@@ -1,0 +1,12 @@
+﻿{
+  "id": "clan-haas",
+  "name": "Clan Haas",
+  "attributeModifiers": [
+    { "attribute": "Aim", 
+      "modifier": 1
+    },
+    { "attribute": "Movement", 
+      "modifier": -1
+    }
+  ]
+}

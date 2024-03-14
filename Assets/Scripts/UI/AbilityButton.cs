@@ -1,16 +1,41 @@
 ﻿using System;
-using Gangs.Abilities;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Gangs {
-    public class AbilityButton : MonoBehaviour { 
-        public BaseAbility Ability { get; set; }
+namespace Gangs.UI {
+    public class AbilityButton : MonoBehaviour {
+        private KeyCode _key;
+        public TextMeshProUGUI abilityNameText;
+        public TextMeshProUGUI hotkeyText;
         
-        public event Action<BaseAbility> OnSelected;
+        private Button _button;
         
-        public void Execute() {
-            OnSelected?.Invoke(Ability);
-            Ability.Execute();
+        public event Action OnSelected;
+        
+        private void Awake() {
+            _button = GetComponent<Button>();
+            _button.onClick.AddListener(Execute);
+        }
+
+        private void Update() {
+            if (Input.GetKeyDown(_key)) {
+                Execute();
+            }
+        }
+
+        public void SetAbility(string ability, KeyCode hotkey) {
+            _key = hotkey;
+            abilityNameText.text = ability;
+            hotkeyText.text = hotkey.ToString().Replace("Alpha", "");
+        }
+        
+        public void Enabled(bool enable) {
+            _button.interactable = enable;
+        }
+
+        private void Execute() {
+            OnSelected?.Invoke();
         }
     }
 }

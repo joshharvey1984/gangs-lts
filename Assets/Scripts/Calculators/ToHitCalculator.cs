@@ -8,7 +8,7 @@ namespace Gangs.Calculators {
     public class ToHitCalculator {
         private const float DecayRate = 0.1f;
         
-        public int CalculateToHitChance(Tile fromTile, Tile targetTile, Unit firingUnit, Unit targetUnit, List<ToHitModifiers> modifiers) {
+        public int CalculateToHitChance(Tile fromTile, Tile targetTile, Unit firingUnit, Unit targetUnit, List<ToHitModifier> modifiers) {
             var range = GridPosition.Distance(fromTile.GridPosition, targetTile.GridPosition);
             var toHitChance = (int)(100 * Math.Exp(-DecayRate * range));
             var firingUnitSkill = firingUnit.Fighter.GetCurrentAttributeValue(FighterAttribute.Aim);
@@ -16,12 +16,21 @@ namespace Gangs.Calculators {
             modifiers.ForEach(modifier => toHitChance += modifier.Modifier);
             
             toHitChance = Mathf.Clamp(toHitChance, 0, 100);
+            Debug.Log($"To hit chance: {toHitChance}%");
+            modifiers.ForEach(modifier => Debug.Log($"To hit modifier: {modifier.Description}: {modifier.Modifier}%"));
             return toHitChance;
         }
     }
 
-    public class ToHitModifiers {
-        public int Modifier;
-        public string Reason;
+    public class ToHitModifier {
+        public ToHitModifierType ModifierType { get; set; }
+        public int Modifier { get; set; }
+        public string Description { get; set; }
+    }
+    
+    public enum ToHitModifierType
+    {
+        TargetInCover,
+        HeightAdvantage
     }
 }

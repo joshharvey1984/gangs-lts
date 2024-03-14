@@ -1,0 +1,10 @@
+﻿{
+  "id": "test-gun",
+  "name": "Test Gun",
+  "typeId": 1,
+  "price": 100,
+  "shortRange": 10,
+  "shortRangeModifier": 2,
+  "longRangeModifier": -1,
+  "damage": 5
+}

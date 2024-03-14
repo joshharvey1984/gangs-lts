@@ -1,0 +1,146 @@
+﻿using System.Collections.Generic;
+using Gangs.Abilities.Structs;
+using Gangs.GameObjects;
+using Gangs.Grid;
+using Gangs.UI;
+using UnityEngine;
+
+namespace Gangs.Managers {
+    public class GridVisualManager : MonoBehaviour {
+        public static GridVisualManager Instance { get; private set; }
+        
+        [SerializeField]
+        private GameObject moveRangeLineRendererObject;
+        private MoveRangeLine _moveRangeLine;
+        
+        [SerializeField]
+        private GameObject movePathLineRendererObject;
+        private MovePathLine _movePathLine;
+        
+        [SerializeField]
+        private GameObject waypointIndicatorPrefab;
+        
+        [SerializeField]
+        private GameObject selectionCursorPrefab;
+        private GameObject _selectionCursor;
+        
+        [SerializeField]
+        private GameObject fullCoverIndicatorPrefab;
+        [SerializeField]
+        private GameObject halfCoverIndicatorPrefab;
+        private readonly List<GameObject> _coverIndicators = new();
+        
+        private void Awake() {
+            if (Instance != null) {
+                Destroy(gameObject);
+                return;
+            }
+            
+            Instance = this;
+            
+            _moveRangeLine = moveRangeLineRendererObject.GetComponent<MoveRangeLine>();
+            _movePathLine = movePathLineRendererObject.GetComponent<MovePathLine>();
+        }
+        
+        public void ResetAllVisuals() {
+            ClearMoveRanges();
+            ClearWaypoints();
+            ClearMovementPath();
+            ClearTileDetails();
+            ClearAllTileColors();
+        }
+        
+        public void DrawTileDetails(Tile tile) {
+            ClearTileDetails();
+            
+            if (tile == null) return;
+            foreach (var wall in tile.Walls) {
+                var wallGameObject = GameManager.Instance.GetWallGameObject(wall.Value);
+                if (wallGameObject == null) continue;
+                var wallScript = wallGameObject.GetComponent<WallGameObject>();
+                if (wallScript.CoverType == CoverType.None) continue;
+                var indicatorPos = wallGameObject.transform.position;
+                var yPos = tile.GridPosition.Y + 0.5f;
+                indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.15f);
+                indicatorPos.y = yPos;
+                var indicator = Instantiate(wallScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
+                if (wall.Key is CardinalDirection.East or CardinalDirection.West) {
+                    indicator.transform.Rotate(Vector3.up, 90);
+                }
+                indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
+                _coverIndicators.Add(indicator);
+            }
+
+            foreach (var prop in tile.NeighbourProps) {
+                var propGameObject = GameManager.Instance.GetPropGameObject(prop.Value);
+                if (propGameObject == null) continue;
+                var propScript = propGameObject.GetComponent<PropGameObject>();
+                if (propScript.CoverType == CoverType.None) continue;
+                var indicatorPos = propGameObject.transform.position;
+                var yPos = tile.GridPosition.Y + 0.5f;
+                indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.65f);
+                indicatorPos.y = yPos;
+                var indicator = Instantiate(propScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
+                if (prop.Key is CardinalDirection.East or CardinalDirection.West) {
+                    indicator.transform.Rotate(Vector3.up, 90);
+                }
+                indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
+                _coverIndicators.Add(indicator);
+            }
+        }
+
+        private void ClearTileDetails() {
+            foreach (var indicator in _coverIndicators) {
+                Destroy(indicator);
+            }
+            _coverIndicators.Clear();
+        }
+        
+        public void UpdateSelectionCursor(Tile hoverTile) {
+            if (_selectionCursor == null) {
+                _selectionCursor = Instantiate(selectionCursorPrefab);
+            }
+            
+            if (hoverTile == null) {
+                _selectionCursor.SetActive(false);
+                return;
+            }
+            
+            _selectionCursor.SetActive(true);
+            
+            _selectionCursor.transform.position = new Vector3 {
+                x = hoverTile.GridPosition.X,
+                y = hoverTile.GridPosition.Y + 0.01f,
+                z = hoverTile.GridPosition.Z
+            };
+        }
+        
+        public GameObject DrawWaypointIndicator(Tile tiles) {
+            var pos = tiles.GridPosition;
+            var waypoint = Instantiate(waypointIndicatorPrefab, new Vector3(pos.X, pos.Y + 0.02f, pos.Z), Quaternion.identity);
+            waypoint.transform.Rotate(Vector3.right, 90);
+            return waypoint;
+        }
+        
+        public void DrawMoveRanges(List<MoveRange> moveRanges) {
+            _moveRangeLine.DestroyAllLines();
+            _moveRangeLine.DrawMovementRangeBoundary(moveRanges);
+        }
+        public void ClearMoveRanges() => _moveRangeLine.DestroyAllLines();
+        public void ClearWaypoints() => _movePathLine.ClearAllLines();
+        public void ClearMovementPath() => _movePathLine.ClearMovementPath();
+        public void DrawMovementPath(List<Tile> tiles) => _movePathLine.DrawMovementPath(tiles);
+        public void ConvertMovementPathToWayPoint() => _movePathLine.ConvertMovementPathToWayPoint();
+
+        public void ColorTile(Tile tile, Color color) {
+            var tileGameObject = GameManager.Instance.GetTileGameObject(tile.GridPosition);
+            tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
+        }
+        
+        public void ClearAllTileColors() {
+            foreach (var go in GameObject.FindGameObjectsWithTag("Tile")) {
+                go.GetComponentInChildren<Renderer>().material.color = Color.white;
+            }
+        }
+    }
+}

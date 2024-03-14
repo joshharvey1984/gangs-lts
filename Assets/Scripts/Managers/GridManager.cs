@@ -1,4 +1,5 @@
 ﻿using System;
+using Gangs.GameObjects;
 using Gangs.Grid;
 using UnityEngine;
 
@@ -16,12 +17,11 @@ namespace Gangs.Managers {
             }
         }
         
-        public Grid.Grid SetupGrid() {
+        public void SetupGrid() {
             SetupTiles();
             SetupProps();
             SetupWalls();
             SetupLadders();
-            return Grid;
         }
 
         private void SetupTiles() {
@@ -54,8 +54,9 @@ namespace Gangs.Managers {
         private void SetupProps() {
             var props = GameObject.FindGameObjectsWithTag($"Prop");
             foreach (var prop in props) {
+                var propScript = prop.GetComponent<PropGameObject>();
                 var propPosition = prop.transform.position;
-                Grid.AddProp(new GridPosition((int)propPosition.x, (int)propPosition.y, (int)propPosition.z));
+                propScript.Prop = Grid.AddProp(new GridPosition((int)propPosition.x, (int)propPosition.y, (int)propPosition.z));
             }
         }
 
@@ -63,32 +64,61 @@ namespace Gangs.Managers {
             var ladders = GameObject.FindGameObjectsWithTag($"Ladder");
             foreach (var ladder in ladders) {
                 var ladderPosition = ladder.transform.position;
-                if (ladderPosition.x % 2 == 0) {
-                    Grid.AddLadder(new GridPosition((int)ladderPosition.x, (int)ladderPosition.y, Mathf.RoundToInt(ladderPosition.z - 0.4f)), 
-                        new GridPosition((int)ladderPosition.x, (int)ladderPosition.y + 1, Mathf.RoundToInt(ladderPosition.z + 0.6f)));
-                }
-                else {
-                    Grid.AddLadder(new GridPosition(Mathf.RoundToInt(ladderPosition.x - 0.4f), (int)ladderPosition.y, (int)ladderPosition.z), 
-                        new GridPosition(Mathf.RoundToInt(ladderPosition.x + 0.6f), (int)ladderPosition.y + 1, (int)ladderPosition.z));
-                }
+                
+                var upperLadderPosition = ladder.transform.rotation.eulerAngles.y switch {
+                    0 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z + 1),
+                    180 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z - 1),
+                    90 => new Vector3(ladderPosition.x + 1, ladderPosition.y + 1, ladderPosition.z),
+                    270 => new Vector3(ladderPosition.x - 1, ladderPosition.y + 1, ladderPosition.z),
+                    _ => new Vector3()
+                };
+
+                var ladderGridPosition = new GridPosition(ladderPosition);
+                var upperLadderGridPosition = new GridPosition(upperLadderPosition);
+                
+                Grid.AddLadder(ladderGridPosition, upperLadderGridPosition);
             }
         }
         
         private void SetupWalls() {
-            var walls = GameObject.FindGameObjectsWithTag($"Wall");
-            foreach (var wall in walls) {
-                var wallPosition = wall.transform.position;
+            var wallGameObjects = GameObject.FindGameObjectsWithTag($"Wall");
+            foreach (var wallGameObject  in wallGameObjects) {
+                var wallScript = wallGameObject.GetComponent<WallGameObject>();
+                var wallPosition = wallGameObject.transform.position;
                 if (Math.Abs(wallPosition.z % 1 - 0.5f) < 0.01f) {
                     var wallGridPosition = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z + 0.5f));
                     var wallGridPosition2 = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z - 0.5f));
-                    Grid.AddWall(wallGridPosition, wallGridPosition2);
+                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2);
                 }
                 else {
                     var wallGridPosition = new GridPosition((int)(wallPosition.x - 0.5f), (int)wallPosition.y, (int)wallPosition.z);
                     var wallGridPosition2 = new GridPosition((int)(wallPosition.x + 0.5f), (int)wallPosition.y, (int)wallPosition.z);
-                    Grid.AddWall(wallGridPosition, wallGridPosition2);
+                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2);
                 }
             }
+        }
+
+        public CoverType CheckTileCover(Tile fromTile, Tile targetTile) {
+            var coverType = CoverType.None;
+            foreach (var wall in targetTile.Walls) {
+                if (GridPosition.CheckDirection(targetTile.GridPosition, fromTile.GridPosition, wall.Key)) {
+                    var wallCoverType = GameManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
+                    if (wallCoverType > coverType) {
+                        coverType = wallCoverType;
+                    }
+                }
+            }
+            
+            foreach (var prop in targetTile.NeighbourProps) {
+                if (GridPosition.CheckDirection(fromTile.GridPosition, targetTile.GridPosition, prop.Key)) {
+                    var propCoverType = GameManager.Instance.GetPropGameObject(prop.Value).GetComponent<PropGameObject>().CoverType;
+                    if (propCoverType > coverType) {
+                        coverType = propCoverType;
+                    }
+                }
+            }
+            
+            return coverType;
         }
     }
 }

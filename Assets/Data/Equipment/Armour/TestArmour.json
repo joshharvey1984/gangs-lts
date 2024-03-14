@@ -1,0 +1,7 @@
+﻿{
+  "id": "test-armour",
+  "name": "Test Armour",
+  "typeId": 3,
+  "price": 100,
+  "damageReduction": 2
+}
