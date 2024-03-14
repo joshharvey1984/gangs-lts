@@ -5,9 +5,11 @@ Assets/Plugins/Editor/JetBrains*
 # Visual Studio Code
 .vscode/
 
-# TextMesh Pro files
+# TextMesh Pro & URP Tutorial files
 Assets/TextMesh Pro/*
-
+Assets/TextMesh Pro.meta
+Assets/TutorialInfo/*
+Assets/TutorialInfo.meta
 
 ### Unity ###
 [Ll]ibrary/
@@ -18,6 +20,7 @@ Assets/TextMesh Pro/*
 [Ll]ogs/
 Assets/AssetStoreTools*
 Assets/Plugins*
+
 # Unity local user project setting
 UserSettings/
 
