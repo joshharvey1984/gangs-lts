@@ -5,6 +5,9 @@ Assets/Plugins/Editor/JetBrains*
 # Visual Studio Code
 .vscode/
 
+# TextMesh Pro files
+Assets/TextMesh Pro/*
+
 
 ### Unity ###
 [Ll]ibrary/
