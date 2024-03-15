@@ -13,7 +13,7 @@ namespace Gangs.AI {
         public static void TakeTurn(Unit unit) {
             var knownEnemyUnits = GetKnownEnemyUnits();
             var moveAbility = unit.Abilities[0] as MoveAbility;
-            var moveRange = moveAbility!.CalculateMoveRange();
+            var moveRange = moveAbility!.SetInitialWaypoint();
             
             // find best move considering cover, distance, line of sight and remaining action points
             var bestMove = GetBestMove(unit, moveRange, knownEnemyUnits);

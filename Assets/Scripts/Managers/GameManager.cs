@@ -56,7 +56,8 @@ namespace Gangs.Managers {
             };
             
             Squads = new List<Squad>();
-            Gang.All[0].IsPlayerControlled = true;
+            Gang.All[0].IsPlayerControlled = false;
+            Gang.All[1].IsPlayerControlled = false;
             CreateSquad(Gang.All[0], spawnPositions1);
             CreateSquad(Gang.All[1], spawnPositions2);
         }

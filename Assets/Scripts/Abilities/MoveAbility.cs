@@ -88,8 +88,8 @@ namespace Gangs.Abilities {
             GridVisualManager.Instance.ConvertMovementPathToWayPoint();
             _moveRanges = CalculateMoveRange();
         }
-        
-        private void SetInitialWaypoint() {
+
+        public void SetInitialWaypoint() {
             _moveWaypoints ??= new List<MoveWaypoint>();
             if (_moveWaypoints.Count > 0) ResetMoveWaypoints();
             _moveWaypoints.Add(new MoveWaypoint {
