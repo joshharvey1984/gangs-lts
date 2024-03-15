@@ -16,8 +16,8 @@ namespace Gangs.Calculators {
             modifiers.ForEach(modifier => toHitChance += modifier.Modifier);
             
             toHitChance = Mathf.Clamp(toHitChance, 0, 100);
-            Debug.Log($"To hit chance: {toHitChance}%");
-            modifiers.ForEach(modifier => Debug.Log($"To hit modifier: {modifier.Description}: {modifier.Modifier}%"));
+            //Debug.Log($"To hit chance: {toHitChance}%");
+            //modifiers.ForEach(modifier => Debug.Log($"To hit modifier: {modifier.Description}: {modifier.Modifier}%"));
             return toHitChance;
         }
     }
@@ -31,6 +31,7 @@ namespace Gangs.Calculators {
     public enum ToHitModifierType
     {
         TargetInCover,
-        HeightAdvantage
+        HeightAdvantage,
+        RemainingActionPoints
     }
 }

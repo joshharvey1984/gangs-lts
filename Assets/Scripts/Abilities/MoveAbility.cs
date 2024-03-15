@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities.Structs;
+using Gangs.AI;
 using Gangs.Data;
 using Gangs.Grid;
 using Gangs.Managers;
-using UnityEngine;
 
 namespace Gangs.Abilities {
     public class MoveAbility : Ability {
@@ -25,22 +25,28 @@ namespace Gangs.Abilities {
         
         public override void Select() {
             base.Select();
-            InputManager.Instance.OnTileHovered += TileHovered;
-            InputManager.Instance.OnRightClick += ResetMove;
-            InputManager.Instance.OnLeftClickTile += LeftClickTile;
+            if (Unit.IsPlayerControlled) {
+                InputManager.Instance.OnTileHovered += TileHovered;
+                InputManager.Instance.OnRightClick += ResetMove;
+                InputManager.Instance.OnLeftClickTile += LeftClickTile;
+            }
+            
             SetInitialWaypoint();
             GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
         }
         
         public override void Deselect() {
-            InputManager.Instance.OnRightClick -= ResetMove;
-            InputManager.Instance.OnTileHovered -= TileHovered;
-            InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+            if (Unit.IsPlayerControlled) {
+                InputManager.Instance.OnRightClick -= ResetMove;
+                InputManager.Instance.OnTileHovered -= TileHovered;
+                InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+            }
+
             CancelMove();
             base.Deselect();
         }
 
-        protected override void Execute() {
+        public override void Execute() {
             base.Execute();
             GridVisualManager.Instance.ClearWaypoints();
             GridVisualManager.Instance.ClearMoveRanges();
@@ -64,7 +70,7 @@ namespace Gangs.Abilities {
             else AddWaypoint(tile);
         }
 
-        private void AddWaypoint(Tile tile) {
+        public void AddWaypoint(Tile tile) {
             var lastWaypoints = _moveWaypoints.Select(w => w.DirectPathTiles.Last()).ToList();
             if (lastWaypoints.Contains(tile)) {
                 ResetMove();
@@ -80,7 +86,7 @@ namespace Gangs.Abilities {
             });
             
             GridVisualManager.Instance.ConvertMovementPathToWayPoint();
-            CalculateMoveRange();
+            _moveRanges = CalculateMoveRange();
         }
         
         private void SetInitialWaypoint() {
@@ -91,10 +97,10 @@ namespace Gangs.Abilities {
                 Cost = 0
             });
             
-            CalculateMoveRange();
+            _moveRanges = CalculateMoveRange();
         }
         
-        private void CalculateMoveRange() {
+        public List<MoveRange> CalculateMoveRange() {
             var totalMoveRange = GetMoveRange();
             var moveRanges = new List<MoveRange>();
             
@@ -105,9 +111,12 @@ namespace Gangs.Abilities {
                 var moveRangeList = new MoveRange(i, keys);
                 moveRanges.Add(moveRangeList);
             }
-            
-            GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
-            _moveRanges = moveRanges;
+
+            if (Unit.IsPlayerControlled) {
+                GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
+            }
+
+            return moveRanges;
         }
 
         private Dictionary<Tile, int> GetMoveRange() {
@@ -125,15 +134,21 @@ namespace Gangs.Abilities {
         
         private void CancelMove() {
             ResetMoveWaypoints();
-            GridVisualManager.Instance.ClearWaypoints();
-            GridVisualManager.Instance.ClearMoveRanges();
+            
+            if (Unit.IsPlayerControlled) {
+                GridVisualManager.Instance.ClearWaypoints();
+                GridVisualManager.Instance.ClearMoveRanges();
+            }
         }
         
         private void ResetMove() {
             CancelMove();
             SetInitialWaypoint();
             DrawMovePath(InputManager.Instance.HoverTile);
-            GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
+
+            if (Unit.IsPlayerControlled) {
+                GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
+            }
         }
 
         private void DrawMovePath(Tile tile) {
@@ -153,6 +168,10 @@ namespace Gangs.Abilities {
             ResetMove();
             Unit.UnitGameObject.OnMoveComplete -= MoveComplete;
             Finish();
+            
+            if (!Unit.IsPlayerControlled && Unit.ActionPointsRemaining > 0) {
+                EnemyAI.TakeTurn(Unit);
+            }
         }
     }
 }

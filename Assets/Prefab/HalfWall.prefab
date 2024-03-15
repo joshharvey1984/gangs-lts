@@ -26,7 +26,7 @@ PrefabInstance:
     - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
         type: 3}
@@ -36,7 +36,7 @@ PrefabInstance:
     - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.5
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
         type: 3}
@@ -87,6 +87,11 @@ PrefabInstance:
         type: 3}
       propertyPath: wallCoverType
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5013434420619870027, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: lineOfSightBlocker
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

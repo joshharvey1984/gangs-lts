@@ -30,6 +30,8 @@ namespace Gangs.Managers {
         private GameObject halfCoverIndicatorPrefab;
         private readonly List<GameObject> _coverIndicators = new();
         
+        private List<GameObject> _tileNumbers = new();
+        
         private void Awake() {
             if (Instance != null) {
                 Destroy(gameObject);
@@ -141,6 +143,25 @@ namespace Gangs.Managers {
             foreach (var go in GameObject.FindGameObjectsWithTag("Tile")) {
                 go.GetComponentInChildren<Renderer>().material.color = Color.white;
             }
+        }
+
+        public void NumberTile(Tile tile, float expectedDamageDifferential) {
+            var tileGameObject = GameManager.Instance.GetTileGameObject(tile.GridPosition);
+            var text = Instantiate(new GameObject(), tileGameObject.transform);
+            text.transform.position = tileGameObject.transform.position;
+            text.transform.rotation = Quaternion.identity;
+            text.transform.Rotate(Vector3.right, 90);
+            text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            var textMesh = text.AddComponent<TextMesh>();
+            textMesh.text = expectedDamageDifferential.ToString("F1");
+            _tileNumbers.Add(text);
+        }
+
+        public void DeleteAllTileNumbers() {
+            foreach (var number in _tileNumbers) {
+                Destroy(number);
+            }
+            _tileNumbers.Clear();
         }
     }
 }

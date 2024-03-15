@@ -45,11 +45,7 @@ namespace Gangs.UI {
                 points.Add(position);
             }
             
-            if (DebugManager.Instance.pathfindingMode == DebugManager.PathfindingMode.AStarWithLerpAndSmoothing)
-                CreateCurvedLineSegments(points, pathColor);
-            else {
-                CreateCurvedLineSegments(points, pathColor, false);
-            }
+            CreateCurvedLineSegments(points, pathColor, false);
         }
         
         private void CreateCurvedLineSegments(List<Vector3> points, Color lineColor, bool curved = true, bool waypoint = false) {

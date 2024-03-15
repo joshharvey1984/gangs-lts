@@ -95,7 +95,7 @@ namespace Gangs.Grid {
             var neighbourTile = Tiles[neighbour.X, neighbour.Y, neighbour.Z];
             if (traversalType == TraversalType.Move && neighbourTile.GridUnit != null) return true;
             if (neighbourTile != null && neighbourTile.Prop != null) return true;
-            if (IsBlockedByPropOrWall(position, neighbour)) return true;
+            if (IsBlockedByPropOrWall(position, neighbour, traversalType)) return true;
             
             // if there's a prop or wall blocking the diagonals, return true
             var adjacentPosition1 = new GridPosition(position.X, position.Y, neighbour.Z);
@@ -111,17 +111,25 @@ namespace Gangs.Grid {
             return new Direction2D(dir.X, dir.Z).ToCardinalDirection();
         }
 
-        private bool IsBlockedByPropOrWall(GridPosition position, GridPosition adjacentPosition) {
+        private bool IsBlockedByPropOrWall(GridPosition position, GridPosition adjacentPosition, TraversalType traversalType = TraversalType.Move) {
             if (position.X == adjacentPosition.X && position.Z == adjacentPosition.Z) return false;
             var tile = GetTile(position);
             var adjacentTile = GetTile(adjacentPosition);
             if (adjacentTile != null) {
                 if (adjacentTile.Prop != null) return true;
                 var dir = GetDirection(position, adjacentPosition);
-                if (adjacentTile.Walls.ContainsKey(dir.GetOpposite())) return true;
+                if (adjacentTile.Walls.ContainsKey(dir.GetOpposite())) {
+                    if (traversalType == TraversalType.See && adjacentTile.Walls[dir.GetOpposite()].LineOfSightBlocker) return true;
+                    if (traversalType == TraversalType.Move) return true;
+                
+                }
             }
             if (tile != null) {
-                if (tile.Walls.ContainsKey(GetDirection(position, adjacentPosition))) return true;
+                if (tile.Walls.ContainsKey(GetDirection(position, adjacentPosition))) {
+                    if (traversalType == TraversalType.See && tile.Walls[GetDirection(position, adjacentPosition)].LineOfSightBlocker) return true;
+                    if (traversalType == TraversalType.Move) return true;
+                
+                }
             }
             
             return false;
@@ -172,8 +180,10 @@ namespace Gangs.Grid {
             return unit;
         }
 
-        public Wall AddWall(GridPosition tile1, GridPosition tile2) {
-            var wall = new Wall();
+        public Wall AddWall(GridPosition tile1, GridPosition tile2, bool losBlocking = true) {
+            var wall = new Wall {
+                LineOfSightBlocker = losBlocking
+            };
             var direction = new Direction2D(tile1 - tile2).ToCardinalDirection();
             if (GetTile(tile1) != null) GetTile(tile1)!.Walls.Add(direction.GetOpposite(), wall);
             if (GetTile(tile2) != null) GetTile(tile2)!.Walls.Add(direction, wall);
@@ -193,8 +203,9 @@ namespace Gangs.Grid {
             Tiles[gridPosition.X, gridPosition.Y, gridPosition.Z] = new Tile(gridPosition);
         }
 
-        public Prop AddProp(GridPosition gridPosition) {
+        public Prop AddProp(GridPosition gridPosition, bool lineOfSightBlocker = true) {
             var prop = Tiles[gridPosition.X, gridPosition.Y, gridPosition.Z].Prop = new Prop();
+            prop.LineOfSightBlocker = lineOfSightBlocker;
             var neighbours = GetAllNeighbourPositions(gridPosition, false);
             foreach (var neighbour in neighbours) {
                 var direction = GridPosition.GetCardinalDirection(gridPosition, neighbour);

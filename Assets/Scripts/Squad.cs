@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Gangs.Abilities;
 using Gangs.Managers;
 
 namespace Gangs {
@@ -11,8 +10,8 @@ namespace Gangs {
         public bool ActivatedUnit;
         
         public bool AllUnitsTurnTaken => Units.All(u => u.TurnTaken);
-        
-        public void SetSelectedUnit(Unit unit) {
+
+        private void SetSelectedUnit(Unit unit) {
             SelectedUnit?.SetSelected(false);
             SelectedUnit = unit;
             SelectedUnit.SetSelected(true);

@@ -47,7 +47,7 @@ namespace Gangs.Abilities {
             Execute();
         }
 
-        protected override void Execute() {
+        public override void Execute() {
             base.Execute();
             var targetTile = InputManager.Instance.HoverTile;
             var random = new System.Random();
@@ -77,7 +77,7 @@ namespace Gangs.Abilities {
             
             // get to hit calculator
             var toHitCalculator = new ToHitCalculator();
-            var modifiers = GetToHitModifiers(unitTile, targetTile);
+            var modifiers = GetToHitModifiers(unitTile, targetTile, Unit.ActionPointsRemaining);
             var toHit = toHitCalculator.CalculateToHitChance(unitTile, targetTile, unit, targetUnit, modifiers);
             return toHit;
         }

@@ -51,8 +51,8 @@ namespace Gangs.Managers {
             };
             
             var spawnPositions2 = new List<GridPosition> {
-                new(10, 0, 15),
-                new(11, 0, 15)
+                new(1, 0, 12),
+                new(0, 0, 13)
             };
             
             Squads = new List<Squad>();
@@ -68,14 +68,15 @@ namespace Gangs.Managers {
             foreach (var fighter in gang.Fighters) {
                 var position = spawnPositions[0];
                 spawnPositions.RemoveAt(0);
-                squad.Units.Add(CreateUnit(fighter, position));
+                squad.Units.Add(CreateUnit(fighter, position, gang.IsPlayerControlled));
             }
         }
         
-        private Unit CreateUnit(Fighter fighter, GridPosition position) {
+        private Unit CreateUnit(Fighter fighter, GridPosition position, bool isPlayerControlled) {
             var unit = new Unit(fighter) {
                 UnitGameObject = SpawnUnit(position),
-                GridUnit = Grid.AddUnit(position)
+                GridUnit = Grid.AddUnit(position),
+                IsPlayerControlled = isPlayerControlled
             };
             unit.UnitGameObject.UnitNewPosition += MoveUnit;
             unit.OnSelected += abilityUIPanel.GetComponent<AbilityButtonBar>().ShowAbilityButtons;

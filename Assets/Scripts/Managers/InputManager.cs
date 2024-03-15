@@ -79,17 +79,17 @@ namespace Gangs.Managers {
                 _camera.transform.Translate(-Input.GetAxis("Mouse X") * (Time.deltaTime * 10), -Input.GetAxis("Mouse Y") * (Time.deltaTime * 10), 0);
             }
 
-            if (Input.GetKeyDown(KeyCode.M)) {
-                // get all unit positions as debug
-                foreach (var squad in GameManager.Instance.Squads) {
-                    foreach (var unit in squad.Units) {
-                        var tile = GameManager.Instance.GetSoldierTile(unit);
-                        var gridTile = Grid.FindGridUnit(unit.GridUnit);
-                        var pos = unit.UnitGameObject.Position;
-                        Debug.Log($"Unit {unit.Fighter.Name} at {pos} and tile {tile.GridPosition} and gridTile {gridTile.GridPosition}");
-                    }
-                }
-            }
+            // if (Input.GetKeyDown(KeyCode.M)) {
+            //     // get all unit positions as debug
+            //     foreach (var squad in GameManager.Instance.Squads) {
+            //         foreach (var unit in squad.Units) {
+            //             var tile = GameManager.Instance.GetSoldierTile(unit);
+            //             var gridTile = Grid.FindGridUnit(unit.GridUnit);
+            //             var pos = unit.UnitGameObject.Position;
+            //             Debug.Log($"Unit {unit.Fighter.Name} at {pos} and tile {tile.GridPosition} and gridTile {gridTile.GridPosition}");
+            //         }
+            //     }
+            // }
         }
         
         private void LeftClick() {

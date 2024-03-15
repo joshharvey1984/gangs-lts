@@ -24,7 +24,7 @@ namespace Gangs.UI {
         
         public void DisableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(false));
         public void EnableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(true));
-        private void DestroyAbilityButtons() {
+        public void DestroyAbilityButtons() {
             foreach (var button in _abilityButtons) {
                 Destroy(button.gameObject);
             }

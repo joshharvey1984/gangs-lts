@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coverType: 2
+  lineOfSightBlocker: 1
 --- !u!1 &1292507407688926633
 GameObject:
   m_ObjectHideFlags: 0

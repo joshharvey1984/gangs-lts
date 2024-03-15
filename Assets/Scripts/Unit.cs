@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
+using Gangs.AI;
 using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
@@ -24,6 +25,8 @@ namespace Gangs {
         public bool TurnTaken = false;
         
         public int DamageTaken;
+
+        public bool IsPlayerControlled;
         
         public event Action<Unit> OnDeselected;
         public event Action<Unit> OnSelected; 
@@ -47,6 +50,11 @@ namespace Gangs {
             
             if (TurnTaken) UnitGameObject.SetSelected(SelectionCircle.State.Unavailable);
             UnitGameObject.SetSelected(selected ? SelectionCircle.State.Selected : SelectionCircle.State.Available);
+            
+            if (!IsPlayerControlled) {
+                GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DestroyAbilityButtons();
+                EnemyAI.TakeTurn(this);
+            }
         }
 
         public void ResetTurn() {
@@ -67,6 +75,8 @@ namespace Gangs {
                 Status = Status.Knocked;
             }
         }
+        
+        public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints) - DamageTaken;
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();

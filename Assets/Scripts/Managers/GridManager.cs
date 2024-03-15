@@ -56,7 +56,7 @@ namespace Gangs.Managers {
             foreach (var prop in props) {
                 var propScript = prop.GetComponent<PropGameObject>();
                 var propPosition = prop.transform.position;
-                propScript.Prop = Grid.AddProp(new GridPosition((int)propPosition.x, (int)propPosition.y, (int)propPosition.z));
+                propScript.Prop = Grid.AddProp(new GridPosition((int)propPosition.x, (int)propPosition.y, (int)propPosition.z), propScript.LineOfSightBlocker);
             }
         }
 
@@ -88,12 +88,12 @@ namespace Gangs.Managers {
                 if (Math.Abs(wallPosition.z % 1 - 0.5f) < 0.01f) {
                     var wallGridPosition = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z + 0.5f));
                     var wallGridPosition2 = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z - 0.5f));
-                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2);
+                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
                 }
                 else {
                     var wallGridPosition = new GridPosition((int)(wallPosition.x - 0.5f), (int)wallPosition.y, (int)wallPosition.z);
                     var wallGridPosition2 = new GridPosition((int)(wallPosition.x + 0.5f), (int)wallPosition.y, (int)wallPosition.z);
-                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2);
+                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
                 }
             }
         }

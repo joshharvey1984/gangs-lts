@@ -20,24 +20,28 @@ namespace Gangs.Abilities {
         public virtual void Select() {
             if (Unit.SelectedAbility != null && Unit.SelectedAbility != this) Unit.SelectedAbility.Deselect();
             Unit.SelectedAbility = this;
-            GridVisualManager.Instance.ResetAllVisuals();
         }
 
         public virtual void Deselect() {
             Unit.SelectedAbility = null;
         }
 
-        protected virtual void Execute() {
+        public virtual void Execute() {
             GameManager.Instance.SquadTurn.ActivatedUnit = true;
             GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
         public virtual int ToHit(Tile tile) => 0;
 
-        protected virtual List<ToHitModifier> GetToHitModifiers(Tile fromTile, Tile targetTile) {
+        public virtual List<ToHitModifier> GetToHitModifiers(Tile fromTile, Tile targetTile, int apRemaining = 0) {
             var modifiers = new List<ToHitModifier>();
             if (CheckCoverModifier(fromTile, targetTile) is { } coverModifier) modifiers.Add(coverModifier);
             if (CheckHeightModifier(fromTile, targetTile) is { } heightModifier) modifiers.Add(heightModifier);
+            if (RemainingActionPointsModifier(apRemaining) is { } apModifier) modifiers.Add(apModifier);
+            // if (modifiers.Count > 0) {
+            //     var modifierString = string.Join(", ", modifiers.Select(m => m.Description + " " + m.Modifier));
+            //     Debug.Log($"To hit modifiers for {fromTile}: {modifierString}");
+            // }
             return modifiers;
         }
 
@@ -48,22 +52,19 @@ namespace Gangs.Abilities {
             return null;
         }
         
+        private ToHitModifier RemainingActionPointsModifier(int remainingActionPoints) {
+            if (remainingActionPoints <= 1) return null;
+            return new ToHitModifier { ModifierType = ToHitModifierType.RemainingActionPoints, Modifier = (remainingActionPoints - 1) * 5, Description = "Remaining action points" };
+        }
+        
         private ToHitModifier CheckHeightModifier(Tile fromTile, Tile targetTile) {
-            // try catch block to handle null reference exception
-            if (fromTile == null) {
-                Debug.LogError("Error: " + fromTile + " " + targetTile);
-                return null;
-            }
-            try {
-                return fromTile.GridPosition.Y > targetTile.GridPosition.Y ? 
-                    new ToHitModifier { ModifierType = ToHitModifierType.HeightAdvantage, Modifier = 10, Description = "Height advantage" } : null;
-            } catch {
-                Debug.LogError("Error: " + fromTile + " " + targetTile);
-                return null;
-            }
+            return fromTile.GridPosition.Y > targetTile.GridPosition.Y ? 
+                new ToHitModifier { ModifierType = ToHitModifierType.HeightAdvantage, Modifier = 10, Description = "Height advantage" } : null;
         }
 
         protected void Finish() {
+            Debug.Log("Finish");
+            Debug.Log($"AP remaining: {Unit.ActionPointsRemaining}");
             if (EndTurnOnUse || Unit.ActionPointsRemaining <= 0) {
                 GridVisualManager.Instance.ResetAllVisuals();
                 GameManager.Instance.SquadTurn.EndUnitTurn();
