@@ -2,7 +2,6 @@
 using System.Linq;
 using Gangs.Abilities;
 using Gangs.Abilities.Structs;
-using Gangs.Calculators;
 using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.Managers;
@@ -11,84 +10,101 @@ using UnityEngine;
 namespace Gangs.AI {
     public static class EnemyAI {
         public static void TakeTurn(Unit unit) {
-            var knownEnemyUnits = GetKnownEnemyUnits();
-            var moveAbility = unit.Abilities[0] as MoveAbility;
-            var moveRange = moveAbility!.SetInitialWaypoint();
+            if (GameManager.Instance.SquadTurn is not AISquad) {
+                Debug.LogError("EnemyAI.TakeTurn() called on a non-AI squad turn!");
+                return;
+            }
             
-            // find best move considering cover, distance, line of sight and remaining action points
-            var bestMove = GetBestMove(unit, moveRange, knownEnemyUnits);
-            if (bestMove == null) {
-                GameManager.Instance.SquadTurn.EndUnitTurn();
-                return;
-            }
-            if (bestMove == GameManager.Instance.GetSoldierTile(unit)) {
-                GameManager.Instance.SquadTurn.EndUnitTurn();
-                return;
-            }
-            moveAbility!.AddWaypoint(bestMove);
-            moveAbility!.Execute();
-        }
-
-        private static Tile GetBestMove(Unit unit, List<MoveRange> moveRange, List<Unit> knownEnemyUnits) {
-            var candidateMoves = new List<CandidateMove>();
             var moveAbility = unit.Abilities[0] as MoveAbility;
-            var toHitCalculator = new ToHitCalculator();
-            foreach (var move in moveRange) {
-                foreach (var tile in move.Tiles) {
-                    var candidateMove = new CandidateMove { Tile = tile, ExpectedDamageDifferential = 0 };
-                    foreach (var enemyUnit in knownEnemyUnits) {
-                        var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemyUnit.GridUnit);
-                        var toHitModifiers = moveAbility!.GetToHitModifiers(tile, enemyTile, unit.ActionPointsRemaining - move.ActionPoint);
-                        var toHit = toHitCalculator.CalculateToHitChance(tile, enemyTile, unit, enemyUnit, toHitModifiers);
-                        var toBeHitModifiers = moveAbility.GetToHitModifiers(enemyTile, tile);
-                        var toBeHit = toHitCalculator.CalculateToHitChance(enemyTile, tile, enemyUnit, unit, toBeHitModifiers);
-                        
-                        var expectedDamageGiven = ((float)toHit / 100) * 10.0f;
-                        var expectedDamageTaken = ((float)toBeHit / 100) * 10.0f;
-                        var expectedDamageDifferential = expectedDamageGiven - expectedDamageTaken;
-                        
-                        //var healthWeight = 1.0f - (unit.GetCurrentHitPoints() + enemyUnit.GetCurrentHitPoints()) / (unit.GetAttribute(FighterAttribute.HitPoints) + enemyUnit.GetAttribute(FighterAttribute.HitPoints));
-                        
-                        candidateMove.ExpectedDamageDifferential += expectedDamageDifferential;
-                    }
-                    
-                    if (unit.ActionPointsRemaining - move.ActionPoint > 0) {
-                        candidateMove.ExpectedDamageDifferential += 5.0f;
-                    }
-                    
-                    candidateMoves.Add(candidateMove);
+            var fireAbility = unit.Abilities[1] as FireAbility;
+            
+            var currentTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
+            
+            var lastSeenEnemies = GameManager.Instance.SquadTurn.EnemyLastSeen;
+            var enemiesInSight = GetEnemiesInSight();
+            
+            var enemyData = new List<EnemyUnits>();
+            
+            foreach (var (enemy, tile) in lastSeenEnemies) {
+                var isVisible = enemiesInSight.Contains(enemy);
+                enemyData.Add(new EnemyUnits {
+                    Unit = enemy,
+                    Tile = tile,
+                    IsVisible = isVisible
+                });
+            }
+            
+            var squad = GameManager.Instance.SquadTurn as AISquad;
+            var weightings = squad!.Weightings;
+            
+            var moveRange = moveAbility!.CalculateMoveRange();
+            var bestMoveTile = FindBestTile(unit, moveRange, enemyData);
+            var bestMoveTileValue = GetTilePointValue(bestMoveTile, enemyData, weightings);
+            var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings);
+            
+            if (bestMoveTileValue <= currentTileValue * 1.25f) {
+                if (unit.GetEnemiesInLineOfSight().Count > 0) {
+                    var target = unit.GetEnemiesInLineOfSight().First();
+                    var targetTile = GridManager.Instance.Grid.FindGridUnit(target.GridUnit);
+                    fireAbility!.Select();
+                    fireAbility!.LeftClickTile(targetTile);
                 }
-            }
-            
-            candidateMoves.ForEach(c => c.ExpectedDamageDifferential += Random.Range(-0.1f, 0.1f));
-            candidateMoves = candidateMoves.OrderByDescending(c => c.ExpectedDamageDifferential).ToList();
-            
-            if (candidateMoves.Count == 0) return null;
-            
-            if (DebugManager.Instance.DebugMode) {
-                for (var i = 0; i < 10; i++) {
-                    Debug.Log($"Move: {candidateMoves[i].Tile.GridPosition}, Expected damage differential: {candidateMoves[i].ExpectedDamageDifferential}");
-                    GridVisualManager.Instance.ColorTile(candidateMoves[i].Tile, Color.green);
-                    GridVisualManager.Instance.NumberTile(candidateMoves[i].Tile, candidateMoves[i].ExpectedDamageDifferential);
+                else {
+                    GameManager.Instance.SquadTurn.EndUnitTurn();
                 }
                 
-                // wait 3 seconds
-                // var start = Time.realtimeSinceStartup;
-                // while (Time.realtimeSinceStartup < start + 3) { }
-                //
-                // GridVisualManager.Instance.ClearAllTileColors();
-                // GridVisualManager.Instance.DeleteAllTileNumbers();
+                return;
             }
             
-            return candidateMoves[0].Tile;
+            moveAbility!.AddWaypoint(bestMoveTile);
+            moveAbility!.Execute();
+        }
+        
+        private static Tile FindBestTile(Unit unit, List<MoveRange> moveRange, List<EnemyUnits> enemyUnits) {
+            var squad = GameManager.Instance.SquadTurn as AISquad;
+            var weightings = squad!.Weightings;
+            
+            var candidateMoves = new Dictionary<Tile, float>();
+            foreach (var move in moveRange) {
+                foreach (var tile in move.Tiles) {
+                    if (tile.GridUnit != null) continue;
+                    var pointValue = GetTilePointValue(tile, enemyUnits, weightings);
+                    if (!candidateMoves.TryAdd(tile, pointValue)) candidateMoves[tile] += pointValue;
+                }
+            }
+            
+            if (candidateMoves.Count == 0) return GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
+            var bestMove = candidateMoves.OrderByDescending(kvp => kvp.Value).First();
+            return bestMove.Key;
         }
 
-        private struct CandidateMove {
-            public Tile Tile;
-            public float ExpectedDamageDifferential;
+        private static float GetTilePointValue(Tile tile, List<EnemyUnits> enemyUnits, EnemyAIWeightings weightings) {
+            var pointValue = 0f;
+            var cover = GetTileCoverFromEnemyTiles(tile, enemyUnits);
+            if (cover is {Count: > 0}){
+                var worstCover = cover.Values.Min();
+                if (worstCover == CoverType.Half) pointValue += weightings.HalfCoverWeight;
+                if (worstCover == CoverType.Full) pointValue += weightings.FullCoverWeight;
+            }
+            
+            if (HeightAdvantage(tile, enemyUnits)) pointValue += weightings.HeightAdvantageWeight;
+            if (CanFlank(tile, enemyUnits)) pointValue += weightings.CanFlankWeight;
+            if (IsFlanked(tile, enemyUnits)) pointValue += weightings.IsFlankedWeight;
+            
+            return pointValue;
+        }
+        
+        private static bool IsFlanked(Tile tile, List<EnemyUnits> enemyUnits) {
+            var isFlanked = false;
+            foreach (var enemyUnit in enemyUnits) {
+                var coverType = GridManager.Instance.CheckTileCover(enemyUnit.Tile, tile);
+                if (coverType == CoverType.None) isFlanked = true;
+            }
+
+            return isFlanked;
         }
 
-        private static List<Unit> GetKnownEnemyUnits() {
+        private static List<Unit> GetEnemiesInSight() {
             var squad = GameManager.Instance.SquadTurn;
             var knownUnits = new List<Unit>();
             foreach (var unit in squad.Units) {
@@ -97,16 +113,40 @@ namespace Gangs.AI {
             
             return knownUnits;
         }
+        
+        private static bool CanFlank(Tile tile, List<EnemyUnits> enemyUnits) {
+            var canFlank = false;
+            foreach (var enemyUnit in enemyUnits) {
+                var coverType = GridManager.Instance.CheckTileCover(tile, enemyUnit.Tile);
+                if (coverType == CoverType.None) canFlank = true;
+            }
 
-        private static Dictionary<Unit, CoverType> GetTileCoverFromEnemyUnits(Tile tile, List<Unit> knownEnemyUnits) {
-            var cover = new Dictionary<Unit, CoverType>();
-            foreach (var enemyUnit in knownEnemyUnits) {
-                var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemyUnit.GridUnit);
-                var coverType = GridManager.Instance.CheckTileCover(tile, enemyTile);
-                cover.Add(enemyUnit, coverType);
+            return canFlank;
+        }
+        
+        private static bool HeightAdvantage(Tile tile, List<EnemyUnits> enemyUnits) {
+            var heightAdvantage = false;
+            foreach (var enemyUnit in enemyUnits) {
+                if (tile.GridPosition.Y > enemyUnit.Tile.GridPosition.Y) heightAdvantage = true;
+            }
+
+            return heightAdvantage;
+        }
+        
+        private static Dictionary<Tile, CoverType> GetTileCoverFromEnemyTiles(Tile tile, List<EnemyUnits> enemyUnits) {
+            var cover = new Dictionary<Tile, CoverType>();
+            foreach (var enemyUnit in enemyUnits) {
+                var coverType = GridManager.Instance.CheckTileCover(enemyUnit.Tile, tile);
+                cover.TryAdd(enemyUnit.Tile, coverType);
             }
 
             return cover;
         }
+    }
+    
+    public struct EnemyUnits {
+        public Unit Unit;
+        public Tile Tile;
+        public bool IsVisible;
     }
 }

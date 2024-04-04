@@ -30,8 +30,8 @@ namespace Gangs.Abilities {
                 InputManager.Instance.OnRightClick += ResetMove;
                 InputManager.Instance.OnLeftClickTile += LeftClickTile;
             }
-            
-            SetInitialWaypoint();
+
+            CalculateMoveRange();
             GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
         }
         
@@ -88,19 +88,17 @@ namespace Gangs.Abilities {
             GridVisualManager.Instance.ConvertMovementPathToWayPoint();
             _moveRanges = CalculateMoveRange();
         }
-
-        public void SetInitialWaypoint() {
-            _moveWaypoints ??= new List<MoveWaypoint>();
-            if (_moveWaypoints.Count > 0) ResetMoveWaypoints();
-            _moveWaypoints.Add(new MoveWaypoint {
-                DirectPathTiles = new List<Tile> { SoldierTile },
-                Cost = 0
-            });
-            
-            _moveRanges = CalculateMoveRange();
-        }
         
         public List<MoveRange> CalculateMoveRange() {
+            if (_moveWaypoints == null || _moveWaypoints.Count == 0) {
+                _moveWaypoints = new List<MoveWaypoint> {
+                    new() {
+                        DirectPathTiles = new List<Tile> { SoldierTile },
+                        Cost = 0
+                    }
+                };
+            }
+            
             var totalMoveRange = GetMoveRange();
             var moveRanges = new List<MoveRange>();
             
@@ -115,6 +113,8 @@ namespace Gangs.Abilities {
             if (Unit.IsPlayerControlled) {
                 GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
             }
+            
+            _moveRanges = moveRanges;
 
             return moveRanges;
         }
@@ -143,7 +143,7 @@ namespace Gangs.Abilities {
         
         private void ResetMove() {
             CancelMove();
-            SetInitialWaypoint();
+            CalculateMoveRange();
             DrawMovePath(InputManager.Instance.HoverTile);
 
             if (Unit.IsPlayerControlled) {
@@ -168,10 +168,6 @@ namespace Gangs.Abilities {
             ResetMove();
             Unit.UnitGameObject.OnMoveComplete -= MoveComplete;
             Finish();
-            
-            if (!Unit.IsPlayerControlled && Unit.ActionPointsRemaining > 0) {
-                EnemyAI.TakeTurn(Unit);
-            }
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Gangs.Abilities;
+using Gangs.AI;
 using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
@@ -22,6 +22,12 @@ namespace Gangs.Managers {
         
         public Unit SelectedUnit => SquadTurn.SelectedUnit;
         public bool ActivatedUnit => SquadTurn.ActivatedUnit;
+
+        public bool SquadOnePlayerControlled;
+        public bool SquadTwoPlayerControlled;
+        
+        public EnemyAIWeightings SquadOneWeightings;
+        public EnemyAIWeightings SquadTwoWeightings;
         
         private void Awake() {
             if (Instance != null) {
@@ -51,19 +57,19 @@ namespace Gangs.Managers {
             };
             
             var spawnPositions2 = new List<GridPosition> {
-                new(1, 0, 12),
-                new(0, 0, 13)
+                new(2, 0, 12),
+                new(3, 0, 13)
             };
             
             Squads = new List<Squad>();
-            Gang.All[0].IsPlayerControlled = false;
-            Gang.All[1].IsPlayerControlled = false;
-            CreateSquad(Gang.All[0], spawnPositions1);
-            CreateSquad(Gang.All[1], spawnPositions2);
+            Gang.All[0].IsPlayerControlled = SquadOnePlayerControlled;
+            Gang.All[1].IsPlayerControlled = SquadTwoPlayerControlled;
+            CreateSquad(Gang.All[0], spawnPositions1, SquadOneWeightings);
+            CreateSquad(Gang.All[1], spawnPositions2, SquadTwoWeightings);
         }
         
-        private void CreateSquad(Gang gang, IList<GridPosition> spawnPositions) {
-            var squad = gang.IsPlayerControlled ? (Squad) new PlayerSquad() : new AISquad();
+        private void CreateSquad(Gang gang, IList<GridPosition> spawnPositions, EnemyAIWeightings aiWeightings = default) {
+            var squad = gang.IsPlayerControlled ? (Squad) new PlayerSquad() : new AISquad(aiWeightings);
             Squads.Add(squad);
             
             foreach (var fighter in gang.Fighters) {
@@ -90,7 +96,24 @@ namespace Gangs.Managers {
             return soldier.GetComponent<UnitGameObject>();
         }
         
-        private void MoveUnit(GridPosition gridPosition) => Grid.MoveUnit(SquadTurn.SelectedUnit.GridUnit, gridPosition);
+        private void MoveUnit(GridPosition gridPosition) {
+            var movingUnit = SquadTurn.SelectedUnit;
+            Grid.MoveUnit(movingUnit.GridUnit, gridPosition);
+            
+            var movedUnitTile = Grid.GetTile(gridPosition);
+            var enemySquads = Squads.Where(s => s != SquadTurn).ToList();
+            var enemyUnits = enemySquads.SelectMany(s => s.Units).ToList();
+
+            foreach (var enemyUnit in enemyUnits) {
+                var enemyTile = GetSoldierTile(enemyUnit);
+                var enemySquad = enemySquads.FirstOrDefault(s => s.Units.Contains(enemyUnit));
+                if (enemyTile.LineOfSightGridPositions.Contains(movedUnitTile.GridPosition)) {
+                    SquadTurn.AddOrUpdateEnemyLastSeen(enemyUnit, enemyTile);
+                    enemySquad!.AddOrUpdateEnemyLastSeen(movingUnit, movedUnitTile);
+                }
+            }
+        }
+
         public Tile GetSoldierTile(Unit unit) => Grid.GetTile(GetSoldierPosition(unit.UnitGameObject));
         private GridPosition GetSoldierPosition(UnitGameObject unitGameObject) => new(unitGameObject.Position.x, unitGameObject.Position.y, unitGameObject.Position.z);
         public void NextUnit() => SquadTurn.NextUnit();

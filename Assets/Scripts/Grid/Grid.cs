@@ -44,13 +44,11 @@ namespace Gangs.Grid {
             return validNeighbours;
         }
         
-        public Tile GetTile(GridPosition position) => !IsPositionWithinGridBounds(position) ? null : Tiles[position.X, position.Y, position.Z];
+        public Tile GetTile(GridPosition pos) => !IsPositionWithinGridBounds(pos) ? null : Tiles[pos.X, pos.Y, pos.Z];
         public Tile GetTile(int x, int y, int z) => !IsPositionWithinGridBounds(new GridPosition(x, y, z)) ? null : Tiles[x, y, z];
         public Tile GetTile(float x, float y, float z) => !IsPositionWithinGridBounds(new GridPosition((int)x, (int)y, (int)z)) ? null : Tiles[(int)x, (int)y, (int)z];
         public Tile GetTile(Vector3 position) => !IsPositionWithinGridBounds(new GridPosition((int)position.x, (int)position.y, (int)position.z)) ? null : Tiles[(int)position.x, (int)position.y, (int)position.z];
-        
-        public List<Tile> GetTilesByGridPosition(IEnumerable<GridPosition> positions) => 
-            positions.Select(GetTile).Where(tile => tile != null).ToList();
+        public List<Tile> GetTilesByGridPosition(IEnumerable<GridPosition> positions) => positions.Select(GetTile).Where(tile => tile != null).ToList();
         
         public Tile GetClosestTile(Vector3 position) {
             var gridPosition = new GridPosition(position);

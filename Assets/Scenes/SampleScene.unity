@@ -15499,6 +15499,84 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1416095109}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1420118028
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 977950834055180911, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_Name
+      value: Wall (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546293419370453970, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0dc18268fd2469a43bdca23a374882d3, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e4a368d6e0583564e99f926d80be506e, type: 3}
 --- !u!4 &1423126091 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2418861227445143627, guid: 030ca478a5cb81240a76ee1bdc78190c,
@@ -15637,6 +15715,22 @@ MonoBehaviour:
   selectionCirclePrefab: {fileID: 3197906927602201418, guid: 91627fd271861b64bb8f650acef103e7,
     type: 3}
   abilityUIPanel: {fileID: 1390728743}
+  SquadOnePlayerControlled: 1
+  SquadTwoPlayerControlled: 0
+  SquadOneWeightings:
+    RemainingActionPointWeight: 20
+    FullCoverWeight: 10
+    HalfCoverWeight: 5
+    HeightAdvantageWeight: 5
+    CanFlankWeight: 25
+    IsFlankedWeight: -15
+  SquadTwoWeightings:
+    RemainingActionPointWeight: 5
+    FullCoverWeight: 10
+    HalfCoverWeight: 5
+    HeightAdvantageWeight: 10
+    CanFlankWeight: 15
+    IsFlankedWeight: -25
 --- !u!114 &1443153852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23770,6 +23864,7 @@ SceneRoots:
   - {fileID: 219322450}
   - {fileID: 1667340965}
   - {fileID: 1142542503}
+  - {fileID: 1420118028}
   - {fileID: 1974107099}
   - {fileID: 436882008}
   - {fileID: 1241681124}

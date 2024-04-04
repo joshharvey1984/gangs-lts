@@ -28,6 +28,8 @@ namespace Gangs {
 
         public bool IsPlayerControlled;
         
+        public Dictionary<Unit, Tile> EnemyLastSeen = new();
+        
         public event Action<Unit> OnDeselected;
         public event Action<Unit> OnSelected; 
         
@@ -49,12 +51,7 @@ namespace Gangs {
             else Abilities[0]?.Select();
             
             if (TurnTaken) UnitGameObject.SetSelected(SelectionCircle.State.Unavailable);
-            UnitGameObject.SetSelected(selected ? SelectionCircle.State.Selected : SelectionCircle.State.Available);
-            
-            if (!IsPlayerControlled) {
-                GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DestroyAbilityButtons();
-                EnemyAI.TakeTurn(this);
-            }
+            else UnitGameObject.SetSelected(selected ? SelectionCircle.State.Selected : SelectionCircle.State.Available);
         }
 
         public void ResetTurn() {
@@ -82,6 +79,8 @@ namespace Gangs {
             ability.Select();
         }
         
+        public void AddOrUpdateEnemyLastSeen(Unit unit, Tile tile) => EnemyLastSeen[unit] = tile;
+
         public List<Unit> GetEnemiesInLineOfSight() {
             var units = new List<Unit>();
             var lineOfSight = GameManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;

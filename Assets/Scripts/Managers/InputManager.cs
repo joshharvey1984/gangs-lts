@@ -32,11 +32,11 @@ namespace Gangs.Managers {
         }
 
         private void CheckKeys() {
-            if (Input.GetKeyDown(KeyCode.Q)) {
+            if (Input.GetKeyUp(KeyCode.Q)) {
                 _camera.transform.RotateAround(Vector3.zero, Vector3.up, 90);
             }
             
-            if (Input.GetKeyDown(KeyCode.E)) {
+            if (Input.GetKeyUp(KeyCode.E)) {
                 _camera.transform.RotateAround(Vector3.zero, Vector3.up, -90);
             }
             
@@ -56,8 +56,12 @@ namespace Gangs.Managers {
                 _camera.transform.Translate(Vector3.right * (Time.deltaTime * 10));
             }
             
-            if (Input.GetKeyDown(KeyCode.Tab)) {
+            if (Input.GetKeyUp(KeyCode.Tab)) {
                 GameManager.Instance.NextUnit();
+            }
+            
+            if (Input.GetKeyUp(KeyCode.Space)) {
+                GameManager.Instance.SquadTurn.EndUnitTurn();
             }
 
             if (Input.GetMouseButtonUp(0)) {
@@ -78,18 +82,6 @@ namespace Gangs.Managers {
             if (Input.GetMouseButton(2)) {
                 _camera.transform.Translate(-Input.GetAxis("Mouse X") * (Time.deltaTime * 10), -Input.GetAxis("Mouse Y") * (Time.deltaTime * 10), 0);
             }
-
-            // if (Input.GetKeyDown(KeyCode.M)) {
-            //     // get all unit positions as debug
-            //     foreach (var squad in GameManager.Instance.Squads) {
-            //         foreach (var unit in squad.Units) {
-            //             var tile = GameManager.Instance.GetSoldierTile(unit);
-            //             var gridTile = Grid.FindGridUnit(unit.GridUnit);
-            //             var pos = unit.UnitGameObject.Position;
-            //             Debug.Log($"Unit {unit.Fighter.Name} at {pos} and tile {tile.GridPosition} and gridTile {gridTile.GridPosition}");
-            //         }
-            //     }
-            // }
         }
         
         private void LeftClick() {
@@ -108,6 +100,7 @@ namespace Gangs.Managers {
         
         private void ClickOnUnit() {
             var unit = GameManager.Instance.FindUnit(HoverTile.GridUnit);
+            if (!unit.IsPlayerControlled) return;
             if (unit.TurnTaken) return;
             if (GameManager.Instance.ActivatedUnit) return;
             SelectUnit(unit);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Gangs.AI;
 using Gangs.Calculators;
 using Gangs.GameObjects;
 using Gangs.Grid;
@@ -63,11 +64,14 @@ namespace Gangs.Abilities {
         }
 
         protected void Finish() {
-            Debug.Log("Finish");
-            Debug.Log($"AP remaining: {Unit.ActionPointsRemaining}");
             if (EndTurnOnUse || Unit.ActionPointsRemaining <= 0) {
                 GridVisualManager.Instance.ResetAllVisuals();
                 GameManager.Instance.SquadTurn.EndUnitTurn();
+                return;
+            }
+
+            if (!Unit.IsPlayerControlled && Unit.ActionPointsRemaining > 0) {
+                EnemyAI.TakeTurn(Unit);
             }
             
             GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();

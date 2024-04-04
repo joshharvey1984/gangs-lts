@@ -1,3 +1,4 @@
+using System.Collections;
 using Gangs.Data;
 using UnityEngine;
 
@@ -31,6 +32,17 @@ namespace Gangs.Managers {
             if (Input.GetKeyDown(KeyCode.F1)) {
                 ToggleDebugMode();
             }
+        }
+        
+        public void DelayAction(float delay, System.Action action)
+        {
+            StartCoroutine(DelayRoutine(delay, action));
+        }
+
+        private IEnumerator DelayRoutine(float delay, System.Action action)
+        {
+            yield return new WaitForSeconds(delay);
+            action();
         }
     }
 }

@@ -8,6 +8,7 @@ using UnityEngine;
 namespace Gangs.Abilities {
     public class FireAbility : Ability {
         private List<Unit> _targets;
+        private Tile _targetTile;
         public FireAbility(Unit unit) : base(unit) {
             ButtonText = "Fire";
             TargetingType = TargetingType.EnemiesInLineOfSight;
@@ -22,14 +23,19 @@ namespace Gangs.Abilities {
                 var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemy.GridUnit);
                 GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
             }
-            
-            InputManager.Instance.OnTileHovered += TileHovered;
-            InputManager.Instance.OnLeftClickTile += LeftClickTile;
+
+            if (Unit.IsPlayerControlled) {
+                InputManager.Instance.OnTileHovered += TileHovered;
+                InputManager.Instance.OnLeftClickTile += LeftClickTile;
+            }
         }
         
         public override void Deselect() {
-            InputManager.Instance.OnTileHovered -= TileHovered;
-            InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+            if (Unit.IsPlayerControlled) {
+                InputManager.Instance.OnTileHovered -= TileHovered;
+                InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+            }
+
             base.Deselect();
         }
         
@@ -43,18 +49,19 @@ namespace Gangs.Abilities {
             }
         }
         
-        private void LeftClickTile(Tile tile) {
+        public void LeftClickTile(Tile tile) {
+            _targetTile = tile;
             Execute();
         }
 
         public override void Execute() {
             base.Execute();
-            var targetTile = InputManager.Instance.HoverTile;
+            if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
             var random = new System.Random();
             var toHitRoll = random.Next(1, 101);
-            var toHit = ToHit(targetTile);
+            var toHit = ToHit(_targetTile);
             if (toHitRoll <= toHit) {
-                var targetGridUnit = targetTile.GridUnit;
+                var targetGridUnit = _targetTile.GridUnit;
                 var targetUnit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
                 var damage = 10;
                 targetUnit!.DamageTaken += damage;
