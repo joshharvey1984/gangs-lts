@@ -120,5 +120,18 @@ namespace Gangs.Managers {
             
             return coverType;
         }
+        
+        public void RemoveGridUnit(GridUnit gridUnit) => Grid.RemoveUnit(gridUnit);
+
+        public int GetDistance(Tile tile, Tile targetTile) {
+            var distance = 0;
+            var xDistance = Math.Abs(tile.GridPosition.X - targetTile.GridPosition.X);
+            var yDistance = Math.Abs(tile.GridPosition.Y - targetTile.GridPosition.Y);
+            var zDistance = Math.Abs(tile.GridPosition.Z - targetTile.GridPosition.Z);
+            distance += xDistance;
+            distance += yDistance;
+            distance += zDistance;
+            return distance;
+        }
     }
 }

@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Gangs.GameObjects {
     public class UnitGameObject : MonoBehaviour {
         public GameObject selectionCircleObject;
+        public GameObject modelObject;
         private SelectionCircle SelectionCircle => selectionCircleObject.GetComponent<SelectionCircle>();
         public Vector3 Position {
             private set => gameObject.transform.position = value;
@@ -20,6 +21,10 @@ namespace Gangs.GameObjects {
         
         public event Action<GridPosition> UnitNewPosition;
         public event Action OnMoveComplete;
+        
+        private void Awake() {
+            modelObject = gameObject.transform.GetChild(0).gameObject;
+        }
 
         private void Update() {
             if (_moveWaypoints is {Count: > 0}) { HandleMovement(); }
@@ -50,6 +55,10 @@ namespace Gangs.GameObjects {
             }
             
             UnitNewPosition?.Invoke(new GridPosition(Position));
+        }
+
+        public void Eliminate() {
+            Destroy(gameObject);
         }
     }
 }

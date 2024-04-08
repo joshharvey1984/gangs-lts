@@ -43,7 +43,7 @@ namespace Gangs.Grid {
             return reachableTiles;
         }
 
-        public static List<Tile> FindPath(Tile start, Tile end) {
+        private static List<Tile> FindPath(Tile start, Tile end) {
             var openSet = new List<Tile>();
             var closedSet = new HashSet<Tile>();
             var cameFrom = new Dictionary<Tile, Tile>();

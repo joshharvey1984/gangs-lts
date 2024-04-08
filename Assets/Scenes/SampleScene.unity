@@ -15715,7 +15715,7 @@ MonoBehaviour:
   selectionCirclePrefab: {fileID: 3197906927602201418, guid: 91627fd271861b64bb8f650acef103e7,
     type: 3}
   abilityUIPanel: {fileID: 1390728743}
-  SquadOnePlayerControlled: 1
+  SquadOnePlayerControlled: 0
   SquadTwoPlayerControlled: 0
   SquadOneWeightings:
     RemainingActionPointWeight: 20
@@ -15724,6 +15724,7 @@ MonoBehaviour:
     HeightAdvantageWeight: 5
     CanFlankWeight: 25
     IsFlankedWeight: -15
+    DistanceCheckWeight: 0.1
   SquadTwoWeightings:
     RemainingActionPointWeight: 5
     FullCoverWeight: 10
@@ -15731,6 +15732,7 @@ MonoBehaviour:
     HeightAdvantageWeight: 10
     CanFlankWeight: 15
     IsFlankedWeight: -25
+    DistanceCheckWeight: 0.1
 --- !u!114 &1443153852
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,7 +24,7 @@ namespace Gangs.Data {
                 SetAttribute(FighterAttribute.Movement, 5),
                 SetAttribute(FighterAttribute.Aim, 2),
                 SetAttribute(FighterAttribute.CloseQuarters, 2),
-                SetAttribute(FighterAttribute.HitPoints, 50),
+                SetAttribute(FighterAttribute.HitPoints, 5),
                 SetAttribute(FighterAttribute.ActionPoints, 2)
             };
         }

@@ -55,20 +55,28 @@ namespace Gangs.Abilities {
         }
 
         public override void Execute() {
-            base.Execute();
-            if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
-            var random = new System.Random();
-            var toHitRoll = random.Next(1, 101);
-            var toHit = ToHit(_targetTile);
-            if (toHitRoll <= toHit) {
-                var targetGridUnit = _targetTile.GridUnit;
-                var targetUnit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
-                var damage = 10;
-                targetUnit!.DamageTaken += damage;
-                Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Fighter.Name}");
+            try {
+                base.Execute();
+                if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
+                var random = new System.Random();
+                var toHitRoll = random.Next(1, 101);
+                var toHit = ToHit(_targetTile);
+                if (toHitRoll <= toHit) {
+                    var targetGridUnit = _targetTile.GridUnit;
+                    var targetUnit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+                    var damage = 10;
+                    Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Fighter.Name}");
+                    Debug.Log($"{targetUnit.Fighter.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
+                    targetUnit!.Damage(damage);
+                }
+                else {
+                    Debug.Log("Miss!");
+                }
             }
-            else {
-                Debug.Log("Miss!");
+            catch (EndGameException) {
+                Deselect();
+                GameManager.Instance.EndGame();
+                return;
             }
             
             Finish();

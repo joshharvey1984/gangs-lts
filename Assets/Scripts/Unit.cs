@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
-using Gangs.AI;
 using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
@@ -69,8 +68,15 @@ namespace Gangs {
         public void Damage(int amount) {
             DamageTaken += amount;
             if (DamageTaken >= Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints)) {
-                Status = Status.Knocked;
+                Eliminate();
             }
+        }
+        
+        private void Eliminate() {
+            Status = Status.Eliminated;
+            GridManager.Instance.RemoveGridUnit(GridUnit);
+            UnitGameObject.Eliminate();
+            GameManager.Instance.CheckForEndGame();
         }
         
         public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints) - DamageTaken;
@@ -79,17 +85,14 @@ namespace Gangs {
             ability.Select();
         }
         
-        public void AddOrUpdateEnemyLastSeen(Unit unit, Tile tile) => EnemyLastSeen[unit] = tile;
-
         public List<Unit> GetEnemiesInLineOfSight() {
             var units = new List<Unit>();
             var lineOfSight = GameManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
-            foreach (var tile in GridManager.Instance.Grid.GetTilesByGridPosition(lineOfSight)) {
-                if (tile.GridUnit == null) continue;
-                var unit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == tile.GridUnit);
-                if (unit == null) continue;
-                if (unit.Fighter.Clan == Fighter.Clan) continue;
-                units.Add(unit);
+            var activeEnemySquads = GameManager.Instance.Squads.Where(s => s != GameManager.Instance.SquadTurn).ToList();
+            var activeEnemyUnits = activeEnemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
+            foreach (var activeEnemy in activeEnemyUnits) {
+                var enemyTile = GameManager.Instance.GetSoldierTile(activeEnemy);
+                if (lineOfSight.Contains(enemyTile.GridPosition)) units.Add(activeEnemy);
             }
             return units;
         }

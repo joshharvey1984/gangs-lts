@@ -7,11 +7,12 @@ using Gangs.Managers;
 namespace Gangs {
     public class Squad {
         public readonly List<Unit> Units = new();
+        public List<Unit> ActiveUnits => Units.Where(u => u.Status == Status.Active).ToList();
         
         public Unit SelectedUnit { get; set; }
         public bool ActivatedUnit;
         
-        public bool AllUnitsTurnTaken => Units.All(u => u.TurnTaken);
+        public bool AllUnitsTurnTaken => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
         
         public Dictionary<Unit, Tile> EnemyLastSeen = new();
 
@@ -21,19 +22,25 @@ namespace Gangs {
             SelectedUnit.SetSelected(true);
         }
         
-        public void NextUnit() {
+        public void NextUnit(Unit unit = null) {
             if (ActivatedUnit) return;
+            if (unit == null) unit = SelectedUnit;
             
-            var index = Units.IndexOf(SelectedUnit);
+            if (AllUnitsTurnTaken) {
+                GameManager.Instance.EndSquadTurn();
+                return;
+            }
+            
+            var index = Units.IndexOf(unit);
             index++;
             if (index >= Units.Count) index = 0;
             
-            SetSelectedUnit(Units[index]);
-            
-            if (SelectedUnit.TurnTaken) {
-                NextUnit();
+            if (Units[index].TurnTaken || Units[index].Status == Status.Eliminated) {
+                NextUnit(Units[index]);
                 return;
             }
+            
+            SetSelectedUnit(Units[index]);
             
             if (SelectedUnit.IsPlayerControlled)
                 InputManager.Instance.SelectUnit(SelectedUnit);

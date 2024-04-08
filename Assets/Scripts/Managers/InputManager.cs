@@ -63,6 +63,10 @@ namespace Gangs.Managers {
             if (Input.GetKeyUp(KeyCode.Space)) {
                 GameManager.Instance.SquadTurn.EndUnitTurn();
             }
+            
+            if (Input.GetKeyUp(KeyCode.Escape)) {
+                GameManager.Instance.EndGame();
+            }
 
             if (Input.GetMouseButtonUp(0)) {
                 LeftClick();
@@ -100,6 +104,7 @@ namespace Gangs.Managers {
         
         private void ClickOnUnit() {
             var unit = GameManager.Instance.FindUnit(HoverTile.GridUnit);
+            if (unit == null) return;
             if (!unit.IsPlayerControlled) return;
             if (unit.TurnTaken) return;
             if (GameManager.Instance.ActivatedUnit) return;

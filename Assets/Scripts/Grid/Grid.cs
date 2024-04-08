@@ -149,6 +149,11 @@ namespace Gangs.Grid {
             return null;
         }
         
+        public void RemoveUnit(GridUnit unit) {
+            var tile = FindGridUnit(unit);
+            tile.GridUnit = null;
+        }
+        
         public void MoveUnit(GridUnit unit, GridPosition to) {
             var from = FindGridUnit(unit);
             if (from.GridPosition == to) return;
@@ -214,5 +219,15 @@ namespace Gangs.Grid {
         }
 
         #endregion
+
+        public Tile GetRandomCenterTile() {
+            // get block of 10% of the centre of the grid, y is always 0
+            var x = Tiles.GetLength(0) / 2;
+            var z = Tiles.GetLength(2) / 2;
+            var range = Tiles.GetLength(0) / 10;
+            var randomX = Random.Range(x - range, x + range);
+            var randomZ = Random.Range(z - range, z + range);
+            return GetTile(randomX, 0, randomZ);
+        }
     }
 }
