@@ -19,7 +19,6 @@ namespace Gangs.Managers {
         
         public void SetupGrid() {
             SetupTiles();
-            SetupProps();
             SetupWalls();
             SetupLadders();
         }
@@ -48,15 +47,6 @@ namespace Gangs.Managers {
             foreach (var tile in tiles) {
                 var position = tile.transform.position;
                 Grid.AddTile(new GridPosition((int)position.x, (int)position.y, (int)position.z));
-            }
-        }
-
-        private void SetupProps() {
-            var props = GameObject.FindGameObjectsWithTag($"Prop");
-            foreach (var prop in props) {
-                var propScript = prop.GetComponent<PropGameObject>();
-                var propPosition = prop.transform.position;
-                propScript.Prop = Grid.AddProp(new GridPosition((int)propPosition.x, (int)propPosition.y, (int)propPosition.z), propScript.LineOfSightBlocker);
             }
         }
 
@@ -105,15 +95,6 @@ namespace Gangs.Managers {
                     var wallCoverType = GameManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
                     if (wallCoverType > coverType) {
                         coverType = wallCoverType;
-                    }
-                }
-            }
-            
-            foreach (var prop in targetTile.NeighbourProps) {
-                if (GridPosition.CheckDirection(fromTile.GridPosition, targetTile.GridPosition, prop.Key)) {
-                    var propCoverType = GameManager.Instance.GetPropGameObject(prop.Value).GetComponent<PropGameObject>().CoverType;
-                    if (propCoverType > coverType) {
-                        coverType = propCoverType;
                     }
                 }
             }

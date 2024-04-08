@@ -123,10 +123,6 @@ namespace Gangs.Managers {
         public GameObject GetWallGameObject(Wall wall) => 
             GameObject.FindGameObjectsWithTag("Wall").FirstOrDefault(wallGameObject => 
                 wallGameObject.GetComponent<WallGameObject>().Wall == wall);
-        
-        public GameObject GetPropGameObject(Prop prop) =>
-            GameObject.FindGameObjectsWithTag("Prop").FirstOrDefault(propGameObject => 
-                propGameObject.GetComponent<PropGameObject>().Prop == prop);
 
         public void EndSquadTurn() {
             if (Squads.All(s => s.AllUnitsTurnTaken)) EndRound(); 

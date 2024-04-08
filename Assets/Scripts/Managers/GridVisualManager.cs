@@ -72,23 +72,6 @@ namespace Gangs.Managers {
                 indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
                 _coverIndicators.Add(indicator);
             }
-
-            foreach (var prop in tile.NeighbourProps) {
-                var propGameObject = GameManager.Instance.GetPropGameObject(prop.Value);
-                if (propGameObject == null) continue;
-                var propScript = propGameObject.GetComponent<PropGameObject>();
-                if (propScript.CoverType == CoverType.None) continue;
-                var indicatorPos = propGameObject.transform.position;
-                var yPos = tile.GridPosition.Y + 0.5f;
-                indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.65f);
-                indicatorPos.y = yPos;
-                var indicator = Instantiate(propScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
-                if (prop.Key is CardinalDirection.East or CardinalDirection.West) {
-                    indicator.transform.Rotate(Vector3.up, 90);
-                }
-                indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
-                _coverIndicators.Add(indicator);
-            }
         }
 
         private void ClearTileDetails() {
