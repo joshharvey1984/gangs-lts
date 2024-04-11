@@ -29,6 +29,15 @@ namespace Gangs.Grid {
             }
 
             await Task.WhenAll(tasks);
+            
+            //make sure all tiles have two way line of sight
+            foreach (var tile in Grid.Tiles) {
+                if (tile == null) continue;
+                foreach (var losPosition in tile.LineOfSightGridPositions) {
+                    Grid.GetTile(losPosition)?.LineOfSightGridPositions.Add(tile.GridPosition);
+                }
+            }
+            
         }
 
 
@@ -81,20 +90,38 @@ namespace Gangs.Grid {
                     // check there is no wall either side of this wall
                     var wallDirection = kvp.Key;
                     foreach (var adjacentDirection in wallDirection.GetFourAdjacent()) {
-                        if (tile!.Walls.ContainsKey(adjacentDirection)) continue;
+                        if (tile!.Walls.ContainsKey(adjacentDirection)) {
+                            if (tile.Walls[adjacentDirection].LineOfSightBlocker) {
+                                continue;
+                            }
+                        }
                         // get the tile in the direction of adjacent direction
                         var adjacentTile = Grid.GetTile(GridPosition.GridPositionFromDirection(tile.GridPosition, adjacentDirection));
                         if (adjacentTile != null && adjacentTile.Walls.ContainsKey(wallDirection)) continue;
                         // if there is no wall in the direction of the adjacent direction, then check the line of sight for the tile around the corner
                         var peakPos = GridPosition.GridPositionFromDirection(GridPosition.GridPositionFromDirection(tile.GridPosition, adjacentDirection), wallDirection);
                         if (!Grid.IsPositionWithinGridBounds(peakPos)) continue;
+                        returnTiles.Add(Grid.GetTile(peakPos));
                         returnTiles.AddRange(GetLineOfSightTiles(peakPos, range, true).Select(Grid.GetTile));
+                        returnTiles.AddRange(GetAllPositionsThatCanSeePosition(peakPos).Select(Grid.GetTile));
                     }
                 }
             }
             
             // get all tiles where not null
             return returnTiles.Where(t => t != null).Select(t => t.GridPosition).ToList();
+        }
+        
+        private static List<GridPosition> GetAllPositionsThatCanSeePosition(GridPosition gridPosition) {
+            var positions = new List<GridPosition>();
+            foreach (var tile in Grid.Tiles) {
+                if (tile == null) continue;
+                if (tile.LineOfSightGridPositions.Contains(gridPosition)) {
+                    positions.Add(tile.GridPosition);
+                }
+            }
+            
+            return positions;
         }
         
         private static List<GridPosition> AboveTiles(GridPosition gridPosition, int range) {

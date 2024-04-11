@@ -18,8 +18,13 @@ namespace Gangs.Data {
         public void Create(FighterDto dto) {
             Clan = Clan.All.Find(c => c.ID == dto.clanId);
             Level = dto.level;
-            FighterClass = (FighterClass) System.Enum.Parse(typeof(FighterClass), dto.fighterClass);
-            
+            FighterClass = Level switch {
+                < 6 => FighterClass.Juve,
+                < 11 => FighterClass.Ganger,
+                < 16 => FighterClass.Veteran,
+                _ => FighterClass.Champion
+            };
+
             Attributes = new List<Attribute> {
                 SetAttribute(FighterAttribute.Movement, 5),
                 SetAttribute(FighterAttribute.Aim, 2),

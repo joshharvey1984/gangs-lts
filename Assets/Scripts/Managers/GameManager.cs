@@ -30,6 +30,16 @@ namespace Gangs.Managers {
         public EnemyAIWeightings SquadOneWeightings;
         public EnemyAIWeightings SquadTwoWeightings;
         
+        public int roundNumber = 1;
+        
+        public int squadOneScore = 0;
+        public int squadTwoScore = 0;
+        
+        public float totalGameLength = 0;
+        public float averageGameLength = 0;
+        
+        public float globalMoveSpeed = 2f;
+        
         private void Awake() {
             if (Instance != null) {
                 Destroy(gameObject);
@@ -47,6 +57,11 @@ namespace Gangs.Managers {
             SpawnSquads();
             SquadTurn = Squads[0];
             NextUnit();
+        }
+        
+        private void Update() {
+            totalGameLength += Time.deltaTime;
+            averageGameLength = totalGameLength / (squadOneScore + squadTwoScore + 1);
         }
         
         private void SpawnSquads() {
@@ -140,10 +155,22 @@ namespace Gangs.Managers {
         
         private void EndRound() {
             Squads.ForEach(s => s.ResetTurns());
+            roundNumber++;
+            
+            if (roundNumber > 100) {
+                EndGame();
+            }
         }
 
         public void CheckForEndGame() {
             if (Squads.Any(s => s.Units.All(u => u.Status == Status.Eliminated))) {
+                if (Squads[0].Units.All(u => u.Status == Status.Eliminated)) {
+                    squadTwoScore++;
+                }
+                else {
+                    squadOneScore++;
+                }
+                Debug.Log($"Squad 1: {squadOneScore} - Squad 2: {squadTwoScore}");
                 throw new EndGameException();
             }
         }
@@ -152,6 +179,7 @@ namespace Gangs.Managers {
             Debug.Log("Game Over");
             GridVisualManager.Instance.ResetAllVisuals();
             DestroySquads();
+            roundNumber = 1;
             SpawnSquads();
             SquadTurn = Squads[0];
             NextUnit();

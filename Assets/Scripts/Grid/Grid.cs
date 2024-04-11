@@ -97,8 +97,8 @@ namespace Gangs.Grid {
             // if there's a prop or wall blocking the diagonals, return true
             var adjacentPosition1 = new GridPosition(position.X, position.Y, neighbour.Z);
             var adjacentPosition2 = new GridPosition(neighbour.X, position.Y, position.Z);
-            if (IsBlockedByWall(position, adjacentPosition1) || IsBlockedByWall(position, adjacentPosition2)) return true;
-            if (IsBlockedByWall(neighbour, adjacentPosition1) || IsBlockedByWall(neighbour, adjacentPosition2)) return true;
+            if (IsBlockedByWall(position, adjacentPosition1, traversalType) || IsBlockedByWall(position, adjacentPosition2, traversalType)) return true;
+            if (IsBlockedByWall(neighbour, adjacentPosition1, traversalType) || IsBlockedByWall(neighbour, adjacentPosition2, traversalType)) return true;
 
             return false;
         }
@@ -115,19 +115,20 @@ namespace Gangs.Grid {
             if (adjacentTile != null) {
                 var dir = GetDirection(position, adjacentPosition);
                 if (adjacentTile.Walls.ContainsKey(dir.GetOpposite())) {
-                    if (traversalType == TraversalType.See && adjacentTile.Walls[dir.GetOpposite()].LineOfSightBlocker) return true;
+                    if (traversalType == TraversalType.See) return adjacentTile.Walls[dir.GetOpposite()].LineOfSightBlocker;
                     if (traversalType == TraversalType.Move) return true;
                 
                 }
             }
-            if (tile != null) {
-                if (tile.Walls.ContainsKey(GetDirection(position, adjacentPosition))) {
-                    if (traversalType == TraversalType.See && tile.Walls[GetDirection(position, adjacentPosition)].LineOfSightBlocker) return true;
-                    if (traversalType == TraversalType.Move) return true;
-                
-                }
-            }
+
+            if (tile == null) return false;
             
+            if (tile.Walls.ContainsKey(GetDirection(position, adjacentPosition))) {
+                if (traversalType == TraversalType.See) return tile.Walls[GetDirection(position, adjacentPosition)].LineOfSightBlocker;
+                if (traversalType == TraversalType.Move) return true;
+                
+            }
+
             return false;
         }
 

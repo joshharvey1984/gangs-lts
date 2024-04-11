@@ -48,11 +48,11 @@ namespace Gangs.AI {
             var weightings = squad!.Weightings;
             
             var moveRange = moveAbility!.CalculateMoveRange();
-            var bestMoveTile = FindBestTile(unit, moveRange, enemyData);
-            var bestMove = bestMoveTile.Take(3).ElementAt(Random.Range(0, 3)).Key;
+            var bestMoveTiles = FindBestTile(unit, moveRange, enemyData);
+            var bestMove = bestMoveTiles.Take(3).ElementAt(Random.Range(0, 3));
             
-            var bestMoveTileValue = GetTilePointValue(bestMove, enemyData, weightings);
-            var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings);
+            var bestMoveTileValue = bestMove.Value;
+            var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, unit.ActionPointsRemaining);
             
             if (bestMoveTileValue <= currentTileValue) {
                 if (unit.GetEnemiesInLineOfSight().Count > 0) {
@@ -68,7 +68,7 @@ namespace Gangs.AI {
                 return;
             }
             
-            moveAbility!.AddWaypoint(bestMove);
+            moveAbility!.AddWaypoint(bestMove.Key);
             moveAbility!.Execute();
         }
         
@@ -80,7 +80,7 @@ namespace Gangs.AI {
             foreach (var move in moveRange) {
                 foreach (var tile in move.Tiles) {
                     if (tile.GridUnit != null) continue;
-                    var pointValue = GetTilePointValue(tile, targetTiles, weightings);
+                    var pointValue = GetTilePointValue(tile, targetTiles, weightings, move.ActionPoint);
                     if (!candidateMoves.TryAdd(tile, pointValue)) candidateMoves[tile] += pointValue;
                 }
             }
@@ -88,7 +88,7 @@ namespace Gangs.AI {
             return candidateMoves.OrderByDescending(kvp => kvp.Value).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
-        private static float GetTilePointValue(Tile tile, List<TargetTiles> targetTiles, EnemyAIWeightings weightings) {
+        private static float GetTilePointValue(Tile tile, List<TargetTiles> targetTiles, EnemyAIWeightings weightings, int apRemaining) {
             var pointValue = 0f;
             var cover = GetTileCoverFromEnemyTiles(tile, targetTiles);
             if (cover is {Count: > 0}){
@@ -100,8 +100,8 @@ namespace Gangs.AI {
             if (HeightAdvantage(tile, targetTiles)) pointValue += weightings.HeightAdvantageWeight;
             if (CanFlank(tile, targetTiles)) pointValue += weightings.CanFlankWeight;
             if (IsFlanked(tile, targetTiles)) pointValue += weightings.IsFlankedWeight;
-
             pointValue += DistanceCheck(tile, targetTiles) * -weightings.DistanceCheckWeight;
+            if (apRemaining > 0) pointValue += weightings.RemainingActionPointWeight;
             
             return pointValue;
         }

@@ -30,6 +30,10 @@ namespace Gangs.Managers {
         private GameObject halfCoverIndicatorPrefab;
         private readonly List<GameObject> _coverIndicators = new();
         
+        [SerializeField]
+        private GameObject debugLosIndicatorPrefab;
+        private readonly List<GameObject> _debugLosIndicators = new();
+        
         private List<GameObject> _tileNumbers = new();
         
         private void Awake() {
@@ -72,6 +76,17 @@ namespace Gangs.Managers {
                 indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
                 _coverIndicators.Add(indicator);
             }
+
+            if (DebugManager.Instance.DebugMode) {
+                // draw line of sight
+                var lineOfSight = tile.LineOfSightGridPositions;
+                foreach (var pos in lineOfSight) {
+                    var tileGameObject = GameManager.Instance.GetTileGameObject(pos);
+                    if (tileGameObject == null) continue;
+                    var indicator = Instantiate(debugLosIndicatorPrefab, tileGameObject.transform.position, Quaternion.identity);
+                    _debugLosIndicators.Add(indicator);
+                }
+            }
         }
 
         private void ClearTileDetails() {
@@ -79,6 +94,11 @@ namespace Gangs.Managers {
                 Destroy(indicator);
             }
             _coverIndicators.Clear();
+            
+            foreach (var indicator in _debugLosIndicators) {
+                Destroy(indicator);
+            }
+            _debugLosIndicators.Clear();
         }
         
         public void UpdateSelectionCursor(Tile hoverTile) {

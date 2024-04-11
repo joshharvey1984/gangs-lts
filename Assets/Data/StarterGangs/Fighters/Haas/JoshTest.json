@@ -2,6 +2,5 @@
   "id": "josh-test",
   "name": "Josh Test",
   "clanId": "clan-haas",
-  "level": 15,
-  "fighterClass": "Champion"
+  "level": 15
 }

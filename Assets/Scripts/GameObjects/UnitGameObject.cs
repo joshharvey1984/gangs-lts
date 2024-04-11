@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities.Structs;
 using Gangs.Grid;
+using Gangs.Managers;
 using Gangs.UI;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace Gangs.GameObjects {
         }
         
         private List<MoveWaypoint> _moveWaypoints;
-        private const float MoveSpeed = 5.5f;
+        private float MoveSpeed => 5.5f * GameManager.Instance.globalMoveSpeed;
         
         public event Action<GridPosition> UnitNewPosition;
         public event Action OnMoveComplete;
