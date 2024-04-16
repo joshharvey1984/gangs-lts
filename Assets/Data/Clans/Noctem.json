@@ -1,6 +1,7 @@
 ﻿{
   "id": "clan-noctem",
   "name": "Clan Noctem",
+  "logo": "clan-noctem",
   "attributeModifiers": [
     { "attribute": "Aim", 
       "modifier": -1

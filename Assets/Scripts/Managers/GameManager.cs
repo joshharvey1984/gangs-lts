@@ -60,8 +60,8 @@ namespace Gangs.Managers {
         }
         
         private void Update() {
-            totalGameLength += Time.deltaTime;
-            averageGameLength = totalGameLength / (squadOneScore + squadTwoScore + 1);
+            //totalGameLength += Time.deltaTime;
+            //averageGameLength = totalGameLength / (squadOneScore + squadTwoScore + 1);
         }
         
         private void SpawnSquads() {

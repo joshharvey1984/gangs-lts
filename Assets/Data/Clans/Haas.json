@@ -1,6 +1,7 @@
 ﻿{
   "id": "clan-haas",
   "name": "Clan Haas",
+  "logo": "clan-haas",
   "attributeModifiers": [
     { "attribute": "Aim", 
       "modifier": 1
