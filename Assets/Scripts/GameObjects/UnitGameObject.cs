@@ -18,7 +18,7 @@ namespace Gangs.GameObjects {
         }
         
         private List<MoveWaypoint> _moveWaypoints;
-        private float MoveSpeed => 5.5f * GameManager.Instance.globalMoveSpeed;
+        private float MoveSpeed => 5.5f * BattleManager.Instance.globalMoveSpeed;
         
         public event Action<GridPosition> UnitNewPosition;
         public event Action OnMoveComplete;

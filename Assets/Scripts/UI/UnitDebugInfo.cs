@@ -11,7 +11,7 @@ namespace Gangs.UI
 
         private void Start() {
             _unitInfo = new Dictionary<Unit, GameObject>();
-            var squads = Managers.GameManager.Instance.Squads;
+            var squads = Managers.BattleManager.Instance.Squads;
             UnitListInfo(squads);
         }
 

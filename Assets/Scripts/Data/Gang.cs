@@ -7,7 +7,6 @@ namespace Gangs.Data {
         public static List<Gang> All { get; set; } = new();
                 
         public Clan Clan { get; set; }
-        public bool IsPlayerControlled { get; set; }
         public List<Fighter> Fighters { get; set; }
         
         public Gang(GangDto dto) : base(dto) {

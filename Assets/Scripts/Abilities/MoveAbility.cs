@@ -17,7 +17,7 @@ namespace Gangs.Abilities {
             TargetingType = TargetingType.StandardMove;
         }
         
-        private Tile SoldierTile => GameManager.Instance.GetSoldierTile(Unit);
+        private Tile SoldierTile => BattleManager.Instance.GetSoldierTile(Unit);
         private int MovePoints => Unit.GetAttribute(FighterAttribute.Movement) * 10;
         private int MovePointsUsed => _moveWaypoints.Sum(w => w.Cost);
         private int MovePointsRemaining => MovePoints * Unit.ActionPointsRemaining - MovePointsUsed;

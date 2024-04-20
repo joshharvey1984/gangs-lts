@@ -63,7 +63,7 @@ namespace Gangs.Abilities {
                 var toHit = ToHit(_targetTile);
                 if (toHitRoll <= toHit) {
                     var targetGridUnit = _targetTile.GridUnit;
-                    var targetUnit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+                    var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
                     var damage = 10;
                     Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Fighter.Name}");
                     Debug.Log($"{targetUnit.Fighter.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
@@ -75,7 +75,7 @@ namespace Gangs.Abilities {
             }
             catch (EndGameException) {
                 Deselect();
-                GameManager.Instance.EndGame();
+                BattleManager.Instance.EndGame();
                 return;
             }
             
@@ -84,9 +84,9 @@ namespace Gangs.Abilities {
         
         public override int ToHit(Tile targetTile) {
             // get unit tile
-            var unit = GameManager.Instance.SquadTurn.SelectedUnit;
+            var unit = BattleManager.Instance.SquadTurn.SelectedUnit;
             var targetGridUnit = targetTile.GridUnit;
-            var targetUnit = GameManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+            var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
             var unitTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
             
             

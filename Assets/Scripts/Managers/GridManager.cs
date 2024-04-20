@@ -92,7 +92,7 @@ namespace Gangs.Managers {
             var coverType = CoverType.None;
             foreach (var wall in targetTile.Walls) {
                 if (GridPosition.CheckDirection(targetTile.GridPosition, fromTile.GridPosition, wall.Key)) {
-                    var wallCoverType = GameManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
+                    var wallCoverType = BattleManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
                     if (wallCoverType > coverType) {
                         coverType = wallCoverType;
                     }

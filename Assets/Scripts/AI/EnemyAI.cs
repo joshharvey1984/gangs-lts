@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Gangs.AI {
     public static class EnemyAI {
         public static void TakeTurn(Unit unit) {
-            if (GameManager.Instance.SquadTurn is not AISquad) {
+            if (BattleManager.Instance.SquadTurn is not AISquad) {
                 Debug.LogError("EnemyAI.TakeTurn() called on a non-AI squad turn!");
                 return;
             }
@@ -20,7 +20,7 @@ namespace Gangs.AI {
             
             var currentTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
             
-            var lastSeenEnemies = GameManager.Instance.SquadTurn.EnemyLastSeen;
+            var lastSeenEnemies = BattleManager.Instance.SquadTurn.EnemyLastSeen;
             var enemiesInSight = GetEnemiesInSight();
             
             var enemyData = new List<TargetTiles>();
@@ -44,7 +44,7 @@ namespace Gangs.AI {
                 });
             }
             
-            var squad = GameManager.Instance.SquadTurn as AISquad;
+            var squad = BattleManager.Instance.SquadTurn as AISquad;
             var weightings = squad!.Weightings;
             
             var moveRange = moveAbility!.CalculateMoveRange();
@@ -62,7 +62,7 @@ namespace Gangs.AI {
                     fireAbility!.LeftClickTile(targetTile);
                 }
                 else {
-                    GameManager.Instance.SquadTurn.EndUnitTurn();
+                    BattleManager.Instance.SquadTurn.EndUnitTurn();
                 }
                 
                 return;
@@ -73,7 +73,7 @@ namespace Gangs.AI {
         }
         
         private static Dictionary<Tile, float> FindBestTile(Unit unit, List<MoveRange> moveRange, List<TargetTiles> targetTiles) {
-            var squad = GameManager.Instance.SquadTurn as AISquad;
+            var squad = BattleManager.Instance.SquadTurn as AISquad;
             var weightings = squad!.Weightings;
             
             var candidateMoves = new Dictionary<Tile, float>();
@@ -127,7 +127,7 @@ namespace Gangs.AI {
         }
 
         private static List<Unit> GetEnemiesInSight() {
-            var squad = GameManager.Instance.SquadTurn;
+            var squad = BattleManager.Instance.SquadTurn;
             var knownUnits = new List<Unit>();
             foreach (var unit in squad.ActiveUnits) {
                 unit.GetEnemiesInLineOfSight().ForEach(u => knownUnits.Add(u));

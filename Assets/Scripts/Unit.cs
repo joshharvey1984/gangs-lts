@@ -76,7 +76,7 @@ namespace Gangs {
             Status = Status.Eliminated;
             GridManager.Instance.RemoveGridUnit(GridUnit);
             UnitGameObject.Eliminate();
-            GameManager.Instance.CheckForEndGame();
+            BattleManager.Instance.CheckForEndGame();
         }
         
         public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints) - DamageTaken;
@@ -87,11 +87,11 @@ namespace Gangs {
         
         public List<Unit> GetEnemiesInLineOfSight() {
             var units = new List<Unit>();
-            var lineOfSight = GameManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
-            var activeEnemySquads = GameManager.Instance.Squads.Where(s => s != GameManager.Instance.SquadTurn).ToList();
+            var lineOfSight = BattleManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
+            var activeEnemySquads = BattleManager.Instance.Squads.Where(s => s != BattleManager.Instance.SquadTurn).ToList();
             var activeEnemyUnits = activeEnemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
             foreach (var activeEnemy in activeEnemyUnits) {
-                var enemyTile = GameManager.Instance.GetSoldierTile(activeEnemy);
+                var enemyTile = BattleManager.Instance.GetSoldierTile(activeEnemy);
                 if (lineOfSight.Contains(enemyTile.GridPosition)) units.Add(activeEnemy);
             }
             return units;

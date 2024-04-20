@@ -57,15 +57,15 @@ namespace Gangs.Managers {
             }
             
             if (Input.GetKeyUp(KeyCode.Tab)) {
-                GameManager.Instance.NextUnit();
+                BattleManager.Instance.NextUnit();
             }
             
             if (Input.GetKeyUp(KeyCode.Space)) {
-                GameManager.Instance.SquadTurn.EndUnitTurn();
+                BattleManager.Instance.SquadTurn.EndUnitTurn();
             }
             
             if (Input.GetKeyUp(KeyCode.Escape)) {
-                GameManager.Instance.EndGame();
+                BattleManager.Instance.EndGame();
             }
 
             if (Input.GetMouseButtonUp(0)) {
@@ -103,17 +103,17 @@ namespace Gangs.Managers {
         }
         
         private void ClickOnUnit() {
-            var unit = GameManager.Instance.FindUnit(HoverTile.GridUnit);
+            var unit = BattleManager.Instance.FindUnit(HoverTile.GridUnit);
             if (unit == null) return;
             if (!unit.IsPlayerControlled) return;
             if (unit.TurnTaken) return;
-            if (GameManager.Instance.ActivatedUnit) return;
+            if (BattleManager.Instance.ActivatedUnit) return;
             SelectUnit(unit);
         }
 
         public void SelectUnit(Unit unit) {
-            if (unit == GameManager.Instance.SelectedUnit) return;
-            GameManager.Instance.SelectedUnit.SelectedAbility?.Deselect();
+            if (unit == BattleManager.Instance.SelectedUnit) return;
+            BattleManager.Instance.SelectedUnit.SelectedAbility?.Deselect();
         }
         
         private void CheckHoverTile() {

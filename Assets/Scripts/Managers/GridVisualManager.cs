@@ -61,7 +61,7 @@ namespace Gangs.Managers {
             
             if (tile == null) return;
             foreach (var wall in tile.Walls) {
-                var wallGameObject = GameManager.Instance.GetWallGameObject(wall.Value);
+                var wallGameObject = BattleManager.Instance.GetWallGameObject(wall.Value);
                 if (wallGameObject == null) continue;
                 var wallScript = wallGameObject.GetComponent<WallGameObject>();
                 if (wallScript.CoverType == CoverType.None) continue;
@@ -81,7 +81,7 @@ namespace Gangs.Managers {
                 // draw line of sight
                 var lineOfSight = tile.LineOfSightGridPositions;
                 foreach (var pos in lineOfSight) {
-                    var tileGameObject = GameManager.Instance.GetTileGameObject(pos);
+                    var tileGameObject = BattleManager.Instance.GetTileGameObject(pos);
                     if (tileGameObject == null) continue;
                     var indicator = Instantiate(debugLosIndicatorPrefab, tileGameObject.transform.position, Quaternion.identity);
                     _debugLosIndicators.Add(indicator);
@@ -138,7 +138,7 @@ namespace Gangs.Managers {
         public void ConvertMovementPathToWayPoint() => _movePathLine.ConvertMovementPathToWayPoint();
 
         public void ColorTile(Tile tile, Color color) {
-            var tileGameObject = GameManager.Instance.GetTileGameObject(tile.GridPosition);
+            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
             tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
         }
         
@@ -149,7 +149,7 @@ namespace Gangs.Managers {
         }
 
         public void NumberTile(Tile tile, float expectedDamageDifferential) {
-            var tileGameObject = GameManager.Instance.GetTileGameObject(tile.GridPosition);
+            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
             var text = Instantiate(new GameObject(), tileGameObject.transform);
             text.transform.position = tileGameObject.transform.position;
             text.transform.rotation = Quaternion.identity;

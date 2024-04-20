@@ -27,7 +27,7 @@ namespace Gangs {
             if (unit == null) unit = SelectedUnit;
             
             if (AllUnitsTurnTaken) {
-                GameManager.Instance.EndSquadTurn();
+                BattleManager.Instance.EndSquadTurn();
                 return;
             }
             
@@ -52,7 +52,7 @@ namespace Gangs {
             SelectedUnit.TurnTaken = true;
             SelectedUnit.SetSelected(false); 
             ActivatedUnit = false;
-            GameManager.Instance.EndSquadTurn();
+            BattleManager.Instance.EndSquadTurn();
         }
 
         public void ResetTurns() {

@@ -28,8 +28,8 @@ namespace Gangs.Abilities {
         }
 
         public virtual void Execute() {
-            GameManager.Instance.SquadTurn.ActivatedUnit = true;
-            GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
+            BattleManager.Instance.SquadTurn.ActivatedUnit = true;
+            BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
         public virtual int ToHit(Tile tile) => 0;
@@ -66,7 +66,7 @@ namespace Gangs.Abilities {
         protected void Finish() {
             if (EndTurnOnUse || Unit.ActionPointsRemaining <= 0) {
                 GridVisualManager.Instance.ResetAllVisuals();
-                GameManager.Instance.SquadTurn.EndUnitTurn();
+                BattleManager.Instance.SquadTurn.EndUnitTurn();
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Gangs.Abilities {
                 EnemyAI.TakeTurn(Unit);
             }
             
-            GameManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
+            BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
         }
     }
 }
