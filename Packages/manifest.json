@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.unity.ide.rider": "3.0.28",
+    "com.unity.probuilder": "5.2.2",
     "com.unity.render-pipelines.universal": "16.0.5",
     "com.unity.timeline": "1.8.6",
     "com.unity.ugui": "2.0.0",
@@ -14,7 +15,6 @@
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.particlesystem": "1.0.0",
     "com.unity.modules.physics": "1.0.0",
-    "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
     "com.unity.modules.uielements": "1.0.0"
   }

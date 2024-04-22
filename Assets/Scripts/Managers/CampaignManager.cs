@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Gangs.Campaign.MapGenerator;
 using UnityEngine;
 
 namespace Gangs.Managers {
@@ -7,7 +6,7 @@ namespace Gangs.Managers {
         public static CampaignManager Instance { get; private set; }
 
         [SerializeField] private GameObject mapParent;
-        public List<GameObject> map = new();
+        private List<GameObject> _map;
         
         [SerializeField] private Material tileMaterial;
 
@@ -24,18 +23,11 @@ namespace Gangs.Managers {
         }
         
         private void Start() {
-            map = CampaignMapGenerator.GenerateMap(gridSize, tileMaterial);
-            map.ForEach(tile => tile.transform.SetParent(mapParent.transform));
+            
         }
         
         private void Update() {
-            if (Input.GetKeyUp(KeyCode.Space)) {
-                var tempMap = new List<GameObject>(map);
-                tempMap.ForEach(Destroy);
-                map.Clear();
-                map = CampaignMapGenerator.GenerateMap(gridSize, tileMaterial);
-                map.ForEach(tile => tile.transform.SetParent(mapParent.transform));
-            }
+            
         }
     }
 }

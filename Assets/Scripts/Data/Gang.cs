@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Gangs.Data.DTO;
+using UnityEngine;
 
 namespace Gangs.Data {
     public class Gang : Entity {
