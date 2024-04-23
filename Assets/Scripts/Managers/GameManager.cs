@@ -1,10 +1,13 @@
-﻿using Gangs.MainMenu;
+﻿using Gangs.Data;
+using Gangs.MainMenu;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Gangs.Managers {
     public class GameManager : MonoBehaviour {
         public static GameManager Instance { get; private set; }
+        
+        public Ruleset CurrentRuleset { get; private set; }
         
         public CampaignData CampaignData { get; private set; }
         
@@ -16,6 +19,9 @@ namespace Gangs.Managers {
                 return;
             }
             Instance = this;
+            
+            DataManager.CreateData();
+            CurrentRuleset = Ruleset.All[0];
         }
         
         public void StartCampaign(CampaignData campaignData) {

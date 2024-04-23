@@ -5,5 +5,6 @@ namespace Gangs.Data.DTO {
     public abstract class EntityDto {
         public string id;
         public string name;
+        public string description;
     }
 }

@@ -6,7 +6,6 @@ namespace Gangs.Data.DTO {
     public class FighterDto : EntityDto {
         public string clanId;
         public int level;
-        public string fighterClass;
         
         public static FighterDto CreateFromJson(string json) => JsonUtility.FromJson<FighterDto>(json);
     }

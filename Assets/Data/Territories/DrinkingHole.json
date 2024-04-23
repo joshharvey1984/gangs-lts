@@ -1,0 +1,16 @@
+﻿{
+  "id": "drinking-hole",
+  "name": "Drinking Hole",
+  "resources": [
+    {
+      "resource": "credits",
+      "amount": 35,
+      "cooldown": 1
+    },
+    {
+      "resource": "recruitmentPoints",
+      "amount": 1,
+      "cooldown": 4
+    }
+  ]
+}

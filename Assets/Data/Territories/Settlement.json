@@ -1,0 +1,16 @@
+﻿{
+  "id": "settlement",
+  "name": "Settlement",
+  "resources": [
+    {
+      "resource": "credits",
+      "amount": 100,
+      "cooldown": 3
+    },
+    {
+      "resource": "recruitmentPoints",
+      "amount": 1,
+      "cooldown": 3
+    }
+  ]
+}

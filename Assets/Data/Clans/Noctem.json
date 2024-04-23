@@ -1,6 +1,7 @@
 ﻿{
   "id": "clan-noctem",
   "name": "Clan Noctem",
+  "color": [0, 1, 0],
   "attributeModifiers": [
     { "attribute": "Aim", 
       "modifier": -1

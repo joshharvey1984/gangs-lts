@@ -33,8 +33,8 @@ namespace Gangs.Data {
                 SetAttribute(FighterAttribute.ActionPoints, 2)
             };
         }
-        
-        private Attribute SetAttribute(FighterAttribute attribute, int baseValue) =>
+
+        protected Attribute SetAttribute(FighterAttribute attribute, int baseValue) =>
             new() {
                 FighterAttribute = attribute,
                 BaseValue = baseValue,

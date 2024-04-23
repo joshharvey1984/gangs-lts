@@ -47,12 +47,12 @@ namespace Gangs.MainMenu {
         Large
     }
     
-    public static class CampaingMapExtensions {
+    public static class CampaignMapExtensions {
         public static int GetGridSize(this CampaignMapSize mapSize) {
             return mapSize switch {
-                CampaignMapSize.Small => 4,
-                CampaignMapSize.Medium => 9,
-                CampaignMapSize.Large => 16,
+                CampaignMapSize.Small => 12,
+                CampaignMapSize.Medium => 18,
+                CampaignMapSize.Large => 27,
                 _ => 1
             };
         }

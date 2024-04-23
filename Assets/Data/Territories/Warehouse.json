@@ -1,0 +1,11 @@
+﻿{
+  "id": "warehouse",
+  "name": "Warehouse",
+  "resources": [
+    {
+      "resource": "credits",
+      "amount": 25,
+      "cooldown": 1
+    }
+  ]
+}

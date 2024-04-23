@@ -1,0 +1,17 @@
+﻿{
+  "id": "standard",
+  "name": "Standard",
+  "validTerritories": [
+    "settlement",
+    "warehouse",
+    "drinking-hole",
+    "narcotics-den"
+  ],
+  "startingTerritories": [
+    {
+      "territoryId": "settlement",
+      "headquarters": true
+    }
+  ],
+  "otherRandomTerritories": 0
+}

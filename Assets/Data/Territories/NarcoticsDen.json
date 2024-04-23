@@ -1,0 +1,16 @@
+﻿{
+  "id": "narcotics-den",
+  "name": "Narcotics Den",
+  "resources": [
+    {
+      "resource": "credits",
+      "amount": 125,
+      "cooldown": 3
+    },
+    {
+      "resource": "stimpack",
+      "amount": 1,
+      "cooldown": 4
+    }
+  ]
+}
