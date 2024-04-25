@@ -1,5 +1,6 @@
 ﻿using Gangs.Campaign;
 using Gangs.Campaign.UI;
+using Gangs.Data;
 using Gangs.MainMenu;
 using UnityEngine;
 
@@ -28,6 +29,10 @@ namespace Gangs.Managers {
 
         public void SetTerritoryInfo(CampaignTerritory territory) {
             territoryInfoPanel.GetComponent<TerritoryInfoPanel>().SetTerritory(territory);
+        }
+
+        public void SetGangTurn(Gang gang) {
+            campaignInfoPanel.GetComponent<CampaignInfoPanel>().SetGangTurn(gang);
         }
     }
 }

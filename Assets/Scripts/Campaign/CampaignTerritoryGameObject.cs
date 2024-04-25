@@ -78,5 +78,9 @@ namespace Gangs.Campaign
             
             return neighbours;
         }
+
+        public void SpawnEntity(ICampaignEntity campaignEntity) {
+            
+        }
     }
 }

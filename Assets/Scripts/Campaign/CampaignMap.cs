@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Gangs.Data;
-using Gangs.Data.DTO;
 using Gangs.MainMenu;
 using Gangs.Managers;
 using UnityEngine;
@@ -17,6 +16,7 @@ namespace Gangs.Campaign {
             GetActiveTerritories(campaignData.MapSize.GetGridSize());
             FindTerritoryNeighbours();
             GenerateMap(campaignData);
+            Territories.ForEach(t => t.SpawnEntities());
         }
         
         public CampaignTerritory GetTerritoryByGameObject(CampaignTerritoryGameObject territoryGameObject) {
@@ -26,6 +26,7 @@ namespace Gangs.Campaign {
         private void GenerateMap(CampaignData campaignData) {
             var ruleset = GameManager.Instance.CurrentRuleset;
             SpawnGangs(campaignData, ruleset.StartingTerritories);
+            SpawnMonsters(ruleset);
             foreach (var territory in Territories.Where(t => t.Territory == null)) {
                 territory.Territory = ruleset.ValidTerritories[Random.Range(0, ruleset.ValidTerritories.Count)];
                 if (Random.Range(0, 100) < 10) CreateMonsterMob(territory);
@@ -33,7 +34,8 @@ namespace Gangs.Campaign {
         }
         
         private void CreateMonsterMob(CampaignTerritory territory) {
-            var mob = new CampaignMob(Monster.All[Random.Range(0, Monster.All.Count)]);
+            var monster = Monster.All[Random.Range(0, Monster.All.Count)];
+            var mob = new CampaignMob(monster);
             territory.AddEntity(mob);
         }
         
@@ -64,6 +66,15 @@ namespace Gangs.Campaign {
                     neighbour?.SetClaimedBy(gang.Gang);
                     if (neighbour != null) neighbour.Territory = startingTerritories[j].Territory;
                 }
+            }
+        }
+        
+        private void SpawnMonsters(Ruleset ruleset) {
+            var monsterTerritories = Territories.Where(t => t.ClaimedBy == null && t.GameObject.Active).ToList();
+            var monsterCount = monsterTerritories.Count / 3;
+            for (var i = 0; i < monsterCount; i++) {
+                var territory = monsterTerritories[Random.Range(0, monsterTerritories.Count)];
+                CreateMonsterMob(territory);
             }
         }
 

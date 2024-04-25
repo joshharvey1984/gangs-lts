@@ -11,8 +11,6 @@ namespace Gangs.Managers {
         [SerializeField] private GameObject mapParent;
         private CampaignMap _campaignMap;
         
-        [SerializeField] private Material tileMaterial;
-        
         private void Awake() {
             DontDestroyOnLoad(gameObject);
             
@@ -35,6 +33,7 @@ namespace Gangs.Managers {
             _campaignMap = new CampaignMap(campaignData, mapParent);
             CampaignUIManager.Instance.SetCampaignInfo(campaignData);
             CampaignUIManager.Instance.SetTurnNumberText(1);
+            CampaignUIManager.Instance.SetGangTurn(campaignData.CampaignGangs[0].Gang);
         }
     }
 }

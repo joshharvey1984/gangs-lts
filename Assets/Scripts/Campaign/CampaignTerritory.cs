@@ -29,5 +29,9 @@ namespace Gangs.Campaign {
         public void MouseEnter() {
             CampaignUIManager.Instance.SetTerritoryInfo(this);
         }
+
+        public void SpawnEntities() {
+            Entities.ForEach(e => GameObject.SpawnEntity(e));
+        }
     }
 }

@@ -2,6 +2,7 @@
   "id": "clan-haas",
   "name": "Clan Haas",
   "color": [1, 0, 0],
+  "logo": "clan-haas",
   "attributeModifiers": [
     { "attribute": "Aim", 
       "modifier": 1
