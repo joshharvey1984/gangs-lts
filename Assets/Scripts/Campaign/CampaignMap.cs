@@ -26,7 +26,7 @@ namespace Gangs.Campaign {
         private void GenerateMap(CampaignData campaignData) {
             var ruleset = GameManager.Instance.CurrentRuleset;
             SpawnGangs(campaignData, ruleset.StartingTerritories);
-            SpawnMonsters(ruleset);
+            SpawnMonsters();
             foreach (var territory in Territories.Where(t => t.Territory == null)) {
                 territory.Territory = ruleset.ValidTerritories[Random.Range(0, ruleset.ValidTerritories.Count)];
                 if (Random.Range(0, 100) < 10) CreateMonsterMob(territory);
@@ -57,19 +57,22 @@ namespace Gangs.Campaign {
                 var gang = campaignData.CampaignGangs[i];
                 var territoryGameObject = spawnPoints[i].GetComponent<CampaignTerritoryGameObject>();
                 var territory = GetTerritoryByGameObject(territoryGameObject);
-                territory.SetClaimedBy(gang.Gang, true);
+                territory.SetClaimedBy(gang, true);
                 territory.Territory = startingTerritories.First(s => s.Headquarters).Territory;
-
+                var squad = new CampaignSquad(gang);
+                campaignData.CampaignGangs[i].AddSquad(squad);
+                territory.Entities.Add(squad);
+                
                 if (startingTerritories.Count <= 1) continue;
                 for (var j = 1; j < startingTerritories.Count; j++) {
                     var neighbour = territory.Neighbours[j - 1];
-                    neighbour?.SetClaimedBy(gang.Gang);
+                    neighbour?.SetClaimedBy(gang);
                     if (neighbour != null) neighbour.Territory = startingTerritories[j].Territory;
                 }
             }
         }
         
-        private void SpawnMonsters(Ruleset ruleset) {
+        private void SpawnMonsters() {
             var monsterTerritories = Territories.Where(t => t.ClaimedBy == null && t.GameObject.Active).ToList();
             var monsterCount = monsterTerritories.Count / 3;
             for (var i = 0; i < monsterCount; i++) {

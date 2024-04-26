@@ -7,10 +7,13 @@ namespace Gangs.Campaign
 {
     public class CampaignTerritoryGameObject : MonoBehaviour {
         [SerializeField] private LineRenderer borderRenderer;
+        [SerializeField] private GameObject entityPrefab;
         public bool Active { get; set; }
         
         public event Action OnMouseEnterEvent;
         public event Action OnMouseExitEvent;
+        
+        private Color _colour = Color.black;
 
         private void Awake() {
             borderRenderer = GetComponent<LineRenderer>();
@@ -24,7 +27,7 @@ namespace Gangs.Campaign
         
         private void OnMouseExit() {
             if (!Active) return;
-            SetBorderColour(Color.black);
+            SetBorderColour(_colour);
             OnMouseExitEvent?.Invoke();
         }
 
@@ -42,7 +45,7 @@ namespace Gangs.Campaign
             borderRenderer.startWidth = 0.1f;
             borderRenderer.endWidth = 0.1f;
             borderRenderer.material = new Material(Shader.Find("Sprites/Default")) {
-                color = Color.black
+                color = _colour
             };
         }
         
@@ -80,7 +83,18 @@ namespace Gangs.Campaign
         }
 
         public void SpawnEntity(ICampaignEntity campaignEntity) {
-            
+            var entity = Instantiate(entityPrefab, transform.position, Quaternion.identity);
+            entity.name = campaignEntity.Name;
+            campaignEntity.GameObject = entity.GetComponent<CampaignEntityGameObject>();
+        }
+
+        public void Highlight(Color color) {
+            _colour = color;
+        }
+
+        public void ResetColour() {
+            _colour = Color.black;
+            SetBorderColour(_colour);
         }
     }
 }

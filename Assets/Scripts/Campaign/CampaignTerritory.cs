@@ -8,7 +8,7 @@ namespace Gangs.Campaign {
         public CampaignTerritoryGameObject GameObject { get; set; }
         public List<CampaignTerritory> Neighbours { get; set; } = new();
         public Territory Territory { get; set; }
-        public Gang ClaimedBy { get; set; }
+        public CampaignGang ClaimedBy { get; set; }
         public bool Headquarters { get; set; }
         public List<ICampaignEntity> Entities { get; set; } = new();
         
@@ -20,10 +20,10 @@ namespace Gangs.Campaign {
             Entities.Add(entity);
         }
         
-        public void SetClaimedBy(Gang gang, bool isHeadquarters = false) {
+        public void SetClaimedBy(CampaignGang gang, bool isHeadquarters = false) {
             ClaimedBy = gang;
             Headquarters = isHeadquarters;
-            GameObject.SetColour(gang.Clan.Color);
+            GameObject.SetColour(gang.BaseGang.Clan.Color);
         }
         
         public void MouseEnter() {

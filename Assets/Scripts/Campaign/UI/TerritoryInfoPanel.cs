@@ -8,11 +8,11 @@ namespace Gangs.Campaign.UI {
 
         public void SetTerritory(CampaignTerritory territory) {
             typeText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.Territory.Name;
-            gangText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.Name ?? "Unclaimed";
-            clanText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.Clan.Name ?? "";
+            gangText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.ToString() ?? "Unclaimed";
+            clanText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.ToString() ?? "";
             
-            gangText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.Clan.Color ?? Color.white;
-            clanText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.Clan.Color ?? Color.white;
+            gangText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.BaseGang.Clan.Color ?? Color.white;
+            clanText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.BaseGang.Clan.Color ?? Color.white;
         }
     }
 }

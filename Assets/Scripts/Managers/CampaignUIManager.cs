@@ -10,6 +10,7 @@ namespace Gangs.Managers {
         
         [SerializeField] private GameObject territoryInfoPanel;
         [SerializeField] private GameObject campaignInfoPanel;
+        [SerializeField] private GameObject battleMenu;
         
         private void Awake() {
             if (Instance is null) {
@@ -20,7 +21,7 @@ namespace Gangs.Managers {
         }
         
         public void SetCampaignInfo(CampaignData campaign) {
-            campaign.CampaignGangs.ForEach(c => campaignInfoPanel.GetComponent<CampaignInfoPanel>().AddGangPanel(c.Gang));
+            campaign.CampaignGangs.ForEach(c => campaignInfoPanel.GetComponent<CampaignInfoPanel>().AddGangPanel(c.BaseGang));
         }
         
         public void SetTurnNumberText(int turn) {
@@ -33,6 +34,10 @@ namespace Gangs.Managers {
 
         public void SetGangTurn(Gang gang) {
             campaignInfoPanel.GetComponent<CampaignInfoPanel>().SetGangTurn(gang);
+        }
+
+        public void SetBattleMenu(CampaignTerritory territory) {
+            battleMenu.GetComponent<BattleMenuPanel>().SetBattleMenu(territory);
         }
     }
 }

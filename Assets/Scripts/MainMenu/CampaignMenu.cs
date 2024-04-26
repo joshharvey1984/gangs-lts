@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Gangs.Campaign;
 using Gangs.Data;
 using Gangs.Managers;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace Gangs.MainMenu {
         }
 
         private void AddGang(Gang gang, bool isPlayerControlled = false) {
-            _campaignData.CampaignGangs.Add(new CampaignGang { Gang = gang, IsPlayerControlled = isPlayerControlled });
+            _campaignData.CampaignGangs.Add(new CampaignGang { BaseGang = gang, IsPlayerControlled = isPlayerControlled });
             var gangObject = Instantiate(gangPrefab, gangListPanel.transform);
             gangObject.GetComponent<CampaignGangPanel>().SetGang(gang, isPlayerControlled);
         }
@@ -34,11 +35,6 @@ namespace Gangs.MainMenu {
     public struct CampaignData {
         public List<CampaignGang> CampaignGangs;
         public CampaignMapSize MapSize;
-    }
-    
-    public struct CampaignGang {
-        public Gang Gang;
-        public bool IsPlayerControlled;
     }
     
     public enum CampaignMapSize {
