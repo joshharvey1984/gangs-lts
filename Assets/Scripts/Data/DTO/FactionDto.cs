@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Gangs.Data.DTO {
     [Serializable]
-    public class ClanDto : EntityDto {
+    public class FactionDto : EntityDto {
         public string logo;
         public float[] color;
         public AttributeModifierDto[] attributeModifiers;
-        public static ClanDto CreateFromJson(string json) => JsonUtility.FromJson<ClanDto>(json);
+        public static FactionDto CreateFromJson(string json) => JsonUtility.FromJson<FactionDto>(json);
     }
 }

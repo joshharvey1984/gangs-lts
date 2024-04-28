@@ -6,7 +6,7 @@ namespace Gangs.Data {
     public class Gang : Entity {
         public static List<Gang> All { get; set; } = new();
                 
-        public Clan Clan { get; set; }
+        public Faction Faction { get; set; }
         public List<Fighter> Fighters { get; set; }
         
         public Gang(GangDto dto) : base(dto) {
@@ -14,7 +14,7 @@ namespace Gangs.Data {
         }
         
         public void Create(GangDto dto) {
-            Clan = Clan.All.Find(c => c.ID == dto.clanId);
+            Faction = Faction.All.Find(c => c.ID == dto.clanId);
             Fighters = Fighter.All.FindAll(f => dto.fighterIds.ToList().Contains(f.ID));
         }
     }

@@ -1,6 +1,7 @@
 ﻿{
   "id": "clan-haas",
   "name": "Clan Haas",
+  "playable": true,
   "color": [1, 0, 0],
   "logo": "clan-haas",
   "attributeModifiers": [

@@ -10,7 +10,7 @@ using Gangs.UI;
 using Tile = Gangs.Grid.Tile;
 
 namespace Gangs {
-    public class Unit {
+    public class BattleUnit {
         public readonly Fighter Fighter;
         public UnitGameObject UnitGameObject;
         public GridUnit GridUnit;
@@ -28,19 +28,19 @@ namespace Gangs {
 
         public bool IsPlayerControlled;
         
-        public event Action<Unit> OnDeselected;
-        public event Action<Unit> OnSelected; 
+        public event Action<BattleUnit> OnDeselected;
+        public event Action<BattleUnit> OnSelected; 
         
-        public Unit(Fighter fighter) {
+        public BattleUnit(Fighter fighter) {
             Fighter = fighter;
-            ActionPointsRemaining = fighter.GetCurrentAttributeValue(FighterAttribute.ActionPoints);
+            ActionPointsRemaining = fighter.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
             Abilities = new Ability[] {
                 new MoveAbility(this),
                 new FireAbility(this)
             };
         }
         
-        public int GetAttribute(FighterAttribute attribute) => Fighter.GetCurrentAttributeValue(attribute);
+        public int GetAttribute(UnitAttribute attribute) => Fighter.GetCurrentAttributeValue(attribute);
 
         public void SetSelected(bool selected) {
             (selected ? OnSelected : OnDeselected)?.Invoke(this);
@@ -53,7 +53,7 @@ namespace Gangs {
         }
 
         public void ResetTurn() {
-            ActionPointsRemaining = Fighter.GetCurrentAttributeValue(FighterAttribute.ActionPoints);
+            ActionPointsRemaining = Fighter.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
             TurnTaken = false;
         }
         
@@ -66,7 +66,7 @@ namespace Gangs {
         
         public void Damage(int amount) {
             DamageTaken += amount;
-            if (DamageTaken >= Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints)) {
+            if (DamageTaken >= Fighter.GetCurrentAttributeValue(UnitAttribute.HitPoints)) {
                 Eliminate();
             }
         }
@@ -78,16 +78,16 @@ namespace Gangs {
             BattleManager.Instance.CheckForEndGame();
         }
         
-        public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(FighterAttribute.HitPoints) - DamageTaken;
+        public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(UnitAttribute.HitPoints) - DamageTaken;
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();
         }
         
-        public List<Unit> GetEnemiesInLineOfSight() {
-            var units = new List<Unit>();
+        public List<BattleUnit> GetEnemiesInLineOfSight() {
+            var units = new List<BattleUnit>();
             var lineOfSight = BattleManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
-            var activeEnemySquads = BattleManager.Instance.Squads.Where(s => s != BattleManager.Instance.SquadTurn).ToList();
+            var activeEnemySquads = BattleManager.Instance.Squads.Where(s => s != BattleManager.Instance.BattleSquadTurn).ToList();
             var activeEnemyUnits = activeEnemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
             foreach (var activeEnemy in activeEnemyUnits) {
                 var enemyTile = BattleManager.Instance.GetSoldierTile(activeEnemy);

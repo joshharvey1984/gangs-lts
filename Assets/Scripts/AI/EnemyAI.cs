@@ -2,6 +2,7 @@
 using System.Linq;
 using Gangs.Abilities;
 using Gangs.Abilities.Structs;
+using Gangs.Battle;
 using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.Managers;
@@ -9,25 +10,25 @@ using UnityEngine;
 
 namespace Gangs.AI {
     public static class EnemyAI {
-        public static void TakeTurn(Unit unit) {
-            if (BattleManager.Instance.SquadTurn is not AISquad) {
+        public static void TakeTurn(BattleUnit battleUnit) {
+            if (BattleManager.Instance.BattleSquadTurn is not AIBattleSquad) {
                 Debug.LogError("EnemyAI.TakeTurn() called on a non-AI squad turn!");
                 return;
             }
             
-            var moveAbility = unit.Abilities[0] as MoveAbility;
-            var fireAbility = unit.Abilities[1] as FireAbility;
+            var moveAbility = battleUnit.Abilities[0] as MoveAbility;
+            var fireAbility = battleUnit.Abilities[1] as FireAbility;
             
-            var currentTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
+            var currentTile = GridManager.Instance.Grid.FindGridUnit(battleUnit.GridUnit);
             
-            var lastSeenEnemies = BattleManager.Instance.SquadTurn.EnemyLastSeen;
+            var lastSeenEnemies = BattleManager.Instance.BattleSquadTurn.EnemyLastSeen;
             var enemiesInSight = GetEnemiesInSight();
             
             var enemyData = new List<TargetTiles>();
             
             foreach (var (enemy, tile) in lastSeenEnemies) {
                 enemyData.Add(new TargetTiles {
-                    Unit = enemy,
+                    BattleUnit = enemy,
                     Tile = tile,
                     Type = enemiesInSight.Contains(enemy) 
                         ? TargetTiles.TargetTileType.VisibleEnemy 
@@ -38,31 +39,31 @@ namespace Gangs.AI {
             if (enemyData.Count == 0) {
                 var centreTile = GridManager.Instance.Grid.GetRandomCenterTile();
                 enemyData.Add(new TargetTiles {
-                    Unit = null,
+                    BattleUnit = null,
                     Tile = centreTile,
                     Type = TargetTiles.TargetTileType.Search
                 });
             }
             
-            var squad = BattleManager.Instance.SquadTurn as AISquad;
+            var squad = BattleManager.Instance.BattleSquadTurn as AIBattleSquad;
             var weightings = squad!.Weightings;
             
             var moveRange = moveAbility!.CalculateMoveRange();
-            var bestMoveTiles = FindBestTile(unit, moveRange, enemyData);
+            var bestMoveTiles = FindBestTile(battleUnit, moveRange, enemyData);
             var bestMove = bestMoveTiles.Take(3).ElementAt(Random.Range(0, 3));
             
             var bestMoveTileValue = bestMove.Value;
-            var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, unit.ActionPointsRemaining);
+            var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, battleUnit.ActionPointsRemaining);
             
             if (bestMoveTileValue <= currentTileValue) {
-                if (unit.GetEnemiesInLineOfSight().Count > 0) {
-                    var target = unit.GetEnemiesInLineOfSight().First();
+                if (battleUnit.GetEnemiesInLineOfSight().Count > 0) {
+                    var target = battleUnit.GetEnemiesInLineOfSight().First();
                     var targetTile = GridManager.Instance.Grid.FindGridUnit(target.GridUnit);
                     fireAbility!.Select();
                     fireAbility!.LeftClickTile(targetTile);
                 }
                 else {
-                    BattleManager.Instance.SquadTurn.EndUnitTurn();
+                    BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
                 }
                 
                 return;
@@ -72,8 +73,8 @@ namespace Gangs.AI {
             moveAbility!.Execute();
         }
         
-        private static Dictionary<Tile, float> FindBestTile(Unit unit, List<MoveRange> moveRange, List<TargetTiles> targetTiles) {
-            var squad = BattleManager.Instance.SquadTurn as AISquad;
+        private static Dictionary<Tile, float> FindBestTile(BattleUnit battleUnit, List<MoveRange> moveRange, List<TargetTiles> targetTiles) {
+            var squad = BattleManager.Instance.BattleSquadTurn as AIBattleSquad;
             var weightings = squad!.Weightings;
             
             var candidateMoves = new Dictionary<Tile, float>();
@@ -126,9 +127,9 @@ namespace Gangs.AI {
             return isFlanked;
         }
 
-        private static List<Unit> GetEnemiesInSight() {
-            var squad = BattleManager.Instance.SquadTurn;
-            var knownUnits = new List<Unit>();
+        private static List<BattleUnit> GetEnemiesInSight() {
+            var squad = BattleManager.Instance.BattleSquadTurn;
+            var knownUnits = new List<BattleUnit>();
             foreach (var unit in squad.ActiveUnits) {
                 unit.GetEnemiesInLineOfSight().ForEach(u => knownUnits.Add(u));
             }
@@ -168,7 +169,7 @@ namespace Gangs.AI {
     
     public struct TargetTiles {
         public Tile Tile;
-        public Unit Unit;
+        public BattleUnit BattleUnit;
         public TargetTileType Type;
         
         public enum TargetTileType {

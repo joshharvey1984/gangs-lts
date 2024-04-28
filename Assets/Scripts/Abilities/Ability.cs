@@ -9,26 +9,26 @@ using UnityEngine;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
-        protected readonly Unit Unit;
+        protected readonly BattleUnit BattleUnit;
         public string ButtonText;
         protected TargetingType TargetingType;
         protected bool EndTurnOnUse = false;
 
-        protected Ability(Unit unit) {
-            Unit = unit;
+        protected Ability(BattleUnit battleUnit) {
+            BattleUnit = battleUnit;
         }
         
         public virtual void Select() {
-            if (Unit.SelectedAbility != null && Unit.SelectedAbility != this) Unit.SelectedAbility.Deselect();
-            Unit.SelectedAbility = this;
+            if (BattleUnit.SelectedAbility != null && BattleUnit.SelectedAbility != this) BattleUnit.SelectedAbility.Deselect();
+            BattleUnit.SelectedAbility = this;
         }
 
         public virtual void Deselect() {
-            Unit.SelectedAbility = null;
+            BattleUnit.SelectedAbility = null;
         }
 
         public virtual void Execute() {
-            BattleManager.Instance.SquadTurn.ActivatedUnit = true;
+            BattleManager.Instance.BattleSquadTurn.ActivatedUnit = true;
             BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
@@ -64,14 +64,14 @@ namespace Gangs.Abilities {
         }
 
         protected void Finish() {
-            if (EndTurnOnUse || Unit.ActionPointsRemaining <= 0) {
+            if (EndTurnOnUse || BattleUnit.ActionPointsRemaining <= 0) {
                 GridVisualManager.Instance.ResetAllVisuals();
-                BattleManager.Instance.SquadTurn.EndUnitTurn();
+                BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
                 return;
             }
 
-            if (!Unit.IsPlayerControlled && Unit.ActionPointsRemaining > 0) {
-                EnemyAI.TakeTurn(Unit);
+            if (!BattleUnit.IsPlayerControlled && BattleUnit.ActionPointsRemaining > 0) {
+                EnemyAI.TakeTurn(BattleUnit);
             }
             
             BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();

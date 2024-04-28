@@ -1,21 +1,22 @@
 using System.Collections.Generic;
+using Gangs.Battle;
 using UnityEngine;
 
 namespace Gangs.UI
 {
     public class UnitDebugInfo : MonoBehaviour {
-        private Dictionary<Unit, GameObject> _unitInfo;
+        private Dictionary<BattleUnit, GameObject> _unitInfo;
         private void Update() {
             UpdateInfo();
         }
 
         private void Start() {
-            _unitInfo = new Dictionary<Unit, GameObject>();
+            _unitInfo = new Dictionary<BattleUnit, GameObject>();
             var squads = Managers.BattleManager.Instance.Squads;
             UnitListInfo(squads);
         }
 
-        public void UnitListInfo(List<Squad> squads) {
+        public void UnitListInfo(List<BattleSquad> squads) {
             var count = 0;
             foreach (var squad in squads) {
                 foreach (var unit in squad.Units) {

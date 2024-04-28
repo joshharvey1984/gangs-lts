@@ -29,7 +29,7 @@ namespace Gangs.Campaign {
         public void SetClaimedBy(CampaignGang gang, bool isHeadquarters = false) {
             ClaimedBy = gang;
             Headquarters = isHeadquarters;
-            GameObject.SetColour(gang.BaseGang.Clan.Color);
+            GameObject.SetColour(gang.BaseGang.Faction.Color);
         }
         
         public void MouseEnter() {

@@ -10,7 +10,7 @@ namespace Gangs.Campaign.UI {
         
         public void SetGang(Gang gang) {
             Gang = gang;
-            var texture = gang.Clan.Logo;
+            var texture = gang.Faction.Logo;
             var rect = new Rect(0, 0, texture.width, texture.height);
             var sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100);
             GetComponent<Image>().sprite = sprite;

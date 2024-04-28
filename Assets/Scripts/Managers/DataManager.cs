@@ -16,13 +16,13 @@ namespace Gangs.Managers {
             var territoryDto = new List<TerritoryDto>();
             
             var clans = Directory.GetFiles(path + "Clans/", "*.json");
-            var clansDto = new List<ClanDto>();
+            var clansDto = new List<FactionDto>();
             
             var starterGangs = Directory.GetFiles(path + "StarterGangs/", "*.json");
             var gangDto = new List<GangDto>();
             
             var starterFighters = Directory.GetFiles(path + "StarterGangs/Fighters/", "*.json", SearchOption.AllDirectories);
-            var fighterDto = new List<FighterDto>();
+            var fighterDto = new List<UnitDto>();
             
             var monsters = Directory.GetFiles(path + "Monsters/", "*.json");
             var monsterDto = new List<MonsterDto>();
@@ -38,9 +38,9 @@ namespace Gangs.Managers {
             
             territories.ToList().ForEach(t => territoryDto.Add(TerritoryDto.CreateFromJson(File.ReadAllText(t))));
             rulesets.ToList().ForEach(r => rulesetDto.Add(RulesetDto.CreateFromJson(File.ReadAllText(r))));
-            clans.ToList().ForEach(c => clansDto.Add(ClanDto.CreateFromJson(File.ReadAllText(c))));
+            clans.ToList().ForEach(c => clansDto.Add(FactionDto.CreateFromJson(File.ReadAllText(c))));
             starterGangs.ToList().ForEach(g => gangDto.Add(GangDto.CreateFromJson(File.ReadAllText(g))));
-            starterFighters.ToList().ForEach(f => fighterDto.Add(FighterDto.CreateFromJson(File.ReadAllText(f))));
+            starterFighters.ToList().ForEach(f => fighterDto.Add(UnitDto.CreateFromJson(File.ReadAllText(f))));
             monsters.ToList().ForEach(m => monsterDto.Add(MonsterDto.CreateFromJson(File.ReadAllText(m))));
             weapons.ToList().ForEach(w => weaponDto.Add(WeaponDto.CreateFromJson(File.ReadAllText(w))));
             armour.ToList().ForEach(a => armourDto.Add(ArmourDto.CreateFromJson(File.ReadAllText(a))));
@@ -48,7 +48,7 @@ namespace Gangs.Managers {
             
             territoryDto.ForEach(t => new Data.Territory(t));
             rulesetDto.ForEach(r => new Data.Ruleset(r));
-            clansDto.ForEach(c => new Data.Clan(c));
+            clansDto.ForEach(c => new Data.Faction(c));
             gangDto.ForEach(g => new Data.Gang(g));
             fighterDto.ForEach(f => new Data.Fighter(f));
             monsterDto.ForEach(m => new Data.Monster(m));
@@ -58,7 +58,7 @@ namespace Gangs.Managers {
             
             Data.Territory.All.ForEach(t => t.Create(territoryDto.Find(dto => dto.id == t.ID)));
             Data.Ruleset.All.ForEach(r => r.Create(rulesetDto.Find(dto => dto.id == r.ID)));
-            Data.Clan.All.ForEach(c => c.Create(clansDto.Find(dto => dto.id == c.ID)));
+            Data.Faction.All.ForEach(c => c.Create(clansDto.Find(dto => dto.id == c.ID)));
             Data.Gang.All.ForEach(g => g.Create(gangDto.Find(dto => dto.id == g.ID)));
             Data.Fighter.All.ForEach(f => f.Create(fighterDto.Find(dto => dto.id == f.ID)));
             Data.Monster.All.ForEach(m => m.Create(monsterDto.Find(dto => dto.id == m.ID)));

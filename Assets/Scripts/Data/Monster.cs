@@ -13,11 +13,11 @@ namespace Gangs.Data {
         
         public void Create(MonsterDto dto) {
             Attributes = new List<Attribute> {
-                new() { BaseValue = dto.movement, FighterAttribute = FighterAttribute.Movement, Modifiers = new List<AttributeModifier>()},
-                new() { BaseValue = dto.aim, FighterAttribute = FighterAttribute.Aim, Modifiers = new List<AttributeModifier>()},
-                new() { BaseValue = dto.closeQuarters, FighterAttribute = FighterAttribute.CloseQuarters, Modifiers = new List<AttributeModifier>()},
-                new() { BaseValue = dto.hitPoints, FighterAttribute = FighterAttribute.HitPoints, Modifiers = new List<AttributeModifier>()},
-                new() { BaseValue = dto.actionPoints, FighterAttribute = FighterAttribute.ActionPoints, Modifiers = new List<AttributeModifier>()}
+                new() { BaseValue = dto.movement, UnitAttribute = UnitAttribute.Movement, Modifiers = new List<AttributeModifier>()},
+                new() { BaseValue = dto.aim, UnitAttribute = UnitAttribute.Aim, Modifiers = new List<AttributeModifier>()},
+                new() { BaseValue = dto.closeQuarters, UnitAttribute = UnitAttribute.CloseQuarters, Modifiers = new List<AttributeModifier>()},
+                new() { BaseValue = dto.hitPoints, UnitAttribute = UnitAttribute.HitPoints, Modifiers = new List<AttributeModifier>()},
+                new() { BaseValue = dto.actionPoints, UnitAttribute = UnitAttribute.ActionPoints, Modifiers = new List<AttributeModifier>()}
             };
         }
     }

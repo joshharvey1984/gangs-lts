@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Gangs.Abilities {
     public class FireAbility : Ability {
-        private List<Unit> _targets;
+        private List<BattleUnit> _targets;
         private Tile _targetTile;
-        public FireAbility(Unit unit) : base(unit) {
+        public FireAbility(BattleUnit battleUnit) : base(battleUnit) {
             ButtonText = "Fire";
             TargetingType = TargetingType.EnemiesInLineOfSight;
             EndTurnOnUse = true;
@@ -18,20 +18,20 @@ namespace Gangs.Abilities {
         public override void Select() {
             base.Select();
             
-            _targets = Unit.GetEnemiesInLineOfSight();
+            _targets = BattleUnit.GetEnemiesInLineOfSight();
             foreach (var enemy in _targets) {
                 var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemy.GridUnit);
                 GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
             }
 
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 InputManager.Instance.OnTileHovered += TileHovered;
                 InputManager.Instance.OnLeftClickTile += LeftClickTile;
             }
         }
         
         public override void Deselect() {
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 InputManager.Instance.OnTileHovered -= TileHovered;
                 InputManager.Instance.OnLeftClickTile -= LeftClickTile;
             }
@@ -40,7 +40,7 @@ namespace Gangs.Abilities {
         }
         
         private void TileHovered(Tile tile) {
-            if (Unit.ActionPointsRemaining <= 0) return;
+            if (BattleUnit.ActionPointsRemaining <= 0) return;
             var targetTiles = _targets.Select(t => GridManager.Instance.Grid.FindGridUnit(t.GridUnit)).ToList();
             targetTiles.ForEach(t => GridVisualManager.Instance.ColorTile(t, Color.red));
             if (targetTiles.Contains(tile)) {
@@ -84,7 +84,7 @@ namespace Gangs.Abilities {
         
         public override int ToHit(Tile targetTile) {
             // get unit tile
-            var unit = BattleManager.Instance.SquadTurn.SelectedUnit;
+            var unit = BattleManager.Instance.BattleSquadTurn.SelectedBattleUnit;
             var targetGridUnit = targetTile.GridUnit;
             var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
             var unitTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
@@ -92,7 +92,7 @@ namespace Gangs.Abilities {
             
             // get to hit calculator
             var toHitCalculator = new ToHitCalculator();
-            var modifiers = GetToHitModifiers(unitTile, targetTile, Unit.ActionPointsRemaining);
+            var modifiers = GetToHitModifiers(unitTile, targetTile, BattleUnit.ActionPointsRemaining);
             var toHit = toHitCalculator.CalculateToHitChance(unitTile, targetTile, unit, targetUnit, modifiers);
             return toHit;
         }

@@ -6,17 +6,17 @@ namespace Gangs.Data {
     public class Fighter: Entity {
         public static List<Fighter> All { get; set; } = new();
         
-        public Clan Clan { get; set; }
+        public Faction Faction { get; set; }
         public int Level { get; set; }
         public FighterClass FighterClass { get; set; }
         public List<Attribute> Attributes { get; set; }
         
-        public Fighter(FighterDto dto) : base(dto) { 
+        public Fighter(UnitDto dto) : base(dto) { 
             All.Add(this);
         }
         
-        public void Create(FighterDto dto) {
-            Clan = Clan.All.Find(c => c.ID == dto.clanId);
+        public void Create(UnitDto dto) {
+            Faction = Faction.All.Find(c => c.ID == dto.clanId);
             Level = dto.level;
             FighterClass = Level switch {
                 < 6 => FighterClass.Juve,
@@ -26,59 +26,59 @@ namespace Gangs.Data {
             };
 
             Attributes = new List<Attribute> {
-                SetAttribute(FighterAttribute.Movement, 5),
-                SetAttribute(FighterAttribute.Aim, 2),
-                SetAttribute(FighterAttribute.CloseQuarters, 2),
-                SetAttribute(FighterAttribute.HitPoints, 5),
-                SetAttribute(FighterAttribute.ActionPoints, 2)
+                SetAttribute(UnitAttribute.Movement, 5),
+                SetAttribute(UnitAttribute.Aim, 2),
+                SetAttribute(UnitAttribute.CloseQuarters, 2),
+                SetAttribute(UnitAttribute.HitPoints, 5),
+                SetAttribute(UnitAttribute.ActionPoints, 2)
             };
         }
 
-        protected Attribute SetAttribute(FighterAttribute attribute, int baseValue) =>
+        protected Attribute SetAttribute(UnitAttribute attribute, int baseValue) =>
             new() {
-                FighterAttribute = attribute,
+                UnitAttribute = attribute,
                 BaseValue = baseValue,
                 Modifiers = SetModifiers(attribute)
             };
         
-        public int GetCurrentAttributeValue(FighterAttribute attribute) =>
-            Attributes.Find(a => a.FighterAttribute == attribute).CurrentValue;
+        public int GetCurrentAttributeValue(UnitAttribute attribute) =>
+            Attributes.Find(a => a.UnitAttribute == attribute).CurrentValue;
 
-        private List<AttributeModifier> SetModifiers(FighterAttribute attribute) {
+        private List<AttributeModifier> SetModifiers(UnitAttribute attribute) {
             var result = new List<AttributeModifier>();
-            result.AddRange(Clan.GetAttributeModifiersByAttribute(attribute));
+            result.AddRange(Faction.GetAttributeModifiersByAttribute(attribute));
             if (FighterClass > FighterClass.Juve) {
-                if (attribute == FighterAttribute.Aim) {
+                if (attribute == UnitAttribute.Aim) {
                     result.Add(new AttributeModifier {
-                        Attribute = FighterAttribute.Aim,
+                        Attribute = UnitAttribute.Aim,
                         Modifier = 1
                     });
                 }
-                if (attribute == FighterAttribute.CloseQuarters) {
+                if (attribute == UnitAttribute.CloseQuarters) {
                     result.Add(new AttributeModifier {
-                        Attribute = FighterAttribute.CloseQuarters,
+                        Attribute = UnitAttribute.CloseQuarters,
                         Modifier = 1
                     });
                 }
-                if (attribute == FighterAttribute.HitPoints) {
+                if (attribute == UnitAttribute.HitPoints) {
                     result.Add(new AttributeModifier {
-                        Attribute = FighterAttribute.HitPoints,
+                        Attribute = UnitAttribute.HitPoints,
                         Modifier = 10
                     });
                 }
             }
             
             if (FighterClass > FighterClass.Ganger) {
-                if (attribute == FighterAttribute.ActionPoints) {
+                if (attribute == UnitAttribute.ActionPoints) {
                     result.Add(new AttributeModifier {
-                        Attribute = FighterAttribute.ActionPoints,
+                        Attribute = UnitAttribute.ActionPoints,
                         Modifier = 1
                     });
                 }
 
-                if (attribute == FighterAttribute.Movement) {
+                if (attribute == UnitAttribute.Movement) {
                     result.Add(new AttributeModifier {
-                        Attribute = FighterAttribute.Movement,
+                        Attribute = UnitAttribute.Movement,
                         Modifier = -1
                     });
                 }
@@ -93,7 +93,7 @@ namespace Gangs.Data {
     }
     
     public class Attribute {
-        public FighterAttribute FighterAttribute { get; set; }
+        public UnitAttribute UnitAttribute { get; set; }
         public int BaseValue { get; set; }
         public List<AttributeModifier> Modifiers { get; set; }
         public int CurrentValue => BaseValue + Modifiers.Sum(m => m.Modifier);
@@ -101,10 +101,10 @@ namespace Gangs.Data {
     
     public class AttributeModifier {
         public int Modifier { get; set; }
-        public FighterAttribute Attribute { get; set; }
+        public UnitAttribute Attribute { get; set; }
     }
     
-    public enum FighterAttribute {
+    public enum UnitAttribute {
         Movement = 0,
         Aim = 1,
         CloseQuarters = 2,

@@ -9,10 +9,10 @@ namespace Gangs.Calculators {
     public class ToHitCalculator {
         private const float DecayRate = 0.1f;
         
-        public int CalculateToHitChance(Tile fromTile, Tile targetTile, Unit firingUnit, Unit targetUnit, List<ToHitModifier> modifiers) {
+        public int CalculateToHitChance(Tile fromTile, Tile targetTile, BattleUnit firingBattleUnit, BattleUnit targetBattleUnit, List<ToHitModifier> modifiers) {
             var range = GridPosition.Distance(fromTile.GridPosition, targetTile.GridPosition);
             var toHitChance = (int)(100 * Math.Exp(-DecayRate * range));
-            var firingUnitSkill = firingUnit.Fighter.GetCurrentAttributeValue(FighterAttribute.Aim);
+            var firingUnitSkill = firingBattleUnit.Fighter.GetCurrentAttributeValue(UnitAttribute.Aim);
             toHitChance += (firingUnitSkill * 5);
             modifiers.ForEach(modifier => toHitChance += modifier.Modifier);
             

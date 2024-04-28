@@ -1,6 +1,7 @@
 ﻿{
   "id": "clan-noctem",
   "name": "Clan Noctem",
+  "playable": true,
   "color": [0, 1, 0],
   "logo": "clan-noctem",
   "attributeModifiers": [

@@ -61,7 +61,7 @@ namespace Gangs.Managers {
             }
             
             if (Input.GetKeyUp(KeyCode.Space)) {
-                BattleManager.Instance.SquadTurn.EndUnitTurn();
+                BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
             }
             
             if (Input.GetKeyUp(KeyCode.Escape)) {
@@ -111,9 +111,9 @@ namespace Gangs.Managers {
             SelectUnit(unit);
         }
 
-        public void SelectUnit(Unit unit) {
-            if (unit == BattleManager.Instance.SelectedUnit) return;
-            BattleManager.Instance.SelectedUnit.SelectedAbility?.Deselect();
+        public void SelectUnit(BattleUnit battleUnit) {
+            if (battleUnit == BattleManager.Instance.SelectedBattleUnit) return;
+            BattleManager.Instance.SelectedBattleUnit.SelectedAbility?.Deselect();
         }
         
         private void CheckHoverTile() {

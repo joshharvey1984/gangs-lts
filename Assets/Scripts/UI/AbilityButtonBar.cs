@@ -10,11 +10,11 @@ namespace Gangs.UI {
         
         private readonly List<AbilityButton> _abilityButtons = new();
         
-        public void ShowAbilityButtons(Unit unit) {
+        public void ShowAbilityButtons(BattleUnit battleUnit) {
             DestroyAbilityButtons();
-            foreach (var ability in unit.Abilities) {
+            foreach (var ability in battleUnit.Abilities) {
                 var button = Instantiate(abilityButtonPrefab, gameObject.transform).GetComponent<AbilityButton>();
-                var hotkey = unit.Abilities.ToList().IndexOf(ability) + 1;
+                var hotkey = battleUnit.Abilities.ToList().IndexOf(ability) + 1;
                 var keyCode = (KeyCode) Enum.Parse(typeof(KeyCode), "Alpha" + hotkey);
                 button.SetAbility(ability.ButtonText, keyCode);
                 button.OnSelected += ability.Select;

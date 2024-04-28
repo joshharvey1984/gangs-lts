@@ -13,20 +13,20 @@ namespace Gangs.Abilities {
         private List<MoveRange> _moveRanges;
         private List<MoveWaypoint> _moveWaypoints;
         
-        public MoveAbility(Unit unit) : base(unit) {
+        public MoveAbility(BattleUnit battleUnit) : base(battleUnit) {
             ButtonText = "Move";
             TargetingType = TargetingType.StandardMove;
         }
         
-        private Tile SoldierTile => BattleManager.Instance.GetSoldierTile(Unit);
-        private int MovePoints => Unit.GetAttribute(FighterAttribute.Movement) * 10;
+        private Tile SoldierTile => BattleManager.Instance.GetSoldierTile(BattleUnit);
+        private int MovePoints => BattleUnit.GetAttribute(UnitAttribute.Movement) * 10;
         private int MovePointsUsed => _moveWaypoints.Sum(w => w.Cost);
-        private int MovePointsRemaining => MovePoints * Unit.ActionPointsRemaining - MovePointsUsed;
-        private bool MaxMovementReached => MovePointsUsed > MovePoints * Unit.ActionPointsRemaining - 10;
+        private int MovePointsRemaining => MovePoints * BattleUnit.ActionPointsRemaining - MovePointsUsed;
+        private bool MaxMovementReached => MovePointsUsed > MovePoints * BattleUnit.ActionPointsRemaining - 10;
         
         public override void Select() {
             base.Select();
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 InputManager.Instance.OnTileHovered += TileHovered;
                 InputManager.Instance.OnRightClick += ResetMove;
                 InputManager.Instance.OnLeftClickTile += LeftClickTile;
@@ -37,7 +37,7 @@ namespace Gangs.Abilities {
         }
         
         public override void Deselect() {
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 InputManager.Instance.OnRightClick -= ResetMove;
                 InputManager.Instance.OnTileHovered -= TileHovered;
                 InputManager.Instance.OnLeftClickTile -= LeftClickTile;
@@ -52,9 +52,9 @@ namespace Gangs.Abilities {
             GridVisualManager.Instance.ClearWaypoints();
             GridVisualManager.Instance.ClearMoveRanges();
             var apSpent = (int)Math.Ceiling((double)MovePointsUsed / MovePoints);
-            Unit.SpendActionPoints(apSpent);
-            Unit.UnitGameObject.OnMoveComplete += MoveComplete;
-            Unit.UnitGameObject.Move(new List<MoveWaypoint>(_moveWaypoints));
+            BattleUnit.SpendActionPoints(apSpent);
+            BattleUnit.UnitGameObject.OnMoveComplete += MoveComplete;
+            BattleUnit.UnitGameObject.Move(new List<MoveWaypoint>(_moveWaypoints));
             ResetMoveWaypoints();
         }
 
@@ -103,15 +103,15 @@ namespace Gangs.Abilities {
             var totalMoveRange = GetMoveRange();
             var moveRanges = new List<MoveRange>();
             
-            for (var i = 0; i < Unit.ActionPointsRemaining; i++) {
-                var moveRange = Unit.GetAttribute(FighterAttribute.Movement) * 10 * (i + 1) - MovePointsUsed;
+            for (var i = 0; i < BattleUnit.ActionPointsRemaining; i++) {
+                var moveRange = BattleUnit.GetAttribute(UnitAttribute.Movement) * 10 * (i + 1) - MovePointsUsed;
                 var m = totalMoveRange.Where(kvp => kvp.Value <= moveRange);
                 var keys = m.Select(kvp => kvp.Key).ToList();
                 var moveRangeList = new MoveRange(i, keys);
                 moveRanges.Add(moveRangeList);
             }
 
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
             }
             
@@ -136,7 +136,7 @@ namespace Gangs.Abilities {
         private void CancelMove() {
             ResetMoveWaypoints();
             
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 GridVisualManager.Instance.ClearWaypoints();
                 GridVisualManager.Instance.ClearMoveRanges();
             }
@@ -147,7 +147,7 @@ namespace Gangs.Abilities {
             CalculateMoveRange();
             DrawMovePath(InputManager.Instance.HoverTile);
 
-            if (Unit.IsPlayerControlled) {
+            if (BattleUnit.IsPlayerControlled) {
                 GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
             }
         }
@@ -167,7 +167,7 @@ namespace Gangs.Abilities {
 
         private void MoveComplete() {
             ResetMove();
-            Unit.UnitGameObject.OnMoveComplete -= MoveComplete;
+            BattleUnit.UnitGameObject.OnMoveComplete -= MoveComplete;
             Finish();
         }
     }

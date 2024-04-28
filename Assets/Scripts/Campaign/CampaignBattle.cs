@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle;
 using Gangs.Data;
 using Gangs.Grid;
 
 namespace Gangs.Campaign {
     public class CampaignBattle {
         public Grid.Grid Grid { get; }
+        public CampaignBattleType BattleType { get; }
+        public List<BattleSquad> Squads { get; } = new();
         
         public CampaignBattle(CampaignTerritory territory, CampaignBattleType battleType) {
+            BattleType = battleType;
             var map = territory.Map;
             
             var xSize = map.Tiles.Max(t => t.X) + 1;

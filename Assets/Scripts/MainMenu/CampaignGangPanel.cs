@@ -11,8 +11,8 @@ namespace Gangs.MainMenu
         
         public void SetGang(Gang gang, bool isPlayerControlled) {
             gangNameText.GetComponent<TMPro.TextMeshProUGUI>().text = gang.Name;
-            clanNameText.GetComponent<TMPro.TextMeshProUGUI>().text = gang.Clan.Name;
-            var texture = gang.Clan.Logo;
+            clanNameText.GetComponent<TMPro.TextMeshProUGUI>().text = gang.Faction.Name;
+            var texture = gang.Faction.Logo;
             var rect = new Rect(0, 0, texture.width, texture.height);
             var sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100);
             clanLogoImage.GetComponent<UnityEngine.UI.Image>().sprite = sprite;

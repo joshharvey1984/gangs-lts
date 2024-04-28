@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Gangs.Data.DTO {
     [Serializable]
-    public class FighterDto : EntityDto {
+    public class UnitDto : EntityDto {
         public string clanId;
         public int level;
         
-        public static FighterDto CreateFromJson(string json) => JsonUtility.FromJson<FighterDto>(json);
+        public static UnitDto CreateFromJson(string json) => JsonUtility.FromJson<UnitDto>(json);
     }
 }
