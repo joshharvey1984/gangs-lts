@@ -7,6 +7,7 @@ using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.Managers;
 using Gangs.UI;
+using Tile = Gangs.Grid.Tile;
 
 namespace Gangs {
     public class Unit {
@@ -26,8 +27,6 @@ namespace Gangs {
         public int DamageTaken;
 
         public bool IsPlayerControlled;
-        
-        public Dictionary<Unit, Tile> EnemyLastSeen = new();
         
         public event Action<Unit> OnDeselected;
         public event Action<Unit> OnSelected; 

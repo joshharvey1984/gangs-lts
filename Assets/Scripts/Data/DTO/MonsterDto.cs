@@ -1,8 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Gangs.Data.DTO {
-    [Serializable]
     public class MonsterDto : EntityDto {
         public int movement;
         public int aim;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Gangs.Data;
 using Gangs.Grid;
 using UnityEngine;
+using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Calculators {
     public class ToHitCalculator {

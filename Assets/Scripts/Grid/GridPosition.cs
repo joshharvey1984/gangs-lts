@@ -52,7 +52,7 @@ namespace Gangs.Grid {
         public Vector3 ToVector3() => new(X, Y, Z);
         
         public override string ToString() => $"({X}, {Y}, {Z})";
-
+        
         #region Operators
 
         public static GridPosition operator +(GridPosition a, GridPosition b) {

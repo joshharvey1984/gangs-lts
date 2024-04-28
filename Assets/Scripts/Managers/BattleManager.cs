@@ -7,6 +7,8 @@ using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.UI;
 using UnityEngine;
+using Tile = Gangs.Grid.Tile;
+using Wall = Gangs.Grid.Wall;
 
 namespace Gangs.Managers {
     public class BattleManager : MonoBehaviour {
@@ -47,12 +49,12 @@ namespace Gangs.Managers {
             }
             Instance = this;
             
-            DataManager.CreateData();
+            //DataManager.CreateData();
         }
         
         private void Start() {
             GridManager.Instance.SetupGrid();
-            LineOfSight.BuildLineOfSightData();
+            LineOfSight.BuildLineOfSightData(GridManager.Instance.Grid);
             
             SpawnSquads();
             SquadTurn = Squads[0];

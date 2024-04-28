@@ -66,10 +66,8 @@ namespace Gangs.Managers {
 
         public void Battle() {
             var territory = _campaignMap.Territories.Find(t => t.Entities.Count > 1);
-            var attacker = territory.Entities[0];
-            var defender = territory.Entities[1];
-            
-            
+            var battle = new CampaignBattle(territory, CampaignBattleType.Auto);
+            Debug.Log("Battle");
         }
     }
 }

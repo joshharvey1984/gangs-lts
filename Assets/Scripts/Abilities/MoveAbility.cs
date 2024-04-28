@@ -6,6 +6,7 @@ using Gangs.AI;
 using Gangs.Data;
 using Gangs.Grid;
 using Gangs.Managers;
+using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Abilities {
     public class MoveAbility : Ability {

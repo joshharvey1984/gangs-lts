@@ -33,6 +33,9 @@ namespace Gangs.Managers {
             var armour = Directory.GetFiles(path + "Equipment/Armour/", "*.json");
             var armourDto = new List<ArmourDto>();
             
+            var maps = Directory.GetFiles(path + "Maps/", "*.json");
+            var mapDto = new List<MapDto>();
+            
             territories.ToList().ForEach(t => territoryDto.Add(TerritoryDto.CreateFromJson(File.ReadAllText(t))));
             rulesets.ToList().ForEach(r => rulesetDto.Add(RulesetDto.CreateFromJson(File.ReadAllText(r))));
             clans.ToList().ForEach(c => clansDto.Add(ClanDto.CreateFromJson(File.ReadAllText(c))));
@@ -41,6 +44,7 @@ namespace Gangs.Managers {
             monsters.ToList().ForEach(m => monsterDto.Add(MonsterDto.CreateFromJson(File.ReadAllText(m))));
             weapons.ToList().ForEach(w => weaponDto.Add(WeaponDto.CreateFromJson(File.ReadAllText(w))));
             armour.ToList().ForEach(a => armourDto.Add(ArmourDto.CreateFromJson(File.ReadAllText(a))));
+            maps.ToList().ForEach(m => mapDto.Add(MapDto.CreateFromJson(File.ReadAllText(m))));
             
             territoryDto.ForEach(t => new Data.Territory(t));
             rulesetDto.ForEach(r => new Data.Ruleset(r));
@@ -50,6 +54,7 @@ namespace Gangs.Managers {
             monsterDto.ForEach(m => new Data.Monster(m));
             weaponDto.ForEach(w => new Data.Weapon(w));
             armourDto.ForEach(a => new Data.Armour(a));
+            mapDto.ForEach(m => new Data.Map(m));
             
             Data.Territory.All.ForEach(t => t.Create(territoryDto.Find(dto => dto.id == t.ID)));
             Data.Ruleset.All.ForEach(r => r.Create(rulesetDto.Find(dto => dto.id == r.ID)));
@@ -59,6 +64,7 @@ namespace Gangs.Managers {
             Data.Monster.All.ForEach(m => m.Create(monsterDto.Find(dto => dto.id == m.ID)));
             Data.Weapon.All.ForEach(w => w.Create(weaponDto.Find(dto => dto.id == w.ID)));
             Data.Armour.All.ForEach(a => a.Create(armourDto.Find(dto => dto.id == a.ID)));
+            Data.Map.All.ForEach(m => m.Create(mapDto.Find(dto => dto.id == m.ID)));
         }
     }
 }
