@@ -95,7 +95,7 @@ namespace Gangs.Managers {
             }
         }
         
-        private BattleUnit CreateUnit(Fighter fighter, GridPosition position, bool isPlayerControlled, Color? color = default) {
+        private BattleUnit CreateUnit(Unit unit, GridPosition position, bool isPlayerControlled, Color? color = default) {
             var unit = new BattleUnit(fighter) {
                 UnitGameObject = SpawnUnit(position),
                 GridUnit = Grid.AddUnit(position),

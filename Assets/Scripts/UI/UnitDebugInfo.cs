@@ -31,7 +31,7 @@ namespace Gangs.UI
                     textMeshPro.rectTransform.position += new Vector3(0, count * 100, 0);
                     count++;
                     
-                    var unitInfo = $"Unit: {unit.Fighter.Name}\n" +
+                    var unitInfo = $"Unit: {unit.Unit.Name}\n" +
                                    $"Action Points: {unit.ActionPointsRemaining}\n" +
                                    $"Turn Taken: {unit.TurnTaken}\n" +
                                    $"Player Controlled: {unit.IsPlayerControlled}\n" +
@@ -46,7 +46,7 @@ namespace Gangs.UI
         public void UpdateInfo() {
             foreach (var unit in _unitInfo.Keys) {
                 var textMeshPro = _unitInfo[unit].GetComponent<TMPro.TextMeshPro>();
-                var unitInfo = $"Unit: {unit.Fighter.Name}\n" +
+                var unitInfo = $"Unit: {unit.Unit.Name}\n" +
                                $"Action Points: {unit.ActionPointsRemaining}\n" +
                                $"Turn Taken: {unit.TurnTaken}\n" +
                                $"Player Controlled: {unit.IsPlayerControlled}\n" +

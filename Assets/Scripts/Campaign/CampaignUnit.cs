@@ -2,9 +2,9 @@
 
 namespace Gangs.Campaign {
     public class CampaignUnit {
-        public Fighter BaseUnit { get; set; }
+        public Unit BaseUnit { get; set; }
         
-        public CampaignUnit(Fighter unit) {
+        public CampaignUnit(Unit unit) {
             BaseUnit = unit;
         }
     }

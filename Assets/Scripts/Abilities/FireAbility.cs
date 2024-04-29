@@ -65,8 +65,8 @@ namespace Gangs.Abilities {
                     var targetGridUnit = _targetTile.GridUnit;
                     var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
                     var damage = 10;
-                    Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Fighter.Name}");
-                    Debug.Log($"{targetUnit.Fighter.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
+                    Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Unit.Name}");
+                    Debug.Log($"{targetUnit.Unit.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
                     targetUnit!.Damage(damage);
                 }
                 else {

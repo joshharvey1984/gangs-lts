@@ -1,8 +1,0 @@
-﻿{
-  "id": "test-haas-gang",
-  "name": "Test Haas Gang",
-  "clanId": "clan-haas",
-  "fighterIds": [
-    "jim-test", "josh-test"
-  ]
-}

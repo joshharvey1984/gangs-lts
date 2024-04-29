@@ -4,6 +4,7 @@
   "playable": true,
   "color": [0, 1, 0],
   "logo": "clan-noctem",
+  "units": [ "ganger" ],
   "attributeModifiers": [
     { "attribute": "Aim", 
       "modifier": -1

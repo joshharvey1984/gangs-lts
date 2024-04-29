@@ -1,0 +1,26 @@
+﻿{
+  "id": "ganger",
+  "name": "Ganger",
+  "baseAtrributes": [
+    {
+      "name": "movement",
+      "value": 4
+    },
+    {
+      "name": "aim",
+      "value": 4
+    },
+    {
+      "name": "closeQuarters",
+      "value": 4
+    },
+    {
+      "name": "hitPoints",
+      "value": 20
+    },
+    {
+      "name": "actionPoints",
+      "value": 2
+    }
+  ]
+}

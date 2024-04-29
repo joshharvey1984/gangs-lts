@@ -11,7 +11,7 @@ using Tile = Gangs.Grid.Tile;
 
 namespace Gangs {
     public class BattleUnit {
-        public readonly Fighter Fighter;
+        public readonly Unit Unit;
         public UnitGameObject UnitGameObject;
         public GridUnit GridUnit;
         
@@ -31,16 +31,16 @@ namespace Gangs {
         public event Action<BattleUnit> OnDeselected;
         public event Action<BattleUnit> OnSelected; 
         
-        public BattleUnit(Fighter fighter) {
-            Fighter = fighter;
-            ActionPointsRemaining = fighter.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
+        public BattleUnit(Unit unit) {
+            Unit = unit;
+            ActionPointsRemaining = unit.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
             Abilities = new Ability[] {
                 new MoveAbility(this),
                 new FireAbility(this)
             };
         }
         
-        public int GetAttribute(UnitAttribute attribute) => Fighter.GetCurrentAttributeValue(attribute);
+        public int GetAttribute(UnitAttribute attribute) => Unit.GetCurrentAttributeValue(attribute);
 
         public void SetSelected(bool selected) {
             (selected ? OnSelected : OnDeselected)?.Invoke(this);
@@ -53,7 +53,7 @@ namespace Gangs {
         }
 
         public void ResetTurn() {
-            ActionPointsRemaining = Fighter.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
+            ActionPointsRemaining = Unit.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
             TurnTaken = false;
         }
         
@@ -66,7 +66,7 @@ namespace Gangs {
         
         public void Damage(int amount) {
             DamageTaken += amount;
-            if (DamageTaken >= Fighter.GetCurrentAttributeValue(UnitAttribute.HitPoints)) {
+            if (DamageTaken >= Unit.GetCurrentAttributeValue(UnitAttribute.HitPoints)) {
                 Eliminate();
             }
         }
@@ -78,7 +78,7 @@ namespace Gangs {
             BattleManager.Instance.CheckForEndGame();
         }
         
-        public int GetCurrentHitPoints() => Fighter.GetCurrentAttributeValue(UnitAttribute.HitPoints) - DamageTaken;
+        public int GetCurrentHitPoints() => Unit.GetCurrentAttributeValue(UnitAttribute.HitPoints) - DamageTaken;
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();

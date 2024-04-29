@@ -12,7 +12,7 @@ namespace Gangs.Calculators {
         public int CalculateToHitChance(Tile fromTile, Tile targetTile, BattleUnit firingBattleUnit, BattleUnit targetBattleUnit, List<ToHitModifier> modifiers) {
             var range = GridPosition.Distance(fromTile.GridPosition, targetTile.GridPosition);
             var toHitChance = (int)(100 * Math.Exp(-DecayRate * range));
-            var firingUnitSkill = firingBattleUnit.Fighter.GetCurrentAttributeValue(UnitAttribute.Aim);
+            var firingUnitSkill = firingBattleUnit.Unit.GetCurrentAttributeValue(UnitAttribute.Aim);
             toHitChance += (firingUnitSkill * 5);
             modifiers.ForEach(modifier => toHitChance += modifier.Modifier);
             

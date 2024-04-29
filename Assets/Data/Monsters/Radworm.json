@@ -1,9 +1,0 @@
-﻿{
-  "id": "radworm",
-  "name": "Radworm",
-  "movement": "4",
-  "aim": "0",
-  "closeQuarters": "3",
-  "hitPoints": "5",
-  "actionPoints": "2"
-}

@@ -1,0 +1,9 @@
+﻿{
+  "id": "creatures",
+  "name": "Creatures",
+  "playable": false,
+  "color": [0.2, 0.8, 0.2],
+  "logo": "creatures",
+  "attributeModifiers": [ ],
+  "units": [ "radworm" ]
+}

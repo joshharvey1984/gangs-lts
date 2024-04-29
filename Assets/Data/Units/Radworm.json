@@ -1,0 +1,44 @@
+﻿{
+  "id": "radworm",
+  "name": "Radworm",
+  "baseAtrributes": [
+    {
+      "attribute": "movement",
+      "value": 4
+    },
+    {
+      "attribute": "aim",
+      "value": 2
+    },
+    {
+      "attribute": "closeQuarters",
+      "value": 2
+    },
+    {
+      "attribute": "hitPoints",
+      "value": 10
+    },
+    {
+      "attribute": "actionPoints",
+      "value": 2
+    }
+  ],
+  "modifiers": [
+    {
+      "level": 1,
+      "type": "nameChange",
+      "value": "Radwormling"
+    },
+    {
+      "level": 2,
+      "type": "attributeChange",
+      "attribute": "movement",
+      "value": "1"
+    },
+    {
+      "level": 4,
+      "type": "nameChange",
+      "value": "Radworm"
+    }
+  ]
+}
