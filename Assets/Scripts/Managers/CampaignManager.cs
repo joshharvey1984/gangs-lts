@@ -11,8 +11,8 @@ namespace Gangs.Managers {
         private CampaignMap _campaignMap;
         [SerializeField] private GameObject mapParent;
         
-        private List<CampaignGang> _gangs;
-        private CampaignGang _currentGang;
+        private List<CampaignGangManager> _gangs;
+        private CampaignGangManager _currentGangManager;
         
         private void Awake() {
             DontDestroyOnLoad(gameObject);
@@ -26,7 +26,7 @@ namespace Gangs.Managers {
         
         private void Start() {
             var campaignData = new CampaignData {
-                CampaignGangs = new List<CampaignGang> {
+                CampaignGangs = new List<CampaignGangManager> {
                     new() { BaseGang = Gang.All[0], IsPlayerControlled = true },
                     new() { BaseGang = Gang.All[1], IsPlayerControlled = false }
                 },
@@ -40,12 +40,12 @@ namespace Gangs.Managers {
             CampaignUIManager.Instance.SetTurnNumberText(1);
             CampaignUIManager.Instance.SetGangTurn(_gangs[0].BaseGang);
             
-            _currentGang = _gangs[0];
+            _currentGangManager = _gangs[0];
             StartTurn();
         }
         
         public void StartTurn() {
-            _currentGang.StartTurn();
+            _currentGangManager.StartTurn();
         }
 
         public CampaignTerritory GetTerritory(CampaignSquad squad) {

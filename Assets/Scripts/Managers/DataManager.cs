@@ -15,6 +15,9 @@ namespace Gangs.Managers {
             var territories = Directory.GetFiles(path + "Territories/", "*.json");
             var territoryDto = new List<TerritoryDto>();
             
+            var units = Directory.GetFiles(path + "Units/", "*.json");
+            var unitDto = new List<UnitDto>();
+            
             var factions = Directory.GetFiles(path + "Factions/", "*.json");
             var factionsDto = new List<FactionDto>();
             
@@ -26,9 +29,6 @@ namespace Gangs.Managers {
             
             var maps = Directory.GetFiles(path + "Maps/", "*.json");
             var mapDto = new List<MapDto>();
-            
-            var units = Directory.GetFiles(path + "Units/", "*.json");
-            var unitDto = new List<UnitDto>();
             
             territories.ToList().ForEach(t => territoryDto.Add(TerritoryDto.CreateFromJson(File.ReadAllText(t))));
             rulesets.ToList().ForEach(r => rulesetDto.Add(RulesetDto.CreateFromJson(File.ReadAllText(r))));
@@ -48,8 +48,8 @@ namespace Gangs.Managers {
             
             Data.Territory.All.ForEach(t => t.Create(territoryDto.Find(dto => dto.id == t.ID)));
             Data.Ruleset.All.ForEach(r => r.Create(rulesetDto.Find(dto => dto.id == r.ID)));
-            Data.Faction.All.ForEach(c => c.Create(factionsDto.Find(dto => dto.id == c.ID)));
             Data.Unit.All.ForEach(u => u.Create(unitDto.Find(dto => dto.id == u.ID)));
+            Data.Faction.All.ForEach(c => c.Create(factionsDto.Find(dto => dto.id == c.ID)));
             Data.Weapon.All.ForEach(w => w.Create(weaponDto.Find(dto => dto.id == w.ID)));
             Data.Armour.All.ForEach(a => a.Create(armourDto.Find(dto => dto.id == a.ID)));
             Data.Map.All.ForEach(m => m.Create(mapDto.Find(dto => dto.id == m.ID)));

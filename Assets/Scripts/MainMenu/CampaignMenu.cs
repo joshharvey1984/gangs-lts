@@ -14,7 +14,7 @@ namespace Gangs.MainMenu {
         
         private void OnEnable() {
             _campaignData = new CampaignData {
-                CampaignGangs = new List<CampaignGang>()
+                CampaignGangs = new List<CampaignGangManager>()
             };
 
             AddGang(Gang.All[0], true);
@@ -26,14 +26,14 @@ namespace Gangs.MainMenu {
         }
 
         private void AddGang(Gang gang, bool isPlayerControlled = false) {
-            _campaignData.CampaignGangs.Add(new CampaignGang { BaseGang = gang, IsPlayerControlled = isPlayerControlled });
+            _campaignData.CampaignGangs.Add(new CampaignGangManager { BaseGang = gang, IsPlayerControlled = isPlayerControlled });
             var gangObject = Instantiate(gangPrefab, gangListPanel.transform);
             gangObject.GetComponent<CampaignGangPanel>().SetGang(gang, isPlayerControlled);
         }
     }
     
     public struct CampaignData {
-        public List<CampaignGang> CampaignGangs;
+        public List<CampaignGangManager> CampaignGangs;
         public CampaignMapSize MapSize;
     }
     

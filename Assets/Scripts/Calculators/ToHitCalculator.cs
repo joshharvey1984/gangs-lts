@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Gangs.Core;
 using Gangs.Data;
 using Gangs.Grid;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Gangs.Calculators {
         public int CalculateToHitChance(Tile fromTile, Tile targetTile, BattleUnit firingBattleUnit, BattleUnit targetBattleUnit, List<ToHitModifier> modifiers) {
             var range = GridPosition.Distance(fromTile.GridPosition, targetTile.GridPosition);
             var toHitChance = (int)(100 * Math.Exp(-DecayRate * range));
-            var firingUnitSkill = firingBattleUnit.Unit.GetCurrentAttributeValue(UnitAttribute.Aim);
+            var firingUnitSkill = firingBattleUnit.Unit.GetCurrentAttributeValue(UnitAttributeType.Aim);
             toHitChance += (firingUnitSkill * 5);
             modifiers.ForEach(modifier => toHitChance += modifier.Modifier);
             

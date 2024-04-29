@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities.Structs;
 using Gangs.AI;
+using Gangs.Core;
 using Gangs.Data;
 using Gangs.Grid;
 using Gangs.Managers;
@@ -19,7 +20,7 @@ namespace Gangs.Abilities {
         }
         
         private Tile SoldierTile => BattleManager.Instance.GetSoldierTile(BattleUnit);
-        private int MovePoints => BattleUnit.GetAttribute(UnitAttribute.Movement) * 10;
+        private int MovePoints => BattleUnit.GetAttribute(UnitAttributeType.Movement) * 10;
         private int MovePointsUsed => _moveWaypoints.Sum(w => w.Cost);
         private int MovePointsRemaining => MovePoints * BattleUnit.ActionPointsRemaining - MovePointsUsed;
         private bool MaxMovementReached => MovePointsUsed > MovePoints * BattleUnit.ActionPointsRemaining - 10;
@@ -104,7 +105,7 @@ namespace Gangs.Abilities {
             var moveRanges = new List<MoveRange>();
             
             for (var i = 0; i < BattleUnit.ActionPointsRemaining; i++) {
-                var moveRange = BattleUnit.GetAttribute(UnitAttribute.Movement) * 10 * (i + 1) - MovePointsUsed;
+                var moveRange = BattleUnit.GetAttribute(UnitAttributeType.Movement) * 10 * (i + 1) - MovePointsUsed;
                 var m = totalMoveRange.Where(kvp => kvp.Value <= moveRange);
                 var keys = m.Select(kvp => kvp.Key).ToList();
                 var moveRangeList = new MoveRange(i, keys);

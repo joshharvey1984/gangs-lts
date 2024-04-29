@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
+using Gangs.Core;
 using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
@@ -33,14 +34,14 @@ namespace Gangs {
         
         public BattleUnit(Unit unit) {
             Unit = unit;
-            ActionPointsRemaining = unit.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
+            ActionPointsRemaining = unit.GetCurrentAttributeValue(UnitAttributeType.ActionPoints);
             Abilities = new Ability[] {
                 new MoveAbility(this),
                 new FireAbility(this)
             };
         }
         
-        public int GetAttribute(UnitAttribute attribute) => Unit.GetCurrentAttributeValue(attribute);
+        public int GetAttribute(UnitAttributeType attributeType) => Unit.GetCurrentAttributeValue(attributeType);
 
         public void SetSelected(bool selected) {
             (selected ? OnSelected : OnDeselected)?.Invoke(this);
@@ -53,7 +54,7 @@ namespace Gangs {
         }
 
         public void ResetTurn() {
-            ActionPointsRemaining = Unit.GetCurrentAttributeValue(UnitAttribute.ActionPoints);
+            ActionPointsRemaining = Unit.GetCurrentAttributeValue(UnitAttributeType.ActionPoints);
             TurnTaken = false;
         }
         
@@ -66,7 +67,7 @@ namespace Gangs {
         
         public void Damage(int amount) {
             DamageTaken += amount;
-            if (DamageTaken >= Unit.GetCurrentAttributeValue(UnitAttribute.HitPoints)) {
+            if (DamageTaken >= Unit.GetCurrentAttributeValue(UnitAttributeType.HitPoints)) {
                 Eliminate();
             }
         }
@@ -78,7 +79,7 @@ namespace Gangs {
             BattleManager.Instance.CheckForEndGame();
         }
         
-        public int GetCurrentHitPoints() => Unit.GetCurrentAttributeValue(UnitAttribute.HitPoints) - DamageTaken;
+        public int GetCurrentHitPoints() => Unit.GetCurrentAttributeValue(UnitAttributeType.HitPoints) - DamageTaken;
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();

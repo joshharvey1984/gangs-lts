@@ -7,9 +7,9 @@ namespace Gangs.Campaign {
         public string Name { get; set; }
         public List<CampaignUnit> Units { get; set; } = new();
         
-        public CampaignSquad(CampaignGang gang) {
-            Name = gang.BaseGang.Name + " Squad";
-            gang.BaseGang.Fighters.ForEach(f => Units.Add(new CampaignUnit(f)));
+        public CampaignSquad(CampaignGangManager gangManager) {
+            Name = gangManager.BaseGang.Name + " Squad";
+            gangManager.BaseGang.Fighters.ForEach(f => Units.Add(new CampaignUnit(f)));
         }
         
         public void Select() {

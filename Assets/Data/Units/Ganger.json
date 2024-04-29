@@ -22,5 +22,17 @@
       "name": "actionPoints",
       "value": 2
     }
+  ],
+  "modifiers": [
+    {
+      "level": 1,
+      "type": "nameChange",
+      "value": "Juve"
+    },
+    {
+      "level": 5,
+      "type": "nameChange",
+      "value": "Ganger"
+    }
   ]
 }
