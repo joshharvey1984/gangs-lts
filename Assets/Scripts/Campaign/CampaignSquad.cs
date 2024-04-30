@@ -2,14 +2,14 @@
 using Gangs.Managers;
 
 namespace Gangs.Campaign {
-    public class CampaignSquad : ICampaignEntity {
+    public abstract class CampaignSquad  {
         public CampaignEntityGameObject GameObject { get; set; }
         public string Name { get; set; }
         public List<CampaignUnit> Units { get; set; } = new();
         
-        public CampaignSquad(CampaignGangManager gangManager) {
-            Name = gangManager.BaseGang.Name + " Squad";
-            gangManager.BaseGang.Fighters.ForEach(f => Units.Add(new CampaignUnit(f)));
+        public void AddUnit(CampaignUnit campaignUnit) {
+            Units.Add(campaignUnit);
+            Units.Sort((a, b) => b.Level.CompareTo(a.Level));
         }
         
         public void Select() {
@@ -21,14 +21,14 @@ namespace Gangs.Campaign {
             var currentTerritory = CampaignManager.Instance.GetTerritory(this);
             if (!currentTerritory.Neighbours.Contains(territory)) return;
             
-            currentTerritory.Entities.Remove(this);
-            territory.Entities.Add(this);
+            currentTerritory.Squads.Remove(this);
+            territory.Squads.Add(this);
             Move(territory);
         }
 
         private void Move(CampaignTerritory territory) {
             GameObject.Move(territory);
-            if (territory.Entities.Count > 1) {
+            if (territory.Squads.Count > 1) {
                 CampaignManager.Instance.BattleMenu(territory);
             }
             EndTurn();

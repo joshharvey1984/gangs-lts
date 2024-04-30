@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
+using Gangs.Campaign;
 using Gangs.Core;
-using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.Managers;
 using Gangs.UI;
-using Tile = Gangs.Grid.Tile;
 
-namespace Gangs {
+namespace Gangs.Battle {
     public class BattleUnit {
-        public readonly Unit Unit;
+        public readonly CampaignUnit Unit;
         public UnitGameObject UnitGameObject;
         public GridUnit GridUnit;
         
@@ -32,16 +31,16 @@ namespace Gangs {
         public event Action<BattleUnit> OnDeselected;
         public event Action<BattleUnit> OnSelected; 
         
-        public BattleUnit(Unit unit) {
+        public BattleUnit(CampaignUnit unit) {
             Unit = unit;
-            ActionPointsRemaining = unit.GetCurrentAttributeValue(UnitAttributeType.ActionPoints);
+            ActionPointsRemaining = GetAttributeValue(UnitAttributeType.ActionPoints);
             Abilities = new Ability[] {
                 new MoveAbility(this),
                 new FireAbility(this)
             };
         }
-        
-        public int GetAttribute(UnitAttributeType attributeType) => Unit.GetCurrentAttributeValue(attributeType);
+
+        public int GetAttributeValue(UnitAttributeType attributeType) => Unit.GetAttribute(attributeType).GetValue();
 
         public void SetSelected(bool selected) {
             (selected ? OnSelected : OnDeselected)?.Invoke(this);
@@ -54,7 +53,7 @@ namespace Gangs {
         }
 
         public void ResetTurn() {
-            ActionPointsRemaining = Unit.GetCurrentAttributeValue(UnitAttributeType.ActionPoints);
+            ActionPointsRemaining = GetAttributeValue(UnitAttributeType.ActionPoints);
             TurnTaken = false;
         }
         
@@ -67,7 +66,7 @@ namespace Gangs {
         
         public void Damage(int amount) {
             DamageTaken += amount;
-            if (DamageTaken >= Unit.GetCurrentAttributeValue(UnitAttributeType.HitPoints)) {
+            if (DamageTaken >= GetCurrentHitPoints()) {
                 Eliminate();
             }
         }
@@ -79,7 +78,7 @@ namespace Gangs {
             BattleManager.Instance.CheckForEndGame();
         }
         
-        public int GetCurrentHitPoints() => Unit.GetCurrentAttributeValue(UnitAttributeType.HitPoints) - DamageTaken;
+        public int GetCurrentHitPoints() => GetAttributeValue(UnitAttributeType.HitPoints) - DamageTaken;
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();

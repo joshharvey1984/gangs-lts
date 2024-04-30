@@ -8,12 +8,12 @@ namespace Gangs.MainMenu
         [SerializeField] private GameObject clanName;
         [SerializeField] private GameObject clanLogo;
         
-        public void SetGang(Gang gang) {
-            gangeName.GetComponent<TMPro.TextMeshProUGUI>().text = gang.Name;
-            clanName.GetComponent<TMPro.TextMeshProUGUI>().text = gang.Faction.Name;
+        public void SetGang(Faction faction) {
+            gangeName.GetComponent<TMPro.TextMeshProUGUI>().text = faction.Name;
+            clanName.GetComponent<TMPro.TextMeshProUGUI>().text = faction.Name;
             
             //conver texture to sprite
-            var texture = gang.Faction.Logo;
+            var texture = faction.Logo;
             var rect = new Rect(0, 0, texture.width, texture.height);
             var sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100);
             clanLogo.GetComponent<UnityEngine.UI.Image>().sprite = sprite;

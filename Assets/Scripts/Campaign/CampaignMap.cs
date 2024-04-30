@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Gangs.Campaign.CampaignGenerators;
 using Gangs.Data;
 using Gangs.MainMenu;
 using Gangs.Managers;
@@ -29,14 +30,14 @@ namespace Gangs.Campaign {
             SpawnMonsters();
             foreach (var territory in Territories.Where(t => t.Territory == null)) {
                 territory.SetTerritory(ruleset.ValidTerritories[Random.Range(0, ruleset.ValidTerritories.Count)]);
-                if (Random.Range(0, 100) < 10) CreateMonsterMob(territory);
+                if (Random.Range(0, 100) < 10) CreateNeutralSquad(territory);
             }
         }
         
-        private void CreateMonsterMob(CampaignTerritory territory) {
-            var monster = Monster.All[Random.Range(0, Monster.All.Count)];
-            var mob = new CampaignMob(monster);
-            territory.AddEntity(mob);
+        private void CreateNeutralSquad(CampaignTerritory territory) {
+            var faction = Faction.All.First(f => f.Playable == false);
+            var squad = CampaignNeutralSquadGenerator.GenerateNeutralSquad(faction, 10);
+            territory.Squads.Add(squad);
         }
         
         private void FindTerritoryNeighbours() {
@@ -50,23 +51,24 @@ namespace Gangs.Campaign {
         
         private void SpawnGangs(CampaignData campaignData, List<StartingTerritory> startingTerritories) {
             var validTerritories = Territories.Where(t => t.Neighbours.Count >= startingTerritories.Count).Select(t => t.GameObject).ToList();
-            var spawnPoints = GameObject.FindSpawnPoints(campaignData.CampaignGangs.Count, validTerritories);
+            var spawnPoints = GameObject.FindSpawnPoints(campaignData.CampaignGangManagers.Count, validTerritories);
             spawnPoints = spawnPoints.OrderBy(_ => Random.value).ToList();
             
-            for (var i = 0; i < campaignData.CampaignGangs.Count; i++) {
-                var gang = campaignData.CampaignGangs[i];
+            for (var i = 0; i < campaignData.CampaignGangManagers.Count; i++) {
+                var gang = campaignData.CampaignGangManagers[i];
                 var territoryGameObject = spawnPoints[i].GetComponent<CampaignTerritoryGameObject>();
                 var territory = GetTerritoryByGameObject(territoryGameObject);
-                territory.SetClaimedBy(gang, true);
+                territory.SetClaimedBy(gang.Gang, true);
                 territory.SetTerritory(startingTerritories.First(s => s.Headquarters).Territory);
-                var squad = new CampaignSquad(gang);
-                campaignData.CampaignGangs[i].AddSquad(squad);
-                territory.Entities.Add(squad);
+                var squad = new CampaignGangSquad(gang.Gang);
+                gang.Gang.Units.ForEach(u => squad.AddUnit(u));
+                campaignData.CampaignGangManagers[i].AddSquad(squad);
+                territory.Squads.Add(squad);
                 
                 if (startingTerritories.Count <= 1) continue;
                 for (var j = 1; j < startingTerritories.Count; j++) {
                     var neighbour = territory.Neighbours[j - 1];
-                    neighbour?.SetClaimedBy(gang);
+                    neighbour?.SetClaimedBy(gang.Gang);
                     neighbour?.SetTerritory(startingTerritories[j].Territory);
                 }
             }
@@ -77,7 +79,7 @@ namespace Gangs.Campaign {
             var monsterCount = monsterTerritories.Count / 3;
             for (var i = 0; i < monsterCount; i++) {
                 var territory = monsterTerritories[Random.Range(0, monsterTerritories.Count)];
-                CreateMonsterMob(territory);
+                CreateNeutralSquad(territory);
             }
         }
 

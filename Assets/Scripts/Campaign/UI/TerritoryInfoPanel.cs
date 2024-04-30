@@ -11,8 +11,8 @@ namespace Gangs.Campaign.UI {
             gangText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.ToString() ?? "Unclaimed";
             clanText.GetComponent<TMPro.TextMeshProUGUI>().text = territory.ClaimedBy?.ToString() ?? "";
             
-            gangText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.BaseGang.Faction.Color ?? Color.white;
-            clanText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.BaseGang.Faction.Color ?? Color.white;
+            gangText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.Faction.Color ?? Color.white;
+            clanText.GetComponent<TMPro.TextMeshProUGUI>().color = territory.ClaimedBy?.Faction.Color ?? Color.white;
         }
     }
 }

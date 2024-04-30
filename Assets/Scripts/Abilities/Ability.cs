@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Gangs.AI;
+using Gangs.Battle;
 using Gangs.Calculators;
 using Gangs.GameObjects;
 using Gangs.Grid;

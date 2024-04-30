@@ -23,7 +23,7 @@ namespace Gangs.Data {
         
         public List<Modifier> GetModifiers(int level) => Modifiers.Where(m => m.Level <= level).ToList();
         
-        private UnitAttributeType GetAttribute(string attribute) => 
+        public UnitAttributeType GetAttribute(string attribute) => 
             (UnitAttributeType) Enum.Parse(typeof(UnitAttributeType), attribute, true);
         private ModifierType GetModifierType(string type) => 
             (ModifierType) Enum.Parse(typeof(ModifierType), type, true);
@@ -98,6 +98,10 @@ namespace Gangs.Data {
     public class AttributeModifier {
         public UnitAttributeType AttributeType { get; set; }
         public int Modifier { get; set; }
+
+        public static UnitAttributeType GetAttribute(string modifierAttribute) {
+            return (UnitAttributeType) Enum.Parse(typeof(UnitAttributeType), modifierAttribute, true);
+        }
     }
     
     public enum ModifierType {

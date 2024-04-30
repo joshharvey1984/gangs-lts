@@ -6,6 +6,8 @@ namespace Gangs.Campaign {
         public string Class { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
-        public List<UnitAttribute> Attributes { get; set; } = new();
+        public List<UnitAttribute> Attributes { private get; set; } = new();
+        
+        public UnitAttribute GetAttribute(UnitAttributeType type) => Attributes.Find(a => a.Type == type);
     }
 }

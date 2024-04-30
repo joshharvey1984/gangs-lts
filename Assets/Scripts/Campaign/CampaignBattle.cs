@@ -22,10 +22,10 @@ namespace Gangs.Campaign {
             
             SetupGrid(map);
             LineOfSight.BuildLineOfSightData(Grid);
-            SpawnSquads(territory.Entities);
+            SpawnSquads(territory.Squads);
         }
 
-        private void SpawnSquads(List<ICampaignEntity> territoryEntities) {
+        private void SpawnSquads(List<CampaignSquad> territoryEntities) {
             var spawnPositions1 = new List<GridPosition> {
                 new(0, 0, 0),
                 new(1, 0, 0),
@@ -43,19 +43,10 @@ namespace Gangs.Campaign {
             var pos = 0;
             
             territoryEntities.ForEach(entity => {
-                if (entity is CampaignSquad squad) {
-                    var spawnPositions = pos == 0 ? spawnPositions1 : spawnPositions2;
-                    var spawnPosition = spawnPositions.First();
-                    spawnPositions.Remove(spawnPosition);
-                    var gridUnit = Grid.AddUnit(new GridPosition(spawnPosition.X, spawnPosition.Y, spawnPosition.Z));
-                }
-                else if (entity is CampaignMob mob) {
-                    var spawnPositions = pos == 0 ? spawnPositions1 : spawnPositions2;
-                    var spawnPosition = spawnPositions.First();
-                    spawnPositions.Remove(spawnPosition);
-                    var gridUnit = Grid.AddUnit(new GridPosition(spawnPosition.X, spawnPosition.Y, spawnPosition.Z));
-                }
-                
+                var spawnPositions = pos == 0 ? spawnPositions1 : spawnPositions2;
+                var spawnPosition = spawnPositions.First();
+                spawnPositions.Remove(spawnPosition);
+                Grid.AddUnit(new GridPosition(spawnPosition.X, spawnPosition.Y, spawnPosition.Z));
                 pos++;
             });
         }

@@ -6,9 +6,9 @@ namespace Gangs.Campaign.UI {
     public class CampaignInfoGangIcon : MonoBehaviour {
         [SerializeField] private GameObject turnBox;
         
-        public Gang Gang { get; private set; }
+        public CampaignGang Gang { get; private set; }
         
-        public void SetGang(Gang gang) {
+        public void SetGang(CampaignGang gang) {
             Gang = gang;
             var texture = gang.Faction.Logo;
             var rect = new Rect(0, 0, texture.width, texture.height);

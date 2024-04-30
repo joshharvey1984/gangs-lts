@@ -21,7 +21,7 @@ namespace Gangs.Managers {
         }
         
         public void SetCampaignInfo(CampaignData campaign) {
-            campaign.CampaignGangs.ForEach(c => campaignInfoPanel.GetComponent<CampaignInfoPanel>().AddGangPanel(c.BaseGang));
+            campaign.CampaignGangManagers.ForEach(c => campaignInfoPanel.GetComponent<CampaignInfoPanel>().AddGangPanel(c.Gang));
         }
         
         public void SetTurnNumberText(int turn) {
@@ -32,7 +32,7 @@ namespace Gangs.Managers {
             territoryInfoPanel.GetComponent<TerritoryInfoPanel>().SetTerritory(territory);
         }
 
-        public void SetGangTurn(Gang gang) {
+        public void SetGangTurn(CampaignGang gang) {
             campaignInfoPanel.GetComponent<CampaignInfoPanel>().SetGangTurn(gang);
         }
 

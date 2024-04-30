@@ -11,29 +11,21 @@ namespace Gangs.Campaign.UI {
         [SerializeField] private GameObject unitPrefab;
         
         public void SetBattleMenu(CampaignTerritory territory) {
-            squadPanelName1.GetComponent<TMP_Text>().text = territory.Entities[0].Name;
-            squadPanelName2.GetComponent<TMP_Text>().text = territory.Entities[1].Name;
+            squadPanelName1.GetComponent<TMP_Text>().text = territory.Squads[0].Name;
+            squadPanelName2.GetComponent<TMP_Text>().text = territory.Squads[1].Name;
             
-            SetUnitPanel(unitPanel1, territory.Entities[0]);
-            SetUnitPanel(unitPanel2, territory.Entities[1]);
+            SetUnitPanel(unitPanel1, territory.Squads[0]);
+            SetUnitPanel(unitPanel2, territory.Squads[1]);
             
             gameObject.SetActive(true);
         }
         
-        private void SetUnitPanel(GameObject panel, ICampaignEntity entity) {
-            if (entity is CampaignSquad squad) {
-                squad.Units.ForEach(u => {
-                    var unitPanel = Instantiate(unitPrefab, panel.transform);
-                    unitPanel.GetComponent<BattleMenuUnit>().SetUnit(u);
-                });
-            }
+        private void SetUnitPanel(GameObject panel, CampaignSquad squad) {
+            squad.Units.ForEach(u => {
+                var unitPanel = Instantiate(unitPrefab, panel.transform);
+                unitPanel.GetComponent<BattleMenuUnit>().SetUnit(u);
+            });
             
-            if (entity is CampaignMob campaignMob) {
-                campaignMob.Monsters.ForEach(m => {
-                    var unitPanel = Instantiate(unitPrefab, panel.transform);
-                    unitPanel.GetComponent<BattleMenuUnit>().SetUnit(m);
-                });
-            }
         }
         
         public void AutoBattle() {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Gangs.Core {
     public class UnitAttribute {
@@ -6,13 +7,7 @@ namespace Gangs.Core {
         public int BaseValue { get; set; }
         public List<UnitAttributeModifier> Modifiers { get; set; } = new();
         
-        public int GetValue() {
-            var value = BaseValue;
-            foreach (var modifier in Modifiers) {
-                value += modifier.Value;
-            }
-            return value;
-        }
+        public int GetValue() => BaseValue + Modifiers.Sum(modifier => modifier.Value);
     }
     
     public enum UnitAttributeType {

@@ -3,23 +3,23 @@
   "name": "Ganger",
   "baseAtrributes": [
     {
-      "name": "movement",
+      "attribute": "movement",
       "value": 4
     },
     {
-      "name": "aim",
+      "attribute": "aim",
       "value": 4
     },
     {
-      "name": "closeQuarters",
+      "attribute": "closeQuarters",
       "value": 4
     },
     {
-      "name": "hitPoints",
+      "attribute": "hitPoints",
       "value": 20
     },
     {
-      "name": "actionPoints",
+      "attribute": "actionPoints",
       "value": 2
     }
   ],

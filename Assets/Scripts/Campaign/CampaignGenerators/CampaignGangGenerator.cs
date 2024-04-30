@@ -1,15 +1,18 @@
 ﻿using Gangs.Data;
+using UnityEngine;
 
-namespace Gangs.Campaign.GangGenerator {
+namespace Gangs.Campaign.CampaignGenerators {
     public static class CampaignGangGenerator {
         public static CampaignGang GenerateGang(Faction faction) {
-            int[] levelOfUnits = {4, 2, 1, 1};
+            int[] levelOfUnits = {5, 2, 1, 1};
             var gang = new CampaignGang {
-                Name = faction.Name
+                Name = faction.Name,
+                Faction = faction
             };
             
             foreach (var t in levelOfUnits) {
-                var unit = CampaignUnitGenerator.GenerateUnit(faction, t);
+                var unitType = faction.Units[Random.Range(0, faction.Units.Count)];
+                var unit = CampaignUnitGenerator.GenerateUnit(faction, unitType, t);
                 gang.Units.Add(unit);
             }
             

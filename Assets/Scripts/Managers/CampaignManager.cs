@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Gangs.Campaign;
+using Gangs.Campaign.CampaignGenerators;
 using Gangs.Data;
 using Gangs.MainMenu;
 using UnityEngine;
@@ -26,19 +28,19 @@ namespace Gangs.Managers {
         
         private void Start() {
             var campaignData = new CampaignData {
-                CampaignGangs = new List<CampaignGangManager> {
-                    new() { BaseGang = Gang.All[0], IsPlayerControlled = true },
-                    new() { BaseGang = Gang.All[1], IsPlayerControlled = false }
+                CampaignGangManagers = new List<CampaignGangManager> {
+                    new() { Gang = CampaignGangGenerator.GenerateGang(Faction.All.Where(f => f.Playable).ToList()[0]), IsPlayerControlled = true },
+                    new() { Gang = CampaignGangGenerator.GenerateGang(Faction.All.Where(f => f.Playable).ToList()[1]), IsPlayerControlled = true }
                 },
                 MapSize = CampaignMapSize.Small
             };
             
             _campaignMap = new CampaignMap(campaignData, mapParent);
-            _gangs = campaignData.CampaignGangs;
+            _gangs = campaignData.CampaignGangManagers;
             
             CampaignUIManager.Instance.SetCampaignInfo(campaignData);
             CampaignUIManager.Instance.SetTurnNumberText(1);
-            CampaignUIManager.Instance.SetGangTurn(_gangs[0].BaseGang);
+            CampaignUIManager.Instance.SetGangTurn(_gangs[0].Gang);
             
             _currentGangManager = _gangs[0];
             StartTurn();
@@ -49,7 +51,7 @@ namespace Gangs.Managers {
         }
 
         public CampaignTerritory GetTerritory(CampaignSquad squad) {
-            return Instance._campaignMap.Territories.Find(t => t.Entities.Contains(squad));
+            return Instance._campaignMap.Territories.Find(t => t.Squads.Contains(squad));
         }
         
         public CampaignTerritory GetTerritory(CampaignTerritoryGameObject territoryGameObject) {
@@ -65,7 +67,7 @@ namespace Gangs.Managers {
         }
 
         public void Battle() {
-            var territory = _campaignMap.Territories.Find(t => t.Entities.Count > 1);
+            var territory = _campaignMap.Territories.Find(t => t.Squads.Count > 1);
             var battle = new CampaignBattle(territory, CampaignBattleType.Auto);
             Debug.Log("Battle");
         }

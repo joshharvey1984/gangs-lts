@@ -9,16 +9,16 @@ namespace Gangs.Campaign {
         public List<CampaignTerritory> Neighbours { get; set; } = new();
         public Territory Territory { get; set; }
         public Map Map { get; set; }
-        public CampaignGangManager ClaimedBy { get; set; }
+        public CampaignGang ClaimedBy { get; set; }
         public bool Headquarters { get; set; }
-        public List<ICampaignEntity> Entities { get; set; } = new();
+        public List<CampaignSquad> Squads { get; set; } = new();
         
         public CampaignTerritory(GameObject gameObject) {
             GameObject = gameObject.GetComponent<CampaignTerritoryGameObject>();
         }
         
-        public void AddEntity(ICampaignEntity entity) {
-            Entities.Add(entity);
+        public void AddEntity(CampaignSquad entity) {
+            Squads.Add(entity);
         }
         
         public void SetTerritory(Territory territory) {
@@ -26,10 +26,10 @@ namespace Gangs.Campaign {
             Map = Map.All[0];
         }
         
-        public void SetClaimedBy(CampaignGangManager gangManager, bool isHeadquarters = false) {
-            ClaimedBy = gangManager;
+        public void SetClaimedBy(CampaignGang gang, bool isHeadquarters = false) {
+            ClaimedBy = gang;
             Headquarters = isHeadquarters;
-            GameObject.SetColour(gangManager.BaseGang.Faction.Color);
+            GameObject.SetColour(gang.Faction.Color);
         }
         
         public void MouseEnter() {
@@ -37,7 +37,7 @@ namespace Gangs.Campaign {
         }
 
         public void SpawnEntities() {
-            Entities.ForEach(e => GameObject.SpawnEntity(e));
+            Squads.ForEach(e => GameObject.SpawnEntity(e));
         }
     }
 }

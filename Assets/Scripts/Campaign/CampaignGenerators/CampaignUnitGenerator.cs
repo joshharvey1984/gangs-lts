@@ -1,12 +1,10 @@
 ﻿using System.Linq;
 using Gangs.Core;
 using Gangs.Data;
-using UnityEngine;
 
-namespace Gangs.Campaign.GangGenerator {
+namespace Gangs.Campaign.CampaignGenerators {
     public static class CampaignUnitGenerator {
-        public static CampaignUnit GenerateUnit(Faction faction, int level) {
-            var unitType = faction.Units[Random.Range(0, faction.Units.Count)];
+        public static CampaignUnit GenerateUnit(Faction faction, Unit unitType, int level) {
             var unit = new CampaignUnit {
                 Class = unitType.Name,
                 Name = unitType.Name,
@@ -20,7 +18,7 @@ namespace Gangs.Campaign.GangGenerator {
             var unitModifiers = unitType.GetModifiers(level);
             foreach (var modifier in unitModifiers) {
                 if (modifier.Type == ModifierType.AttributeChange) {
-                    var attribute = unit.Attributes.FirstOrDefault(x => x.Type == modifier.GetAttributeChange().AttributeType);
+                    var attribute = unit.GetAttribute(modifier.GetAttributeChange().AttributeType);
                     attribute!.Modifiers.Add(new UnitAttributeModifier {
                         Source = new UnitAttributeModifierSource {
                             Type = UnitAttributeModifierSourceType.Individual,
@@ -34,7 +32,7 @@ namespace Gangs.Campaign.GangGenerator {
             
             var factionModifiers = faction.AttributeModifiers;
             foreach (var modifier in factionModifiers) {
-                var attribute = unit.Attributes.FirstOrDefault(x => x.Type == modifier.AttributeType);
+                var attribute = unit.GetAttribute(modifier.AttributeType);
                 attribute!.Modifiers.Add(new UnitAttributeModifier {
                     Source = new UnitAttributeModifierSource {
                         Type = UnitAttributeModifierSourceType.Faction,

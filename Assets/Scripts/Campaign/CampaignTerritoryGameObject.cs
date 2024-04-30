@@ -82,7 +82,7 @@ namespace Gangs.Campaign
             return neighbours;
         }
 
-        public void SpawnEntity(ICampaignEntity campaignEntity) {
+        public void SpawnEntity(CampaignSquad campaignEntity) {
             var entity = Instantiate(entityPrefab, transform.position, Quaternion.identity);
             entity.name = campaignEntity.Name;
             campaignEntity.GameObject = entity.GetComponent<CampaignEntityGameObject>();

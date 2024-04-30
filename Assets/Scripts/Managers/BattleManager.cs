@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Gangs.AI;
 using Gangs.Battle;
-using Gangs.Data;
 using Gangs.GameObjects;
 using Gangs.Grid;
-using Gangs.UI;
 using UnityEngine;
 using Tile = Gangs.Grid.Tile;
 using Wall = Gangs.Grid.Wall;
@@ -80,32 +78,32 @@ namespace Gangs.Managers {
             
             Squads = new List<BattleSquad>();
             
-            CreateSquad(Gang.All[0], spawnPositions1, SquadOneWeightings, Color.blue, SquadOnePlayerControlled);
-            CreateSquad(Gang.All[1], spawnPositions2, SquadTwoWeightings, Color.red, SquadTwoPlayerControlled);
+            //CreateSquad(Gang.All[0], spawnPositions1, SquadOneWeightings, Color.blue, SquadOnePlayerControlled);
+            //CreateSquad(Gang.All[1], spawnPositions2, SquadTwoWeightings, Color.red, SquadTwoPlayerControlled);
         }
         
-        private void CreateSquad(Gang gang, IList<GridPosition> spawnPositions, EnemyAIWeightings aiWeightings = default, Color color = default, bool playerControlled = false) {
-            var squad = playerControlled ? (BattleSquad) new PlayerBattleSquad() : new AIBattleSquad(aiWeightings);
-            Squads.Add(squad);
-            
-            foreach (var fighter in gang.Fighters) {
-                var position = spawnPositions[0];
-                spawnPositions.RemoveAt(0);
-                squad.Units.Add(CreateUnit(fighter, position,playerControlled, color));
-            }
-        }
+        // private void CreateSquad(Gang gang, IList<GridPosition> spawnPositions, EnemyAIWeightings aiWeightings = default, Color color = default, bool playerControlled = false) {
+        //     var squad = playerControlled ? (BattleSquad) new PlayerBattleSquad() : new AIBattleSquad(aiWeightings);
+        //     Squads.Add(squad);
+        //     
+        //     foreach (var fighter in gang.Fighters) {
+        //         var position = spawnPositions[0];
+        //         spawnPositions.RemoveAt(0);
+        //         squad.Units.Add(CreateUnit(fighter, position,playerControlled, color));
+        //     }
+        // }
         
-        private BattleUnit CreateUnit(Unit unit, GridPosition position, bool isPlayerControlled, Color? color = default) {
-            var unit = new BattleUnit(fighter) {
-                UnitGameObject = SpawnUnit(position),
-                GridUnit = Grid.AddUnit(position),
-                IsPlayerControlled = isPlayerControlled
-            };
-            unit.UnitGameObject.UnitNewPosition += MoveUnit;
-            unit.OnSelected += abilityUIPanel.GetComponent<AbilityButtonBar>().ShowAbilityButtons;
-            unit.UnitGameObject.modelObject.GetComponent<Renderer>().material.color = color ?? Color.white;
-            return unit;
-        }
+        // private BattleUnit CreateUnit(Unit unit, GridPosition position, bool isPlayerControlled, Color? color = default) {
+        //     var unit = new BattleUnit(fighter) {
+        //         UnitGameObject = SpawnUnit(position),
+        //         GridUnit = Grid.AddUnit(position),
+        //         IsPlayerControlled = isPlayerControlled
+        //     };
+        //     unit.UnitGameObject.UnitNewPosition += MoveUnit;
+        //     unit.OnSelected += abilityUIPanel.GetComponent<AbilityButtonBar>().ShowAbilityButtons;
+        //     unit.UnitGameObject.modelObject.GetComponent<Renderer>().material.color = color ?? Color.white;
+        //     return unit;
+        // }
         
         private UnitGameObject SpawnUnit(GridPosition pos) {
             var soldier = Instantiate(soldierPrefab, new Vector3(pos.X, pos.Y, pos.Z), Quaternion.identity);

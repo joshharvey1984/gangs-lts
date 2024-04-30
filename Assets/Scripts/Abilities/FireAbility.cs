@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle;
 using Gangs.Calculators;
 using Gangs.Grid;
 using Gangs.Managers;

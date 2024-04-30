@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle;
 using UnityEngine;
 
 namespace Gangs.UI {

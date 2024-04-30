@@ -12,7 +12,7 @@ namespace Gangs.Campaign.UI {
         
         private readonly List<GameObject> _gangPanelInstance = new();
         
-        public void AddGangPanel(Gang gang) {
+        public void AddGangPanel(CampaignGang gang) {
             var gangPanelInstance = Instantiate(gangPanelPrefab, gangPanel.transform);
             gangPanelInstance.GetComponent<CampaignInfoGangIcon>().SetGang(gang);
             _gangPanelInstance.Add(gangPanelInstance);
@@ -22,7 +22,7 @@ namespace Gangs.Campaign.UI {
             turnText.GetComponent<TMPro.TextMeshProUGUI>().text = $"Turn {turn}";
         }
         
-        public void SetGangTurn(Gang gang) {
+        public void SetGangTurn(CampaignGang gang) {
             foreach (var gangIcon in _gangPanelInstance) {
                 gangIcon.GetComponent<CampaignInfoGangIcon>()
                     .SetGangTurn(gangIcon.GetComponent<CampaignInfoGangIcon>().Gang == gang);

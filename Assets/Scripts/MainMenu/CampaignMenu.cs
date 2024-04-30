@@ -14,26 +14,28 @@ namespace Gangs.MainMenu {
         
         private void OnEnable() {
             _campaignData = new CampaignData {
-                CampaignGangs = new List<CampaignGangManager>()
+                CampaignGangManagers = new List<CampaignGangManager>() {
+                    
+                },
+                MapSize = CampaignMapSize.Small
             };
 
-            AddGang(Gang.All[0], true);
-            AddGang(Gang.All[1]);
+            
         }
         
         public void StartGame() {
             GameManager.Instance.StartCampaign(_campaignData);
         }
 
-        private void AddGang(Gang gang, bool isPlayerControlled = false) {
-            _campaignData.CampaignGangs.Add(new CampaignGangManager { BaseGang = gang, IsPlayerControlled = isPlayerControlled });
-            var gangObject = Instantiate(gangPrefab, gangListPanel.transform);
-            gangObject.GetComponent<CampaignGangPanel>().SetGang(gang, isPlayerControlled);
-        }
+        // private void AddGang(Faction faction, bool isPlayerControlled = false) {
+        //     _campaignData.CampaignFactions.Add(new Faction.All[0], IsPlayerControlled = isPlayerControlled });
+        //     var gangObject = Instantiate(gangPrefab, gangListPanel.transform);
+        //     gangObject.GetComponent<CampaignGangPanel>().SetGang(gang, isPlayerControlled);
+        // }
     }
     
     public struct CampaignData {
-        public List<CampaignGangManager> CampaignGangs;
+        public List<CampaignGangManager> CampaignGangManagers;
         public CampaignMapSize MapSize;
     }
     
