@@ -13,6 +13,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: HalfWall
       objectReference: {fileID: 0}
+    - target: {fileID: 2074251835380773245, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: coverType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2074251835380773245, guid: e4a368d6e0583564e99f926d80be506e,
+        type: 3}
+      propertyPath: lineOfSightBlocker
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3943058606537566833, guid: e4a368d6e0583564e99f926d80be506e,
         type: 3}
       propertyPath: m_LocalScale.x

@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using Gangs.Core;
 using Gangs.Data.DTO;
 
 namespace Gangs.Data {
     public class Map : Entity {
-        public static List<Map> All { get; set; } = new();
+        public static List<Map> All { get; } = new();
         
-        public List<Tile> Tiles { get; set; }
-        public List<Wall> Walls { get; set; }
-        public List<Ladder> Ladders { get; set; }
+        public List<Tile> Tiles { get; private set; }
+        public List<Wall> Walls { get; private set; }
+        public List<Ladder> Ladders { get; private set; }
         
         public Map(EntityDto dto) : base(dto) {
             All.Add(this);
@@ -29,7 +30,9 @@ namespace Gangs.Data {
                 Walls.Add(new Wall {
                     X = dtoWall.x,
                     Y = dtoWall.y,
-                    Z = dtoWall.z
+                    Z = dtoWall.z,
+                    CoverType = (CoverType)dtoWall.coverType,
+                    LineOfSightBlocker = dtoWall.lineOfSightBlocker
                 });
             }
             foreach (var dtoLadder in dto.ladders) {
@@ -53,6 +56,8 @@ namespace Gangs.Data {
         public float X { get; set; }
         public int Y { get; set; }
         public float Z { get; set; }
+        public CoverType CoverType { get; set; }
+        public bool LineOfSightBlocker { get; set; }
     }
     
     public class Ladder {

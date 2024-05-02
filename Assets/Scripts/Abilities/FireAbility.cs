@@ -10,7 +10,7 @@ namespace Gangs.Abilities {
     public class FireAbility : Ability {
         private List<BattleUnit> _targets;
         private Tile _targetTile;
-        public FireAbility(BattleUnit battleUnit) : base(battleUnit) {
+        public FireAbility(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) : base(battleUnit, battleSquad, battle) {
             ButtonText = "Fire";
             TargetingType = TargetingType.EnemiesInLineOfSight;
             EndTurnOnUse = true;
@@ -19,10 +19,10 @@ namespace Gangs.Abilities {
         public override void Select() {
             base.Select();
             
-            _targets = BattleUnit.GetEnemiesInLineOfSight();
+            //_targets = BattleUnit.GetEnemiesInLineOfSight();
             foreach (var enemy in _targets) {
                 var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemy.GridUnit);
-                GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
+                //GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
             }
 
             if (BattleUnit.IsPlayerControlled) {
@@ -43,9 +43,9 @@ namespace Gangs.Abilities {
         private void TileHovered(Tile tile) {
             if (BattleUnit.ActionPointsRemaining <= 0) return;
             var targetTiles = _targets.Select(t => GridManager.Instance.Grid.FindGridUnit(t.GridUnit)).ToList();
-            targetTiles.ForEach(t => GridVisualManager.Instance.ColorTile(t, Color.red));
+            //targetTiles.ForEach(t => GridVisualManager.Instance.ColorTile(t, Color.red));
             if (targetTiles.Contains(tile)) {
-                GridVisualManager.Instance.ColorTile(tile, Color.yellow);
+                //GridVisualManager.Instance.ColorTile(tile, Color.yellow);
                 var toHit = ToHit(tile);
             }
         }
@@ -64,7 +64,7 @@ namespace Gangs.Abilities {
                 var toHit = ToHit(_targetTile);
                 if (toHitRoll <= toHit) {
                     var targetGridUnit = _targetTile.GridUnit;
-                    var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+                    var targetUnit = Battle.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
                     var damage = 10;
                     Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Unit.Name}");
                     Debug.Log($"{targetUnit.Unit.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
@@ -74,9 +74,9 @@ namespace Gangs.Abilities {
                     Debug.Log("Miss!");
                 }
             }
-            catch (EndGameException) {
+            catch (Battle.Battle.EndGameException) {
                 Deselect();
-                BattleManager.Instance.EndGame();
+                Battle.EndGame();
                 return;
             }
             
@@ -85,9 +85,9 @@ namespace Gangs.Abilities {
         
         public override int ToHit(Tile targetTile) {
             // get unit tile
-            var unit = BattleManager.Instance.BattleSquadTurn.SelectedBattleUnit;
+            var unit = Battle.SelectedBattleUnit;
             var targetGridUnit = targetTile.GridUnit;
-            var targetUnit = BattleManager.Instance.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+            var targetUnit = Battle.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
             var unitTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
             
             

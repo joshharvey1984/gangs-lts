@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gangs.AI;
+using Gangs.Battle.AI;
+using Gangs.Campaign;
 using Gangs.Grid;
 using Gangs.Managers;
 
@@ -15,6 +18,9 @@ namespace Gangs.Battle {
         public bool AllUnitsTurnTaken => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
         
         public Dictionary<BattleUnit, Tile> EnemyLastSeen = new();
+        
+        public event Action OnUnitTurnTaken;
+        public event Action OnAllUnitsTurnTaken;
 
         private void SetSelectedUnit(BattleUnit battleUnit) {
             SelectedBattleUnit?.SetSelected(false);
@@ -27,7 +33,7 @@ namespace Gangs.Battle {
             if (battleUnit == null) battleUnit = SelectedBattleUnit;
             
             if (AllUnitsTurnTaken) {
-                BattleManager.Instance.EndSquadTurn();
+                OnAllUnitsTurnTaken?.Invoke();
                 return;
             }
             
@@ -42,17 +48,17 @@ namespace Gangs.Battle {
             
             SetSelectedUnit(Units[index]);
             
-            if (SelectedBattleUnit.IsPlayerControlled)
-                InputManager.Instance.SelectUnit(SelectedBattleUnit);
-            else
-                EnemyAI.TakeTurn(SelectedBattleUnit);
+            // if (SelectedBattleUnit.IsPlayerControlled)
+            //     InputManager.Instance.SelectUnit(SelectedBattleUnit);
+            // else
+            //     EnemyAI.TakeTurn(SelectedBattleUnit);
         }
         
         public void EndUnitTurn() {
             SelectedBattleUnit.TurnTaken = true;
             SelectedBattleUnit.SetSelected(false); 
             ActivatedUnit = false;
-            BattleManager.Instance.EndSquadTurn();
+            OnUnitTurnTaken?.Invoke();
         }
 
         public void ResetTurns() {
@@ -66,9 +72,9 @@ namespace Gangs.Battle {
     public class PlayerBattleSquad : BattleSquad { }
     
     public class AIBattleSquad : BattleSquad {
-        public EnemyAIWeightings Weightings;
+        public BattleAIWeightings Weightings;
         
-        public AIBattleSquad(EnemyAIWeightings weightings) {
+        public AIBattleSquad(BattleAIWeightings weightings, CampaignSquad entity) {
             Weightings = weightings;
         }
     }

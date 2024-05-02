@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Gangs.Abilities;
 using Gangs.Campaign;
 using Gangs.Core;
@@ -30,14 +29,15 @@ namespace Gangs.Battle {
         
         public event Action<BattleUnit> OnDeselected;
         public event Action<BattleUnit> OnSelected; 
+        public event Action<BattleUnit> OnUnitEliminated;
         
         public BattleUnit(CampaignUnit unit) {
             Unit = unit;
             ActionPointsRemaining = GetAttributeValue(UnitAttributeType.ActionPoints);
-            Abilities = new Ability[] {
-                new MoveAbility(this),
-                new FireAbility(this)
-            };
+            // Abilities = new Ability[] {
+            //     new MoveAbility(this),
+            //     new FireAbility(this)
+            // };
         }
 
         public int GetAttributeValue(UnitAttributeType attributeType) => Unit.GetAttribute(attributeType).GetValue();
@@ -75,7 +75,7 @@ namespace Gangs.Battle {
             Status = Status.Eliminated;
             GridManager.Instance.RemoveGridUnit(GridUnit);
             UnitGameObject.Eliminate();
-            BattleManager.Instance.CheckForEndGame();
+            OnUnitEliminated?.Invoke(this);
         }
         
         public int GetCurrentHitPoints() => GetAttributeValue(UnitAttributeType.HitPoints) - DamageTaken;
@@ -84,17 +84,17 @@ namespace Gangs.Battle {
             ability.Select();
         }
         
-        public List<BattleUnit> GetEnemiesInLineOfSight() {
-            var units = new List<BattleUnit>();
-            var lineOfSight = BattleManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
-            var activeEnemySquads = BattleManager.Instance.Squads.Where(s => s != BattleManager.Instance.BattleSquadTurn).ToList();
-            var activeEnemyUnits = activeEnemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
-            foreach (var activeEnemy in activeEnemyUnits) {
-                var enemyTile = BattleManager.Instance.GetSoldierTile(activeEnemy);
-                if (lineOfSight.Contains(enemyTile.GridPosition)) units.Add(activeEnemy);
-            }
-            return units;
-        }
+        // public List<BattleUnit> GetEnemiesInLineOfSight() {
+        //     var units = new List<BattleUnit>();
+        //     var lineOfSight = BattleManager.Instance.GetSoldierTile(this).LineOfSightGridPositions;
+        //     var activeEnemySquads = BattleManager.Instance.Squads.Where(s => s != BattleManager.Instance.BattleSquadTurn).ToList();
+        //     var activeEnemyUnits = activeEnemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
+        //     foreach (var activeEnemy in activeEnemyUnits) {
+        //         var enemyTile = BattleManager.Instance.GetSoldierTile(activeEnemy);
+        //         if (lineOfSight.Contains(enemyTile.GridPosition)) units.Add(activeEnemy);
+        //     }
+        //     return units;
+        // }
     }
     
     public enum Status {

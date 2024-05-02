@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
-using Gangs.AI;
 using Gangs.Battle;
+using Gangs.Battle.AI;
 using Gangs.Calculators;
-using Gangs.GameObjects;
+using Gangs.Core;
 using Gangs.Grid;
 using Gangs.Managers;
 using Gangs.UI;
-using UnityEngine;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
+        protected readonly Battle.Battle Battle;
         protected readonly BattleUnit BattleUnit;
+        protected readonly BattleSquad BattleSquad;
         public string ButtonText;
         protected TargetingType TargetingType;
         protected bool EndTurnOnUse = false;
 
-        protected Ability(BattleUnit battleUnit) {
+        protected Ability(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) {
             BattleUnit = battleUnit;
+            BattleSquad = battleSquad;
+            Battle = battle;
         }
         
         public virtual void Select() {
@@ -29,7 +32,7 @@ namespace Gangs.Abilities {
         }
 
         public virtual void Execute() {
-            BattleManager.Instance.BattleSquadTurn.ActivatedUnit = true;
+            BattleSquad.ActivatedUnit = true;
             BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
@@ -48,7 +51,7 @@ namespace Gangs.Abilities {
         }
 
         private ToHitModifier CheckCoverModifier(Tile fromTile, Tile targetTile) {
-            var coverType = GridManager.Instance.CheckTileCover(fromTile, targetTile);
+            var coverType = Battle.Grid.GetCoverType(fromTile.GridPosition, targetTile.GridPosition);
             if (coverType == CoverType.Full) return new ToHitModifier { ModifierType = ToHitModifierType.TargetInCover, Modifier = -20, Description = "Target in full cover" };
             if (coverType == CoverType.Half) return new ToHitModifier { ModifierType = ToHitModifierType.TargetInCover, Modifier = -10, Description = "Target in half cover" };
             return null;
@@ -67,12 +70,12 @@ namespace Gangs.Abilities {
         protected void Finish() {
             if (EndTurnOnUse || BattleUnit.ActionPointsRemaining <= 0) {
                 GridVisualManager.Instance.ResetAllVisuals();
-                BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
+                BattleSquad.EndUnitTurn();
                 return;
             }
 
             if (!BattleUnit.IsPlayerControlled && BattleUnit.ActionPointsRemaining > 0) {
-                EnemyAI.TakeTurn(BattleUnit);
+                EnemyAI.TakeTurn(BattleUnit, Battle);
             }
             
             BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();

@@ -219,8 +219,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!4 &203844589
 Transform:
   m_ObjectHideFlags: 0
@@ -283,6 +287,8 @@ MonoBehaviour:
   tilePrefab: {fileID: 3215530564756705941, guid: 030ca478a5cb81240a76ee1bdc78190c,
     type: 3}
   wallPrefab: {fileID: 977950834055180911, guid: e4a368d6e0583564e99f926d80be506e,
+    type: 3}
+  halfWallPrefab: {fileID: 1395975343611246218, guid: bd9337e062890994e83222955a08653e,
     type: 3}
   ladderPrefab: {fileID: 9176165691699579343, guid: cde164b1bd42d3e4ea8308d530af9ff2,
     type: 3}

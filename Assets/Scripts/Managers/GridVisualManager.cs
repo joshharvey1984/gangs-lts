@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Gangs.Abilities.Structs;
-using Gangs.GameObjects;
 using Gangs.Grid;
 using Gangs.UI;
 using UnityEngine;
@@ -57,36 +56,36 @@ namespace Gangs.Managers {
         }
         
         public void DrawTileDetails(Tile tile) {
-            ClearTileDetails();
-            
-            if (tile == null) return;
-            foreach (var wall in tile.Walls) {
-                var wallGameObject = BattleManager.Instance.GetWallGameObject(wall.Value);
-                if (wallGameObject == null) continue;
-                var wallScript = wallGameObject.GetComponent<WallGameObject>();
-                if (wallScript.CoverType == CoverType.None) continue;
-                var indicatorPos = wallGameObject.transform.position;
-                var yPos = tile.GridPosition.Y + 0.5f;
-                indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.15f);
-                indicatorPos.y = yPos;
-                var indicator = Instantiate(wallScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
-                if (wall.Key is CardinalDirection.East or CardinalDirection.West) {
-                    indicator.transform.Rotate(Vector3.up, 90);
-                }
-                indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
-                _coverIndicators.Add(indicator);
-            }
-
-            if (DebugManager.Instance.DebugMode) {
-                // draw line of sight
-                var lineOfSight = tile.LineOfSightGridPositions;
-                foreach (var pos in lineOfSight) {
-                    var tileGameObject = BattleManager.Instance.GetTileGameObject(pos);
-                    if (tileGameObject == null) continue;
-                    var indicator = Instantiate(debugLosIndicatorPrefab, tileGameObject.transform.position, Quaternion.identity);
-                    _debugLosIndicators.Add(indicator);
-                }
-            }
+            // ClearTileDetails();
+            //
+            // if (tile == null) return;
+            // foreach (var wall in tile.Walls) {
+            //     var wallGameObject = BattleManager.Instance.GetWallGameObject(wall.Value);
+            //     if (wallGameObject == null) continue;
+            //     var wallScript = wallGameObject.GetComponent<WallGameObject>();
+            //     if (wallScript.CoverType == CoverType.None) continue;
+            //     var indicatorPos = wallGameObject.transform.position;
+            //     var yPos = tile.GridPosition.Y + 0.5f;
+            //     indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.15f);
+            //     indicatorPos.y = yPos;
+            //     var indicator = Instantiate(wallScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
+            //     if (wall.Key is CardinalDirection.East or CardinalDirection.West) {
+            //         indicator.transform.Rotate(Vector3.up, 90);
+            //     }
+            //     indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
+            //     _coverIndicators.Add(indicator);
+            // }
+            //
+            // if (DebugManager.Instance.DebugMode) {
+            //     // draw line of sight
+            //     var lineOfSight = tile.LineOfSightGridPositions;
+            //     foreach (var pos in lineOfSight) {
+            //         var tileGameObject = BattleManager.Instance.GetTileGameObject(pos);
+            //         if (tileGameObject == null) continue;
+            //         var indicator = Instantiate(debugLosIndicatorPrefab, tileGameObject.transform.position, Quaternion.identity);
+            //         _debugLosIndicators.Add(indicator);
+            //     }
+            // }
         }
 
         private void ClearTileDetails() {
@@ -137,10 +136,10 @@ namespace Gangs.Managers {
         public void DrawMovementPath(List<Tile> tiles) => _movePathLine.DrawMovementPath(tiles);
         public void ConvertMovementPathToWayPoint() => _movePathLine.ConvertMovementPathToWayPoint();
 
-        public void ColorTile(Tile tile, Color color) {
-            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
-            tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
-        }
+        // public void ColorTile(Tile tile, Color color) {
+        //     var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
+        //     tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
+        // }
         
         public void ClearAllTileColors() {
             foreach (var go in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -148,17 +147,17 @@ namespace Gangs.Managers {
             }
         }
 
-        public void NumberTile(Tile tile, float expectedDamageDifferential) {
-            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
-            var text = Instantiate(new GameObject(), tileGameObject.transform);
-            text.transform.position = tileGameObject.transform.position;
-            text.transform.rotation = Quaternion.identity;
-            text.transform.Rotate(Vector3.right, 90);
-            text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            var textMesh = text.AddComponent<TextMesh>();
-            textMesh.text = expectedDamageDifferential.ToString("F1");
-            _tileNumbers.Add(text);
-        }
+        // public void NumberTile(Tile tile, float expectedDamageDifferential) {
+        //     var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
+        //     var text = Instantiate(new GameObject(), tileGameObject.transform);
+        //     text.transform.position = tileGameObject.transform.position;
+        //     text.transform.rotation = Quaternion.identity;
+        //     text.transform.Rotate(Vector3.right, 90);
+        //     text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //     var textMesh = text.AddComponent<TextMesh>();
+        //     textMesh.text = expectedDamageDifferential.ToString("F1");
+        //     _tileNumbers.Add(text);
+        // }
 
         public void DeleteAllTileNumbers() {
             foreach (var number in _tileNumbers) {

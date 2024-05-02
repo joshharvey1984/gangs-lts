@@ -1,6 +1,6 @@
 namespace Gangs.AI {
     [System.Serializable]
-    public struct EnemyAIWeightings {
+    public struct BattleAIWeightings {
         public float RemainingActionPointWeight;
         public float FullCoverWeight;
         public float HalfCoverWeight;

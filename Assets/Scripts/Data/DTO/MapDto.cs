@@ -23,6 +23,8 @@ namespace Gangs.Data.DTO {
         public float x;
         public int y;
         public float z;
+        public int coverType;
+        public bool lineOfSightBlocker;
     }
     
     [Serializable]

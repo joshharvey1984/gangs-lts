@@ -57,17 +57,17 @@ namespace Gangs.Managers {
                 _camera.transform.Translate(Vector3.right * (Time.deltaTime * 10));
             }
             
-            if (Input.GetKeyUp(KeyCode.Tab)) {
-                BattleManager.Instance.NextUnit();
-            }
-            
-            if (Input.GetKeyUp(KeyCode.Space)) {
-                BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
-            }
-            
-            if (Input.GetKeyUp(KeyCode.Escape)) {
-                BattleManager.Instance.EndGame();
-            }
+            // if (Input.GetKeyUp(KeyCode.Tab)) {
+            //     BattleManager.Instance.NextUnit();
+            // }
+            //
+            // if (Input.GetKeyUp(KeyCode.Space)) {
+            //     BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
+            // }
+            //
+            // if (Input.GetKeyUp(KeyCode.Escape)) {
+            //     BattleManager.Instance.EndGame();
+            // }
 
             if (Input.GetMouseButtonUp(0)) {
                 LeftClick();
@@ -94,28 +94,28 @@ namespace Gangs.Managers {
             if (tile == null) return;
             OnLeftClickTile?.Invoke(tile);
             
-            if (tile.GridUnit != null) {
-                ClickOnUnit();
-            }
+            // if (tile.GridUnit != null) {
+            //     ClickOnUnit();
+            // }
         }
         
         private void RightClick() {
             OnRightClick?.Invoke();
         }
         
-        private void ClickOnUnit() {
-            var unit = BattleManager.Instance.FindUnit(HoverTile.GridUnit);
-            if (unit == null) return;
-            if (!unit.IsPlayerControlled) return;
-            if (unit.TurnTaken) return;
-            if (BattleManager.Instance.ActivatedUnit) return;
-            SelectUnit(unit);
-        }
-
-        public void SelectUnit(BattleUnit battleUnit) {
-            if (battleUnit == BattleManager.Instance.SelectedBattleUnit) return;
-            BattleManager.Instance.SelectedBattleUnit.SelectedAbility?.Deselect();
-        }
+        // private void ClickOnUnit() {
+        //     var unit = BattleManager.Instance.FindUnit(HoverTile.GridUnit);
+        //     if (unit == null) return;
+        //     if (!unit.IsPlayerControlled) return;
+        //     if (unit.TurnTaken) return;
+        //     if (BattleManager.Instance.ActivatedUnit) return;
+        //     SelectUnit(unit);
+        // }
+        //
+        // public void SelectUnit(BattleUnit battleUnit) {
+        //     if (battleUnit == BattleManager.Instance.SelectedBattleUnit) return;
+        //     BattleManager.Instance.SelectedBattleUnit.SelectedAbility?.Deselect();
+        // }
         
         private void CheckHoverTile() {
             var tile = GetMouseTile();

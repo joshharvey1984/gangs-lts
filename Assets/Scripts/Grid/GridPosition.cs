@@ -84,4 +84,21 @@ namespace Gangs.Grid {
 
         #endregion
     }
+    
+    public static class GridPositionExtensions {
+        public static CardinalDirection GetDirectionFromOther(this GridPosition a, GridPosition b) {
+            var dx = Math.Abs(a.X - b.X);
+            var dz = Math.Abs(a.Z - b.Z);
+            if (dx == 0 && dz == 0) return CardinalDirection.None;
+            if (dx > dz) {
+                return a.X > b.X ? CardinalDirection.West : CardinalDirection.East;
+            }
+            
+            return a.Z > b.Z ? CardinalDirection.South : CardinalDirection.North;
+        }
+        
+        public static GridPosition GetDirectionGridPosition(this GridPosition gridPosition, CardinalDirection direction) {
+            return GridPosition.GridPositionFromDirection(gridPosition, direction);
+        }
+    }
 }

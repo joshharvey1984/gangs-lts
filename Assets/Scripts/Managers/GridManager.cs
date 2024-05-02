@@ -1,5 +1,4 @@
 ﻿using System;
-using Gangs.GameObjects;
 using Gangs.Grid;
 using UnityEngine;
 
@@ -17,90 +16,90 @@ namespace Gangs.Managers {
             }
         }
         
-        public void SetupGrid() {
-            SetupTiles();
-            SetupWalls();
-            SetupLadders();
-        }
+        // public void SetupGrid() {
+        //     SetupTiles();
+        //     SetupWalls();
+        //     SetupLadders();
+        // }
 
-        private void SetupTiles() {
-            var tiles = GameObject.FindGameObjectsWithTag($"Tile");
-            
-            var maxX = 0;
-            var maxY = 0;
-            var maxZ = 0;
-            foreach (var tile in tiles) {
-                var tilePosition = tile.transform.position;
-                if (tilePosition.x > maxX) {
-                    maxX = (int)tilePosition.x;
-                }
-                if (tilePosition.y > maxY) {
-                    maxY = (int)tilePosition.y;
-                }
-                if (tilePosition.z > maxZ) {
-                    maxZ = (int)tilePosition.z;
-                }
-            }
-            
-            Grid = new Grid.Grid(maxX + 1, maxY + 1, maxZ + 1);
-            
-            foreach (var tile in tiles) {
-                var position = tile.transform.position;
-                Grid.AddTile(new GridPosition((int)position.x, (int)position.y, (int)position.z));
-            }
-        }
+        // private void SetupTiles() {
+        //     var tiles = GameObject.FindGameObjectsWithTag($"Tile");
+        //     
+        //     var maxX = 0;
+        //     var maxY = 0;
+        //     var maxZ = 0;
+        //     foreach (var tile in tiles) {
+        //         var tilePosition = tile.transform.position;
+        //         if (tilePosition.x > maxX) {
+        //             maxX = (int)tilePosition.x;
+        //         }
+        //         if (tilePosition.y > maxY) {
+        //             maxY = (int)tilePosition.y;
+        //         }
+        //         if (tilePosition.z > maxZ) {
+        //             maxZ = (int)tilePosition.z;
+        //         }
+        //     }
+        //     
+        //     Grid = new Grid.Grid(maxX + 1, maxY + 1, maxZ + 1);
+        //     
+        //     foreach (var tile in tiles) {
+        //         var position = tile.transform.position;
+        //         Grid.AddTile(new GridPosition((int)position.x, (int)position.y, (int)position.z));
+        //     }
+        // }
+        //
+        // private void SetupLadders() {
+        //     var ladders = GameObject.FindGameObjectsWithTag($"Ladder");
+        //     foreach (var ladder in ladders) {
+        //         var ladderPosition = ladder.transform.position;
+        //         
+        //         var upperLadderPosition = ladder.transform.rotation.eulerAngles.y switch {
+        //             0 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z + 1),
+        //             180 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z - 1),
+        //             90 => new Vector3(ladderPosition.x + 1, ladderPosition.y + 1, ladderPosition.z),
+        //             270 => new Vector3(ladderPosition.x - 1, ladderPosition.y + 1, ladderPosition.z),
+        //             _ => new Vector3()
+        //         };
+        //
+        //         var ladderGridPosition = new GridPosition(ladderPosition);
+        //         var upperLadderGridPosition = new GridPosition(upperLadderPosition);
+        //         
+        //         Grid.AddLadder(ladderGridPosition, upperLadderGridPosition);
+        //     }
+        // }
+        //
+        // private void SetupWalls() {
+        //     var wallGameObjects = GameObject.FindGameObjectsWithTag($"Wall");
+        //     foreach (var wallGameObject  in wallGameObjects) {
+        //         var wallScript = wallGameObject.GetComponent<WallGameObject>();
+        //         var wallPosition = wallGameObject.transform.position;
+        //         if (Math.Abs(wallPosition.z % 1 - 0.5f) < 0.01f) {
+        //             var wallGridPosition = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z + 0.5f));
+        //             var wallGridPosition2 = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z - 0.5f));
+        //             wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
+        //         }
+        //         else {
+        //             var wallGridPosition = new GridPosition((int)(wallPosition.x - 0.5f), (int)wallPosition.y, (int)wallPosition.z);
+        //             var wallGridPosition2 = new GridPosition((int)(wallPosition.x + 0.5f), (int)wallPosition.y, (int)wallPosition.z);
+        //             wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
+        //         }
+        //     }
+        // }
 
-        private void SetupLadders() {
-            var ladders = GameObject.FindGameObjectsWithTag($"Ladder");
-            foreach (var ladder in ladders) {
-                var ladderPosition = ladder.transform.position;
-                
-                var upperLadderPosition = ladder.transform.rotation.eulerAngles.y switch {
-                    0 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z + 1),
-                    180 => new Vector3(ladderPosition.x, ladderPosition.y + 1, ladderPosition.z - 1),
-                    90 => new Vector3(ladderPosition.x + 1, ladderPosition.y + 1, ladderPosition.z),
-                    270 => new Vector3(ladderPosition.x - 1, ladderPosition.y + 1, ladderPosition.z),
-                    _ => new Vector3()
-                };
-
-                var ladderGridPosition = new GridPosition(ladderPosition);
-                var upperLadderGridPosition = new GridPosition(upperLadderPosition);
-                
-                Grid.AddLadder(ladderGridPosition, upperLadderGridPosition);
-            }
-        }
-        
-        private void SetupWalls() {
-            var wallGameObjects = GameObject.FindGameObjectsWithTag($"Wall");
-            foreach (var wallGameObject  in wallGameObjects) {
-                var wallScript = wallGameObject.GetComponent<WallGameObject>();
-                var wallPosition = wallGameObject.transform.position;
-                if (Math.Abs(wallPosition.z % 1 - 0.5f) < 0.01f) {
-                    var wallGridPosition = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z + 0.5f));
-                    var wallGridPosition2 = new GridPosition((int)wallPosition.x, (int)wallPosition.y, (int)(wallPosition.z - 0.5f));
-                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
-                }
-                else {
-                    var wallGridPosition = new GridPosition((int)(wallPosition.x - 0.5f), (int)wallPosition.y, (int)wallPosition.z);
-                    var wallGridPosition2 = new GridPosition((int)(wallPosition.x + 0.5f), (int)wallPosition.y, (int)wallPosition.z);
-                    wallScript.Wall = Grid.AddWall(wallGridPosition, wallGridPosition2, wallScript.LineOfSightBlocker);
-                }
-            }
-        }
-
-        public CoverType CheckTileCover(Tile fromTile, Tile targetTile) {
-            var coverType = CoverType.None;
-            foreach (var wall in targetTile.Walls) {
-                if (GridPosition.CheckDirection(targetTile.GridPosition, fromTile.GridPosition, wall.Key)) {
-                    var wallCoverType = BattleManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
-                    if (wallCoverType > coverType) {
-                        coverType = wallCoverType;
-                    }
-                }
-            }
-            
-            return coverType;
-        }
+        // public CoverType CheckTileCover(Tile fromTile, Tile targetTile) {
+        //     var coverType = CoverType.None;
+        //     foreach (var wall in targetTile.Walls) {
+        //         if (GridPosition.CheckDirection(targetTile.GridPosition, fromTile.GridPosition, wall.Key)) {
+        //             var wallCoverType = BattleManager.Instance.GetWallGameObject(wall.Value).GetComponent<WallGameObject>().CoverType;
+        //             if (wallCoverType > coverType) {
+        //                 coverType = wallCoverType;
+        //             }
+        //         }
+        //     }
+        //     
+        //     return coverType;
+        // }
         
         public void RemoveGridUnit(GridUnit gridUnit) => Grid.RemoveUnit(gridUnit);
 

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities.Structs;
-using Gangs.AI;
 using Gangs.Battle;
 using Gangs.Core;
-using Gangs.Data;
 using Gangs.Grid;
 using Gangs.Managers;
 using Tile = Gangs.Grid.Tile;
@@ -15,12 +13,12 @@ namespace Gangs.Abilities {
         private List<MoveRange> _moveRanges;
         private List<MoveWaypoint> _moveWaypoints;
         
-        public MoveAbility(BattleUnit battleUnit) : base(battleUnit) {
+        public MoveAbility(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) : base(battleUnit, battleSquad, battle) {
             ButtonText = "Move";
             TargetingType = TargetingType.StandardMove;
         }
         
-        private Tile SoldierTile => BattleManager.Instance.GetSoldierTile(BattleUnit);
+        private Tile SoldierTile => Battle.GetSoldierTile(BattleUnit);
         private int MovePoints => BattleUnit.GetAttributeValue(UnitAttributeType.Movement) * 10;
         private int MovePointsUsed => _moveWaypoints.Sum(w => w.Cost);
         private int MovePointsRemaining => MovePoints * BattleUnit.ActionPointsRemaining - MovePointsUsed;

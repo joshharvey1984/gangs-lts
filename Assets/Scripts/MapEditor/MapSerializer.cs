@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Gangs.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace Gangs.MapEditor
     public class MapSerializer : MonoBehaviour {
         public GameObject tilePrefab;
         public GameObject wallPrefab;
+        public GameObject halfWallPrefab;
         public GameObject ladderPrefab;
         
         public void Save() {
@@ -18,15 +20,17 @@ namespace Gangs.MapEditor
                 ladders = new List<Ladder>()
             };
 
-            foreach (var tile in GameObject.FindGameObjectsWithTag("Tile")) {
+            foreach (var tile in GameObject.FindGameObjectsWithTag(nameof(Tile))) {
                 map.tiles.Add(new Tile(tile.transform.position));
             }
 
-            foreach (var wall in GameObject.FindGameObjectsWithTag("Wall")) {
-                map.walls.Add(new Wall(wall.transform.position));
+            foreach (var wall in GameObject.FindGameObjectsWithTag(nameof(Wall))) {
+                var cover = wall.GetComponent<MapWallData>().coverType;
+                var lineOfSightBlocker = wall.GetComponent<MapWallData>().lineOfSightBlocker;
+                map.walls.Add(new Wall(wall.transform.position, cover, lineOfSightBlocker));
             }
             
-            foreach (var ladder in GameObject.FindGameObjectsWithTag("Ladder")) {
+            foreach (var ladder in GameObject.FindGameObjectsWithTag(nameof(Ladder))) {
                 map.ladders.Add(new Ladder(ladder.transform));
             }
 
@@ -38,7 +42,7 @@ namespace Gangs.MapEditor
         }
 
         public void Load() {
-            var path = Application.dataPath + "/Data/Maps/";
+            var path = Application.dataPath + "/Data/Maps/Test/";
             var file = EditorUtility.OpenFilePanel("Load map", path, "json");
             if (file.Length == 0) return;
             
@@ -47,30 +51,36 @@ namespace Gangs.MapEditor
             
             foreach (var tile in map.tiles) {
                 var newTile = Instantiate(tilePrefab, new Vector3(tile.x, tile.y, tile.z), Quaternion.identity, transform);
-                newTile.tag = "Tile";
+                newTile.tag = nameof(Tile);
             }
             
             foreach (var wall in map.walls) {
-                var newWall = Instantiate(wallPrefab, new Vector3(wall.x, wall.y, wall.z), Quaternion.identity, transform);
-                newWall.tag = "Wall";
+                if (wall.coverType == CoverType.Full) {
+                    var newWall = Instantiate(wallPrefab, new Vector3(wall.x, wall.y, wall.z), Quaternion.identity, transform);
+                    newWall.tag = nameof(Wall);
+                }
+                else {
+                    var newWall = Instantiate(halfWallPrefab, new Vector3(wall.x, wall.y, wall.z), Quaternion.identity, transform);
+                    newWall.tag = nameof(Wall);
+                }
             }
             
             foreach (var ladder in map.ladders) {
                 var newLadder = Instantiate(ladderPrefab, new Vector3(ladder.x, ladder.y, ladder.z), Quaternion.Euler(0, ladder.rotation, 0), transform);
-                newLadder.tag = "Ladder";
+                newLadder.tag = nameof(Ladder);
             }
         }
         
         public void Clear() {
-            foreach (var tile in GameObject.FindGameObjectsWithTag("Tile")) {
+            foreach (var tile in GameObject.FindGameObjectsWithTag(nameof(Tile))) {
                 Destroy(tile);
             }
             
-            foreach (var wall in GameObject.FindGameObjectsWithTag("Wall")) {
+            foreach (var wall in GameObject.FindGameObjectsWithTag(nameof(Wall))) {
                 Destroy(wall);
             }
             
-            foreach (var ladder in GameObject.FindGameObjectsWithTag("Ladder")) {
+            foreach (var ladder in GameObject.FindGameObjectsWithTag(nameof(Ladder))) {
                 Destroy(ladder);
             }
         }
@@ -101,11 +111,15 @@ namespace Gangs.MapEditor
         public float x;
         public int y;
         public float z;
+        public CoverType coverType;
+        public bool lineOfSightBlocker;
         
-        public Wall(Vector3 position) {
+        public Wall(Vector3 position, CoverType coverType, bool lineOfSightBlocker = true) {
             x = position.x;
             y = (int) position.y;
             z = position.z;
+            this.coverType = coverType;
+            this.lineOfSightBlocker = lineOfSightBlocker;
         }
     }
     

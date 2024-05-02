@@ -49,6 +49,7 @@ namespace Gangs.Grid {
         public Tile GetTile(float x, float y, float z) => !IsPositionWithinGridBounds(new GridPosition((int)x, (int)y, (int)z)) ? null : Tiles[(int)x, (int)y, (int)z];
         public Tile GetTile(Vector3 position) => !IsPositionWithinGridBounds(new GridPosition((int)position.x, (int)position.y, (int)position.z)) ? null : Tiles[(int)position.x, (int)position.y, (int)position.z];
         public List<Tile> GetTilesByGridPosition(IEnumerable<GridPosition> positions) => positions.Select(GetTile).Where(tile => tile != null).ToList();
+        public Wall GetWall(GridPosition tile1, CardinalDirection direction) => GetTile(tile1)?.Walls.ContainsKey(direction) == true ? GetTile(tile1).Walls[direction] : null;
         
         public Tile GetClosestTile(Vector3 position) {
             var gridPosition = new GridPosition(position);
@@ -215,6 +216,19 @@ namespace Gangs.Grid {
             var randomX = Random.Range(x - range, x + range);
             var randomZ = Random.Range(z - range, z + range);
             return GetTile(randomX, 0, randomZ);
+        }
+
+        public Tile GetTileByGridUnit(GridUnit battleUnitGridUnit) {
+            for (var i = 0; i < Tiles.GetLength(0); i++) {
+                for (var j = 0; j < Tiles.GetLength(1); j++) {
+                    for (var k = 0; k < Tiles.GetLength(2); k++) {
+                        if (Tiles[i, j, k] == null) continue;
+                        if (Tiles[i, j, k].GridUnit == battleUnitGridUnit) return Tiles[i, j, k];
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }
