@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Gangs.Grid {
     
@@ -12,8 +11,7 @@ namespace Gangs.Grid {
         South = 4,
         SouthWest = 5,
         West = 6,
-        NorthWest = 7,
-        None
+        NorthWest = 7
     }
 
     public struct Direction2D {

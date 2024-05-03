@@ -89,7 +89,6 @@ namespace Gangs.Grid {
         public static CardinalDirection GetDirectionFromOther(this GridPosition a, GridPosition b) {
             var dx = Math.Abs(a.X - b.X);
             var dz = Math.Abs(a.Z - b.Z);
-            if (dx == 0 && dz == 0) return CardinalDirection.None;
             if (dx > dz) {
                 return a.X > b.X ? CardinalDirection.West : CardinalDirection.East;
             }

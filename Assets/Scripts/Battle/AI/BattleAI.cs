@@ -2,14 +2,13 @@
 using System.Linq;
 using Gangs.Abilities;
 using Gangs.Abilities.Structs;
-using Gangs.AI;
 using Gangs.Core;
 using Gangs.Grid;
 using Gangs.Managers;
 using UnityEngine;
 
 namespace Gangs.Battle.AI {
-    public static class EnemyAI {
+    public static class BattleAI {
         private static Battle _battle;
         public static void TakeTurn(BattleUnit battleUnit, Battle battle) {
             _battle = battle;
@@ -21,10 +20,10 @@ namespace Gangs.Battle.AI {
             var moveAbility = battleUnit.Abilities[0] as MoveAbility;
             var fireAbility = battleUnit.Abilities[1] as FireAbility;
             
-            var currentTile = GridManager.Instance.Grid.FindGridUnit(battleUnit.GridUnit);
+            var currentTile = battleUnit.GridUnit.GetTile();
             
             var lastSeenEnemies = activeSquad.EnemyLastSeen;
-            var enemiesInSight = GetEnemiesInSight(activeSquad);
+            var enemiesInSight = GetEnemiesInSquadSight(activeSquad);
             
             var enemyData = new List<TargetTiles>();
             
@@ -39,7 +38,7 @@ namespace Gangs.Battle.AI {
             }
             
             if (enemyData.Count == 0) {
-                var centreTile = GridManager.Instance.Grid.GetRandomCenterTile();
+                var centreTile = battle.Grid.Grid.GetRandomCenterTile();
                 enemyData.Add(new TargetTiles {
                     BattleUnit = null,
                     Tile = centreTile,
@@ -56,19 +55,19 @@ namespace Gangs.Battle.AI {
             var bestMoveTileValue = bestMove.Value;
             var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, battleUnit.ActionPointsRemaining);
             
-            // if (bestMoveTileValue <= currentTileValue) {
-            //     if (battleUnit.GetEnemiesInLineOfSight().Count > 0) {
-            //         var target = battleUnit.GetEnemiesInLineOfSight().First();
-            //         var targetTile = GridManager.Instance.Grid.FindGridUnit(target.GridUnit);
-            //         fireAbility!.Select();
-            //         fireAbility!.LeftClickTile(targetTile);
-            //     }
-            //     else {
-            //         activeSquad.EndUnitTurn();
-            //     }
-            //     
-            //     return;
-            // }
+            if (bestMoveTileValue <= currentTileValue) {
+                if (GetEnemiesInLineOfSight(battleUnit).ToList().Count > 0) {
+                    var target = GetEnemiesInLineOfSight(battleUnit).First();
+                    var targetTile = target.GridUnit.GetTile();
+                    fireAbility!.Select();
+                    fireAbility!.LeftClickTile(targetTile);
+                }
+                else {
+                    activeSquad.EndUnitTurn();
+                }
+                
+                return;
+            }
             
             moveAbility!.AddWaypoint(bestMove.Key);
             moveAbility!.Execute();
@@ -110,7 +109,7 @@ namespace Gangs.Battle.AI {
         private static int DistanceCheck(Tile tile, List<TargetTiles> targetTiles) {
             var distance = 0;
             foreach (var targetTile in targetTiles) {
-                var distanceToEnemy = GridManager.Instance.GetDistance(tile, targetTile.Tile);
+                var distanceToEnemy = _battle.Grid.Grid.GetDistance(tile, targetTile.Tile);
                 if (distanceToEnemy > distance) distance = distanceToEnemy;
             }
 
@@ -127,13 +126,14 @@ namespace Gangs.Battle.AI {
             return isFlanked;
         }
 
-        private static List<BattleUnit> GetEnemiesInSight(AIBattleSquad activeSquad) {
-            var knownUnits = new List<BattleUnit>();
-            foreach (var unit in activeSquad.ActiveUnits) {
-                //unit.GetEnemiesInLineOfSight().ForEach(u => knownUnits.Add(u));
-            }
-            
-            return knownUnits;
+        private static List<BattleUnit> GetEnemiesInSquadSight(AIBattleSquad activeSquad) => 
+            activeSquad.ActiveUnits.SelectMany(GetEnemiesInLineOfSight).ToList();
+
+        private static IEnumerable<BattleUnit> GetEnemiesInLineOfSight(BattleUnit battleUnit) {
+            var unitTile = battleUnit.GridUnit.GetTile();
+            var losUnits = _battle.Grid.GetUnitsInSightOfTile(unitTile, 20);
+            var enemyUnits = _battle.GetEnemyUnits(battleUnit);
+            return losUnits.Where(unit => enemyUnits.Contains(unit)).ToList();
         }
         
         private static bool CanFlank(Tile tile, List<TargetTiles> enemyUnits) {

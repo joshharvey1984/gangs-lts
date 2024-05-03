@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle.AI;
 using Gangs.Battle.Grid;
 using Gangs.Data;
 using Gangs.Grid;
+using UnityEngine;
 using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Battle {
     public class Battle {
         public BattleGrid Grid { get; private set; }
-        public List<BattleSquad> Squads { get; set; } = new();
-        public BattleSquad ActiveSquad { get; set; }
+        public List<BattleSquad> Squads { get; } = new();
+        public BattleSquad ActiveSquad { get; private set; }
         public int RoundNumber { get; set; } = 1;
         
         public void CreateGrid(Map map) {
             Grid = new BattleGrid(map);
+            Grid.OnGetUnit += GetUnit;
         }
         
         public void AddSquad(BattleSquad squad) {
@@ -26,19 +29,22 @@ namespace Gangs.Battle {
                 for (var j = 0; j < Squads[i].Units.Count; j++) {
                     var gridUnit = Grid.Grid.AddUnit(spawnPositionGroups[i][j]);
                     Squads[i].Units[j].GridUnit = gridUnit;
+                    Debug.Log($"Spawned {Squads[i].Units[j]} at {spawnPositionGroups[i][j]}");
                 }
             }
         }
         
         public void StartTurn() {
             ActiveSquad = Squads[0];
+            ActiveSquad.NextUnit();
+            BattleAI.TakeTurn(ActiveSquad.SelectedUnit, this);
         }
         
-        public BattleUnit SelectedBattleUnit => ActiveSquad.SelectedBattleUnit;
-        public bool ActivatedUnit => ActiveSquad.ActivatedUnit;
-        
+        private BattleUnit GetUnit(GridUnit gridUnit) => 
+            Squads.SelectMany(s => s.Units).FirstOrDefault(u => u.GridUnit == gridUnit);
+
         private void MoveUnit(GridPosition gridPosition) {
-            var movingUnit = ActiveSquad.SelectedBattleUnit;
+            var movingUnit = ActiveSquad.SelectedUnit;
             Grid.Grid.MoveUnit(movingUnit.GridUnit, gridPosition);
             
             var movedUnitTile = Grid.Grid.GetTile(gridPosition);
@@ -56,7 +62,6 @@ namespace Gangs.Battle {
         }
         
         public Tile GetSoldierTile(BattleUnit battleUnit) => Grid.Grid.GetTileByGridUnit(battleUnit.GridUnit);
-        public void NextUnit() => ActiveSquad.NextUnit();
         public BattleUnit FindUnit(GridUnit hoverTileGridUnit) => ActiveSquad.Units.FirstOrDefault(unit => unit.GridUnit == hoverTileGridUnit);
         
         public void EndSquadTurn() {
@@ -95,5 +100,8 @@ namespace Gangs.Battle {
         public class EndGameException : Exception {
             public EndGameException() : base("Game Over") { }
         }
+
+        public IEnumerable<BattleUnit> GetEnemyUnits(BattleUnit battleUnit) => 
+            Squads.Where(sq => !sq.Units.Contains(battleUnit)).SelectMany(sq => sq.Units).ToList();
     }
 }

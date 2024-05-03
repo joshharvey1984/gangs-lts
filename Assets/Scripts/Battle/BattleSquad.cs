@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gangs.AI;
 using Gangs.Battle.AI;
 using Gangs.Campaign;
 using Gangs.Grid;
-using Gangs.Managers;
 
 namespace Gangs.Battle {
     public abstract class BattleSquad {
         public readonly List<BattleUnit> Units = new();
         public List<BattleUnit> ActiveUnits => Units.Where(u => u.Status == Status.Active).ToList();
         
-        public BattleUnit SelectedBattleUnit { get; set; }
+        public BattleUnit SelectedUnit { get; set; }
         public bool ActivatedUnit;
         
         public bool AllUnitsTurnTaken => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
@@ -23,14 +21,14 @@ namespace Gangs.Battle {
         public event Action OnAllUnitsTurnTaken;
 
         private void SetSelectedUnit(BattleUnit battleUnit) {
-            SelectedBattleUnit?.SetSelected(false);
-            SelectedBattleUnit = battleUnit;
-            SelectedBattleUnit.SetSelected(true);
+            SelectedUnit?.SetSelected(false);
+            SelectedUnit = battleUnit;
+            SelectedUnit.SetSelected(true);
         }
         
         public void NextUnit(BattleUnit battleUnit = null) {
             if (ActivatedUnit) return;
-            if (battleUnit == null) battleUnit = SelectedBattleUnit;
+            if (battleUnit == null) battleUnit = SelectedUnit;
             
             if (AllUnitsTurnTaken) {
                 OnAllUnitsTurnTaken?.Invoke();
@@ -48,22 +46,22 @@ namespace Gangs.Battle {
             
             SetSelectedUnit(Units[index]);
             
-            // if (SelectedBattleUnit.IsPlayerControlled)
+            // if (SelectedUnit.IsPlayerControlled)
             //     InputManager.Instance.SelectUnit(SelectedBattleUnit);
             // else
-            //     EnemyAI.TakeTurn(SelectedBattleUnit);
+            
         }
         
         public void EndUnitTurn() {
-            SelectedBattleUnit.TurnTaken = true;
-            SelectedBattleUnit.SetSelected(false); 
+            SelectedUnit.TurnTaken = true;
+            SelectedUnit.SetSelected(false); 
             ActivatedUnit = false;
             OnUnitTurnTaken?.Invoke();
         }
 
         public void ResetTurns() {
             Units.ForEach(u => u.ResetTurn());
-            SelectedBattleUnit = null;
+            SelectedUnit = null;
         }
         
         public void AddOrUpdateEnemyLastSeen(BattleUnit battleUnit, Tile tile) => EnemyLastSeen[battleUnit] = tile;

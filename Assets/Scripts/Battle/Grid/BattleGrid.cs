@@ -4,33 +4,48 @@ using System.Linq;
 using Gangs.Core;
 using Gangs.Data;
 using Gangs.Grid;
+using Tile = Gangs.Grid.Tile;
 using Wall = Gangs.Data.Wall;
 
 namespace Gangs.Battle.Grid {
     public class BattleGrid {
         public Gangs.Grid.Grid Grid { get; private set; }
-        
-        public List<BattleGridWall> Walls { get; } = new();
 
-        public BattleGrid(Map map) => CreateGrid(map);
+        private List<BattleGridWall> Walls { get; } = new();
+        
+        public event Func<GridUnit, BattleUnit> OnGetUnit;
 
-        public BattleGridWall GetWall(GridPosition gridPosition, CardinalDirection cardinalDirection) {
-            var gridWall = Grid.GetWall(gridPosition, cardinalDirection);
-            return Walls.FirstOrDefault(w => w.Wall == gridWall);
+        public BattleGrid(Map map) {
+            CreateGrid(map);
+            Pathfinder.Initialize(Grid);
         }
-        
-        public CoverType GetCoverType(GridPosition gridPosition, CardinalDirection cardinalDirection) {
-            var gridWall = Grid.GetWall(gridPosition, cardinalDirection);
-            return Walls.FirstOrDefault(w => w.Wall == gridWall)?.CoverType ?? CoverType.None;
+
+        public IEnumerable<BattleUnit> GetUnitsInSightOfTile(Tile tile, int range) {
+            var units = new List<BattleUnit>();
+            foreach (var gridPosition in tile.LineOfSightGridPositions) {
+                var gridTile = Grid.GetTile(gridPosition);
+                if (gridTile == null) continue;
+                if (Grid.GetDistance(tile, gridTile) <= range)
+                    units.AddRange(gridTile.GridUnit != null ? new[] { GetUnit(gridTile.GridUnit) } : 
+                        Array.Empty<BattleUnit>());
+            }
+
+            return units;
         }
-        
+
+        public BattleUnit GetUnit(GridUnit gridUnit) {
+            var tile = Grid.GetTileByGridUnit(gridUnit);
+            return tile != null ? OnGetUnit?.Invoke(gridUnit) : null;
+        }
+
         public CoverType GetCoverType(GridPosition gridPosition, GridPosition targetGridPosition) {
             var dir = GridPosition.GetCardinalDirection(gridPosition, targetGridPosition);
-            if (dir != null)
-                return dir == CardinalDirection.None
-                    ? CoverType.None
-                    : GetCoverType(gridPosition, (CardinalDirection) dir);
-            return CoverType.None;
+            return dir != null ? GetCoverType(gridPosition, dir.Value) : CoverType.None;
+        }
+
+        private CoverType GetCoverType(GridPosition gridPosition, CardinalDirection cardinalDirection) {
+            var gridWall = Grid.GetWall(gridPosition, cardinalDirection);
+            return Walls.FirstOrDefault(w => w.Wall == gridWall)?.CoverType ?? CoverType.None;
         }
 
         private void CreateGrid(Map map) {
@@ -76,7 +91,7 @@ namespace Gangs.Battle.Grid {
 
         private void AddWall(GridPosition tile1, GridPosition tile2, Wall wall) {
             var gridWall = Grid.AddWall(tile1, tile2);
-            Walls.Add(new BattleGridWall { Wall = gridWall, CoverType = wall.CoverType });
+            Walls.Add(new BattleGridWall { Wall = gridWall, CoverType = wall.CoverType, LineOfSightBlocker = wall.LineOfSightBlocker });
         }
     }
 }

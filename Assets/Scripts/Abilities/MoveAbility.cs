@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities.Structs;
 using Gangs.Battle;
+using Gangs.Battle.Grid;
 using Gangs.Core;
 using Gangs.Grid;
 using Gangs.Managers;
@@ -13,12 +14,12 @@ namespace Gangs.Abilities {
         private List<MoveRange> _moveRanges;
         private List<MoveWaypoint> _moveWaypoints;
         
-        public MoveAbility(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) : base(battleUnit, battleSquad, battle) {
+        public MoveAbility(BattleUnit battleUnit, BattleGrid battleGrid) : base(battleUnit, battleGrid) {
             ButtonText = "Move";
             TargetingType = TargetingType.StandardMove;
         }
-        
-        private Tile SoldierTile => Battle.GetSoldierTile(BattleUnit);
+
+        private Tile SoldierTile => BattleUnit.GridUnit.GetTile();
         private int MovePoints => BattleUnit.GetAttributeValue(UnitAttributeType.Movement) * 10;
         private int MovePointsUsed => _moveWaypoints.Sum(w => w.Cost);
         private int MovePointsRemaining => MovePoints * BattleUnit.ActionPointsRemaining - MovePointsUsed;
@@ -33,7 +34,7 @@ namespace Gangs.Abilities {
             }
 
             CalculateMoveRange();
-            GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
+            //GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
         }
         
         public override void Deselect() {
@@ -49,8 +50,11 @@ namespace Gangs.Abilities {
 
         public override void Execute() {
             base.Execute();
-            GridVisualManager.Instance.ClearWaypoints();
-            GridVisualManager.Instance.ClearMoveRanges();
+            if (BattleUnit.IsPlayerControlled) {
+                GridVisualManager.Instance.ClearWaypoints();
+                GridVisualManager.Instance.ClearMoveRanges();
+            }
+            
             var apSpent = (int)Math.Ceiling((double)MovePointsUsed / MovePoints);
             BattleUnit.SpendActionPoints(apSpent);
             BattleUnit.UnitGameObject.OnMoveComplete += MoveComplete;

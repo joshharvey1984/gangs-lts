@@ -4,11 +4,15 @@ using Gangs.Managers;
 
 namespace Gangs.Grid {
     public static class Pathfinder {
-        public static Grid Grid = GridManager.Instance.Grid;
+        private static Grid _grid;
+        
+        public static void Initialize(Grid grid) {
+            _grid = grid;
+        }
 
         public static Dictionary<Tile, int> CalculateMoveRange(Tile startPosition, int movementPoints) {
             var reachableTiles = new Dictionary<Tile, int>();
-            var tiles = Grid.Tiles;
+            var tiles = _grid.Tiles;
 
             var maxMove = movementPoints / 10;
 
@@ -25,7 +29,7 @@ namespace Gangs.Grid {
                 for (var y = startY; y <= endY; y++) {
                     for (var z = startZ; z <= endZ; z++) {
                         if (x < 0 || x >= tiles.GetLength(0) || y < 0 || y >= tiles.GetLength(1) || z < 0 || z >= tiles.GetLength(2)) continue;
-                        var endPosition = Grid.Tiles[x, y, z];
+                        var endPosition = _grid.Tiles[x, y, z];
                         if (endPosition == null) continue;
 
                         var path = FindPath(startPosition, endPosition);
@@ -69,7 +73,7 @@ namespace Gangs.Grid {
                     return RetracePath(cameFrom, start, end);
                 }
 
-                foreach (var neighbor in Grid.GetValidNeighbours(current)) {
+                foreach (var neighbor in _grid.GetValidNeighbours(current)) {
                     if (closedSet.Contains(neighbor)) {
                         continue;
                     }
@@ -145,7 +149,7 @@ namespace Gangs.Grid {
             var checkTile = path[^1];
 
             while (currentTile != path[^1]) {
-                var line = GridUtils.GetAllTilesInStraightLine(Grid, currentTile, checkTile);
+                var line = GridUtils.GetAllTilesInStraightLine(_grid, currentTile, checkTile);
                 if (IsPathClear(line)) {
                     pathData.PathTiles.AddRange(line);
                     pathData.DirectPathTiles.Add(line[^1]);
@@ -164,7 +168,7 @@ namespace Gangs.Grid {
 
         private static bool IsPathClear(List<Tile> path) {
             for (var i = 1; i < path.Count; i++) {
-                if (!Grid.CanMoveFromTileToTile(path[i - 1], path[i])) {
+                if (!_grid.CanMoveFromTileToTile(path[i - 1], path[i])) {
                     return false;
                 }
             }

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Gangs.Battle;
-using Gangs.Battle.AI;
+using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
@@ -9,17 +10,18 @@ using Gangs.UI;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
-        protected readonly Battle.Battle Battle;
         protected readonly BattleUnit BattleUnit;
-        protected readonly BattleSquad BattleSquad;
+        protected readonly BattleGrid BattleGrid;
+        
         public string ButtonText;
         protected TargetingType TargetingType;
         protected bool EndTurnOnUse = false;
+        
+        public event Action OnAbilityFinished;
 
-        protected Ability(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) {
+        protected Ability(BattleUnit battleUnit, BattleGrid battleGrid) {
             BattleUnit = battleUnit;
-            BattleSquad = battleSquad;
-            Battle = battle;
+            BattleGrid = battleGrid;
         }
         
         public virtual void Select() {
@@ -32,7 +34,7 @@ namespace Gangs.Abilities {
         }
 
         public virtual void Execute() {
-            BattleSquad.ActivatedUnit = true;
+            //BattleSquad.ActivatedUnit = true;
             BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
@@ -51,7 +53,7 @@ namespace Gangs.Abilities {
         }
 
         private ToHitModifier CheckCoverModifier(Tile fromTile, Tile targetTile) {
-            var coverType = Battle.Grid.GetCoverType(fromTile.GridPosition, targetTile.GridPosition);
+            var coverType = BattleGrid.GetCoverType(fromTile.GridPosition, targetTile.GridPosition);
             if (coverType == CoverType.Full) return new ToHitModifier { ModifierType = ToHitModifierType.TargetInCover, Modifier = -20, Description = "Target in full cover" };
             if (coverType == CoverType.Half) return new ToHitModifier { ModifierType = ToHitModifierType.TargetInCover, Modifier = -10, Description = "Target in half cover" };
             return null;
@@ -68,17 +70,18 @@ namespace Gangs.Abilities {
         }
 
         protected void Finish() {
-            if (EndTurnOnUse || BattleUnit.ActionPointsRemaining <= 0) {
-                GridVisualManager.Instance.ResetAllVisuals();
-                BattleSquad.EndUnitTurn();
-                return;
-            }
-
-            if (!BattleUnit.IsPlayerControlled && BattleUnit.ActionPointsRemaining > 0) {
-                EnemyAI.TakeTurn(BattleUnit, Battle);
-            }
-            
-            BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
+            OnAbilityFinished?.Invoke();
+            // if (EndTurnOnUse || BattleUnit.ActionPointsRemaining <= 0) {
+            //     GridVisualManager.Instance.ResetAllVisuals();
+            //     OnAbilityFinished?.Invoke();
+            //     return;
+            // }
+            //
+            // if (!BattleUnit.IsPlayerControlled && BattleUnit.ActionPointsRemaining > 0) {
+            //     BattleAI.TakeTurn(BattleUnit, Battle);
+            // }
+            //
+            // BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
         }
     }
 }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Gangs.Grid {
     public class Grid {
@@ -179,6 +181,7 @@ namespace Gangs.Grid {
 
         public GridUnit AddUnit(GridPosition gridPosition) {
             var unit = new GridUnit();
+            unit.OnTileGetPosition += FindGridUnit;
             Tiles[gridPosition.X, gridPosition.Y, gridPosition.Z].GridUnit = unit;
             return unit;
         }
@@ -208,6 +211,17 @@ namespace Gangs.Grid {
 
         #endregion
 
+        public int GetDistance(Tile tile, Tile targetTile) {
+            var distance = 0;
+            var xDistance = Math.Abs(tile.GridPosition.X - targetTile.GridPosition.X);
+            var yDistance = Math.Abs(tile.GridPosition.Y - targetTile.GridPosition.Y);
+            var zDistance = Math.Abs(tile.GridPosition.Z - targetTile.GridPosition.Z);
+            distance += xDistance;
+            distance += yDistance;
+            distance += zDistance;
+            return distance;
+        }
+        
         public Tile GetRandomCenterTile() {
             // get block of 10% of the centre of the grid, y is always 0
             var x = Tiles.GetLength(0) / 2;

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 
 namespace Gangs.Grid {
-    [Serializable]
     public class Tile {
         public GridUnit GridUnit { get; set; }
         public GridPosition GridPosition { get; }
@@ -14,8 +12,6 @@ namespace Gangs.Grid {
             GridPosition = gridPosition;
         }
         
-        public override string ToString() {
-            return $"Tile at {GridPosition}";
-        }
+        public override string ToString() => $"Tile at {GridPosition}";
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gangs.Battle;
+using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Grid;
 using Gangs.Managers;
@@ -10,7 +12,10 @@ namespace Gangs.Abilities {
     public class FireAbility : Ability {
         private List<BattleUnit> _targets;
         private Tile _targetTile;
-        public FireAbility(BattleUnit battleUnit, BattleSquad battleSquad, Battle.Battle battle) : base(battleUnit, battleSquad, battle) {
+        
+        public event Action<List<Tile>, int> OnDamageDealt;
+        
+        public FireAbility(BattleUnit battleUnit, BattleGrid battleGrid) : base(battleUnit, battleGrid) {
             ButtonText = "Fire";
             TargetingType = TargetingType.EnemiesInLineOfSight;
             EndTurnOnUse = true;
@@ -64,11 +69,8 @@ namespace Gangs.Abilities {
                 var toHit = ToHit(_targetTile);
                 if (toHitRoll <= toHit) {
                     var targetGridUnit = _targetTile.GridUnit;
-                    var targetUnit = Battle.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
                     var damage = 10;
-                    Debug.Log($"Hit! {damage} damage dealt to {targetUnit.Unit.Name}");
-                    Debug.Log($"{targetUnit.Unit.Name} has {targetUnit.GetCurrentHitPoints()} hit points remaining");
-                    targetUnit!.Damage(damage);
+                    OnDamageDealt?.Invoke(new List<Tile> { _targetTile }, damage);
                 }
                 else {
                     Debug.Log("Miss!");
@@ -76,7 +78,7 @@ namespace Gangs.Abilities {
             }
             catch (Battle.Battle.EndGameException) {
                 Deselect();
-                Battle.EndGame();
+                //Battle.EndGame();
                 return;
             }
             
@@ -85,9 +87,9 @@ namespace Gangs.Abilities {
         
         public override int ToHit(Tile targetTile) {
             // get unit tile
-            var unit = Battle.SelectedBattleUnit;
+            var unit = BattleUnit;
             var targetGridUnit = targetTile.GridUnit;
-            var targetUnit = Battle.Squads.SelectMany(squad => squad.Units).FirstOrDefault(u => u.GridUnit == targetGridUnit);
+            var targetUnit = BattleGrid.GetUnit(targetGridUnit);
             var unitTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
             
             

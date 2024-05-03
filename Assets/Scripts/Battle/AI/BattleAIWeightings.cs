@@ -1,4 +1,4 @@
-namespace Gangs.AI {
+namespace Gangs.Battle.AI {
     [System.Serializable]
     public struct BattleAIWeightings {
         public float RemainingActionPointWeight;
