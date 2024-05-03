@@ -29,7 +29,6 @@ namespace Gangs.Battle {
                 for (var j = 0; j < Squads[i].Units.Count; j++) {
                     var gridUnit = Grid.Grid.AddUnit(spawnPositionGroups[i][j]);
                     Squads[i].Units[j].GridUnit = gridUnit;
-                    Debug.Log($"Spawned {Squads[i].Units[j]} at {spawnPositionGroups[i][j]}");
                 }
             }
         }
@@ -38,28 +37,11 @@ namespace Gangs.Battle {
             ActiveSquad = Squads[0];
             ActiveSquad.NextUnit();
             BattleAI.TakeTurn(ActiveSquad.SelectedUnit, this);
+            EndSquadTurn();
         }
         
         private BattleUnit GetUnit(GridUnit gridUnit) => 
             Squads.SelectMany(s => s.Units).FirstOrDefault(u => u.GridUnit == gridUnit);
-
-        private void MoveUnit(GridPosition gridPosition) {
-            var movingUnit = ActiveSquad.SelectedUnit;
-            Grid.Grid.MoveUnit(movingUnit.GridUnit, gridPosition);
-            
-            var movedUnitTile = Grid.Grid.GetTile(gridPosition);
-            var enemySquads = Squads.Where(s => s != ActiveSquad).ToList();
-            var enemyUnits = enemySquads.SelectMany(s => s.Units).Where(u => u.Status != Status.Eliminated).ToList();
-
-            foreach (var enemyUnit in enemyUnits) {
-                var enemyTile = GetSoldierTile(enemyUnit);
-                var enemySquad = enemySquads.FirstOrDefault(s => s.Units.Contains(enemyUnit));
-                if (enemyTile.LineOfSightGridPositions.Contains(movedUnitTile.GridPosition)) {
-                    ActiveSquad.AddOrUpdateEnemyLastSeen(enemyUnit, enemyTile);
-                    enemySquad!.AddOrUpdateEnemyLastSeen(movingUnit, movedUnitTile);
-                }
-            }
-        }
         
         public Tile GetSoldierTile(BattleUnit battleUnit) => Grid.Grid.GetTileByGridUnit(battleUnit.GridUnit);
         public BattleUnit FindUnit(GridUnit hoverTileGridUnit) => ActiveSquad.Units.FirstOrDefault(unit => unit.GridUnit == hoverTileGridUnit);
@@ -69,6 +51,9 @@ namespace Gangs.Battle {
 
             ActiveSquad = GetNextSquadTurn();
             ActiveSquad.NextUnit();
+            BattleAI.TakeTurn(ActiveSquad.SelectedUnit, this);
+            CheckForEndGame();
+            EndSquadTurn();
         }
         
         private BattleSquad GetNextSquadTurn(BattleSquad battleSquad = null) {
@@ -79,6 +64,7 @@ namespace Gangs.Battle {
         }
         
         private void EndRound() {
+            Debug.Log($"End of Round {RoundNumber}");
             Squads.ForEach(s => s.ResetTurns());
             RoundNumber++;
             

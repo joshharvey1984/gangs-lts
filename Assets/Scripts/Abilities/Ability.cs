@@ -5,8 +5,6 @@ using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
-using Gangs.Managers;
-using Gangs.UI;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
@@ -35,7 +33,7 @@ namespace Gangs.Abilities {
 
         public virtual void Execute() {
             //BattleSquad.ActivatedUnit = true;
-            BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
+            //BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
         }
 
         public virtual int ToHit(Tile tile) => 0;

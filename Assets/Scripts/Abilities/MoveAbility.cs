@@ -7,6 +7,7 @@ using Gangs.Battle.Grid;
 using Gangs.Core;
 using Gangs.Grid;
 using Gangs.Managers;
+using UnityEngine;
 using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Abilities {
@@ -50,16 +51,24 @@ namespace Gangs.Abilities {
 
         public override void Execute() {
             base.Execute();
-            if (BattleUnit.IsPlayerControlled) {
-                GridVisualManager.Instance.ClearWaypoints();
-                GridVisualManager.Instance.ClearMoveRanges();
-            }
+            // if (BattleUnit.IsPlayerControlled) {
+            //     GridVisualManager.Instance.ClearWaypoints();
+            //     GridVisualManager.Instance.ClearMoveRanges();
+            // }
             
             var apSpent = (int)Math.Ceiling((double)MovePointsUsed / MovePoints);
             BattleUnit.SpendActionPoints(apSpent);
-            BattleUnit.UnitGameObject.OnMoveComplete += MoveComplete;
-            BattleUnit.UnitGameObject.Move(new List<MoveWaypoint>(_moveWaypoints));
+            _moveWaypoints.Last().Tiles.ForEach(MoveToTile);
+            //BattleUnit.UnitGameObject.OnMoveComplete += MoveComplete;
+            //BattleUnit.UnitGameObject.Move(new List<MoveWaypoint>(_moveWaypoints));
+            Debug.Log($"{BattleUnit.Unit.Name} moved to {BattleUnit.GridUnit.GetTile()}");
             ResetMoveWaypoints();
+            
+            MoveComplete();
+        }
+        
+        private void MoveToTile(Tile tile) {
+            BattleGrid.MoveUnit(BattleUnit, tile);
         }
 
         private void TileHovered(Tile tile) {
@@ -86,11 +95,10 @@ namespace Gangs.Abilities {
             _moveWaypoints.Add(new MoveWaypoint {
                 DirectPathTiles = path.DirectPathTiles,
                 Tiles = path.PathTiles,
-                Cost = path.Cost,
-                Indicator = GridVisualManager.Instance.DrawWaypointIndicator(tile)
+                Cost = path.Cost
             });
             
-            GridVisualManager.Instance.ConvertMovementPathToWayPoint();
+            //GridVisualManager.Instance.ConvertMovementPathToWayPoint();
             _moveRanges = CalculateMoveRange();
         }
         
@@ -131,9 +139,6 @@ namespace Gangs.Abilities {
         }
         
         private void ResetMoveWaypoints() {
-            foreach (var moveWaypoint in _moveWaypoints) {
-                moveWaypoint.DestroyIndicator();
-            }
             _moveWaypoints.Clear();
         }
         
@@ -170,8 +175,8 @@ namespace Gangs.Abilities {
         }
 
         private void MoveComplete() {
-            ResetMove();
-            BattleUnit.UnitGameObject.OnMoveComplete -= MoveComplete;
+            //ResetMove();
+            //BattleUnit.UnitGameObject.OnMoveComplete -= MoveComplete;
             Finish();
         }
     }

@@ -24,16 +24,16 @@ namespace Gangs.Abilities {
         public override void Select() {
             base.Select();
             
-            //_targets = BattleUnit.GetEnemiesInLineOfSight();
-            foreach (var enemy in _targets) {
-                var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemy.GridUnit);
-                //GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
-            }
-
-            if (BattleUnit.IsPlayerControlled) {
-                InputManager.Instance.OnTileHovered += TileHovered;
-                InputManager.Instance.OnLeftClickTile += LeftClickTile;
-            }
+            // _targets = BattleUnit.GetEnemiesInLineOfSight();
+            // foreach (var enemy in _targets) {
+            //     var enemyTile = GridManager.Instance.Grid.FindGridUnit(enemy.GridUnit);
+            //     //GridVisualManager.Instance.ColorTile(enemyTile, Color.red);
+            // }
+            //
+            // if (BattleUnit.IsPlayerControlled) {
+            //     InputManager.Instance.OnTileHovered += TileHovered;
+            //     InputManager.Instance.OnLeftClickTile += LeftClickTile;
+            // }
         }
         
         public override void Deselect() {
@@ -63,7 +63,7 @@ namespace Gangs.Abilities {
         public override void Execute() {
             try {
                 base.Execute();
-                if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
+                //if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
                 var random = new System.Random();
                 var toHitRoll = random.Next(1, 101);
                 var toHit = ToHit(_targetTile);
@@ -71,6 +71,7 @@ namespace Gangs.Abilities {
                     var targetGridUnit = _targetTile.GridUnit;
                     var damage = 10;
                     OnDamageDealt?.Invoke(new List<Tile> { _targetTile }, damage);
+                    Debug.Log($"Hit! Dealt {damage} damage to {targetGridUnit}");
                 }
                 else {
                     Debug.Log("Miss!");
@@ -90,7 +91,7 @@ namespace Gangs.Abilities {
             var unit = BattleUnit;
             var targetGridUnit = targetTile.GridUnit;
             var targetUnit = BattleGrid.GetUnit(targetGridUnit);
-            var unitTile = GridManager.Instance.Grid.FindGridUnit(unit.GridUnit);
+            var unitTile = BattleUnit.GridUnit.GetTile();
             
             
             // get to hit calculator

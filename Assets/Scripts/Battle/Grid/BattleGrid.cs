@@ -19,6 +19,11 @@ namespace Gangs.Battle.Grid {
             CreateGrid(map);
             Pathfinder.Initialize(Grid);
         }
+        
+        public void MoveUnit(BattleUnit unit, Tile tile) {
+            Grid.MoveUnit(unit.GridUnit, tile.GridPosition);
+            // TODO: Update last seen for enemy units
+        }
 
         public IEnumerable<BattleUnit> GetUnitsInSightOfTile(Tile tile, int range) {
             var units = new List<BattleUnit>();
