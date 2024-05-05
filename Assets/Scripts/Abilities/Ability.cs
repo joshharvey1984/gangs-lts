@@ -16,6 +16,7 @@ namespace Gangs.Abilities {
         protected bool EndTurnOnUse = false;
         
         public event Action OnAbilityFinished;
+        public event Action OnAbilityExecuted;
 
         protected Ability(BattleUnit battleUnit, BattleGrid battleGrid) {
             BattleUnit = battleUnit;
@@ -31,9 +32,8 @@ namespace Gangs.Abilities {
             BattleUnit.SelectedAbility = null;
         }
 
-        public virtual void Execute() {
-            //BattleSquad.ActivatedUnit = true;
-            //BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().DisableAbilityButtons();
+        public virtual void Execute(){
+            OnAbilityExecuted?.Invoke();
         }
 
         public virtual int ToHit(Tile tile) => 0;

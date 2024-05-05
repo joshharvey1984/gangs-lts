@@ -3,14 +3,11 @@ using Gangs.Abilities;
 using Gangs.Battle.Grid;
 using Gangs.Campaign;
 using Gangs.Core;
-using Gangs.GameObjects;
 using Gangs.Grid;
-using Gangs.Managers;
 
 namespace Gangs.Battle {
     public class BattleUnit {
         public readonly CampaignUnit Unit;
-        public UnitGameObject UnitGameObject;
         public GridUnit GridUnit;
         
         public readonly Ability[] Abilities;
@@ -72,8 +69,7 @@ namespace Gangs.Battle {
         
         private void Eliminate() {
             Status = Status.Eliminated;
-            GridManager.Instance.RemoveGridUnit(GridUnit);
-            UnitGameObject.Eliminate();
+            //GridManager.Instance.RemoveGridUnit(GridUnit);
             OnUnitEliminated?.Invoke(this);
         }
         

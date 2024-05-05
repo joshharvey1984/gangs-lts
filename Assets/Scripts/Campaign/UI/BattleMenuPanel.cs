@@ -10,6 +10,13 @@ namespace Gangs.Campaign.UI {
         [SerializeField] private GameObject unitPanel2;
         [SerializeField] private GameObject unitPrefab;
         
+        [SerializeField] private GameObject autoBattleButton;
+        [SerializeField] private GameObject manualBattleButton;
+        [SerializeField] private GameObject closeButton;
+        
+        [SerializeField] private GameObject autoBattlePanel;
+        [SerializeField] private GameObject swordAnimation;
+        
         public void SetBattleMenu(CampaignTerritory territory) {
             squadPanelName1.GetComponent<TMP_Text>().text = territory.Squads[0].Name;
             squadPanelName2.GetComponent<TMP_Text>().text = territory.Squads[1].Name;
@@ -20,6 +27,19 @@ namespace Gangs.Campaign.UI {
             gameObject.SetActive(true);
         }
         
+        public void SetBattleMenuVictor(CampaignSquad victor) {
+            Reset();
+            var victorName = victor.Name;
+            var text = victorName + " is victorious!";
+            squadPanelName1.GetComponent<TMP_Text>().text = text;
+            squadPanelName2.GetComponent<TMP_Text>().text = text;
+            
+            SetUnitPanel(unitPanel1, victor);
+            
+            closeButton.SetActive(true);
+            gameObject.SetActive(true);
+        }
+
         private void SetUnitPanel(GameObject panel, CampaignSquad squad) {
             squad.Units.ForEach(u => {
                 var unitPanel = Instantiate(unitPrefab, panel.transform);
@@ -29,12 +49,39 @@ namespace Gangs.Campaign.UI {
         }
         
         public void AutoBattle() {
-            gameObject.SetActive(false);
-            CampaignManager.Instance.Battle();
+            autoBattlePanel.SetActive(true);
+            autoBattleButton.SetActive(false);
+            manualBattleButton.SetActive(false);
+            
+            CampaignManager.Instance.AutoBattle();
         }
         
         public void ManualBattle() {
+            autoBattleButton.SetActive(false);
+            manualBattleButton.SetActive(false);
+            CampaignManager.Instance.ManualBattle();
+        }
+
+        public void Close() {
             gameObject.SetActive(false);
+            autoBattleButton.SetActive(true);
+            manualBattleButton.SetActive(true);
+            Reset();
+        }
+        
+        private void Reset() {
+            squadPanelName1.GetComponent<TMP_Text>().text = "Squad 1";
+            squadPanelName2.GetComponent<TMP_Text>().text = "Squad 2";
+            
+            autoBattlePanel.SetActive(false);
+            
+            foreach (Transform child in unitPanel1.transform) {
+                Destroy(child.gameObject);
+            }
+            
+            foreach (Transform child in unitPanel2.transform) {
+                Destroy(child.gameObject);
+            }
         }
     }
 }

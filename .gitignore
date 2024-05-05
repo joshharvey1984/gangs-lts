@@ -11,10 +11,8 @@ Assets/TextMesh Pro.meta
 Assets/TutorialInfo/*
 Assets/TutorialInfo.meta
 
-Assets/HighlightPlusBundle/*
-Assets/HighlightPlusBundle.meta
-Assets/HighlightPlus/*
-Assets/HighlightPlus.meta
+Assets/Packages/*
+Assets/Packages.meta
 
 ### Unity ###
 [Ll]ibrary/

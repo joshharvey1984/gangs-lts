@@ -2,7 +2,7 @@
 using Gangs.Managers;
 
 namespace Gangs.Campaign {
-    public abstract class CampaignSquad  {
+    public class CampaignSquad  {
         public CampaignEntityGameObject GameObject { get; set; }
         public string Name { get; set; }
         public List<CampaignUnit> Units { get; set; } = new();

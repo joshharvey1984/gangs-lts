@@ -13,24 +13,17 @@ namespace Gangs.Battle {
         public BattleUnit SelectedUnit { get; set; }
         public bool ActivatedUnit;
         
-        public bool AllUnitsTurnTaken => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
         
         public Dictionary<BattleUnit, Tile> EnemyLastSeen = new();
         
         public event Action OnUnitTurnTaken;
         public event Action OnAllUnitsTurnTaken;
-
-        private void SetSelectedUnit(BattleUnit battleUnit) {
-            SelectedUnit?.SetSelected(false);
-            SelectedUnit = battleUnit;
-            SelectedUnit.SetSelected(true);
-        }
         
         public void NextUnit(BattleUnit battleUnit = null) {
             if (ActivatedUnit) return;
             if (battleUnit == null) battleUnit = SelectedUnit;
             
-            if (AllUnitsTurnTaken) {
+            if (AllUnitsTurnTaken()) {
                 OnAllUnitsTurnTaken?.Invoke();
                 return;
             }
@@ -45,11 +38,6 @@ namespace Gangs.Battle {
             }
             
             SetSelectedUnit(Units[index]);
-            
-            // if (SelectedUnit.IsPlayerControlled)
-            //     InputManager.Instance.SelectUnit(SelectedBattleUnit);
-            // else
-            
         }
         
         public void EndUnitTurn() {
@@ -65,6 +53,13 @@ namespace Gangs.Battle {
         }
         
         public void AddOrUpdateEnemyLastSeen(BattleUnit battleUnit, Tile tile) => EnemyLastSeen[battleUnit] = tile;
+        public bool AllUnitsTurnTaken() => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
+
+        private void SetSelectedUnit(BattleUnit battleUnit) {
+            SelectedUnit?.SetSelected(false);
+            SelectedUnit = battleUnit;
+            SelectedUnit.SetSelected(true);
+        }
     }
     
     public class PlayerBattleSquad : BattleSquad { }

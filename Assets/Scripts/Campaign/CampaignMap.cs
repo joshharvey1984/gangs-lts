@@ -60,7 +60,7 @@ namespace Gangs.Campaign {
                 var territory = GetTerritoryByGameObject(territoryGameObject);
                 territory.SetClaimedBy(gang.Gang, true);
                 territory.SetTerritory(startingTerritories.First(s => s.Headquarters).Territory);
-                var squad = new CampaignGangSquad(gang.Gang);
+                var squad = new CampaignSquad();
                 gang.Gang.Units.ForEach(u => squad.AddUnit(u));
                 campaignData.CampaignGangManagers[i].AddSquad(squad);
                 territory.Squads.Add(squad);

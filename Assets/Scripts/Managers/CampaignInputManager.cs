@@ -11,11 +11,8 @@ namespace Gangs.Managers {
         public event Action<CampaignTerritory> OnLeftClickTerritory; 
         
         private void Awake() {
-            if (Instance != null) {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
+            if (Instance != null && Instance != this) Destroy(this); 
+            else Instance = this;
         }
         
         private void Update() {

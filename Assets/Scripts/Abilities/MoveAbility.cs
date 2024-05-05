@@ -29,9 +29,9 @@ namespace Gangs.Abilities {
         public override void Select() {
             base.Select();
             if (BattleUnit.IsPlayerControlled) {
-                InputManager.Instance.OnTileHovered += TileHovered;
-                InputManager.Instance.OnRightClick += ResetMove;
-                InputManager.Instance.OnLeftClickTile += LeftClickTile;
+                // InputManager.Instance.OnTileHovered += TileHovered;
+                // InputManager.Instance.OnRightClick += ResetMove;
+                // InputManager.Instance.OnLeftClickTile += LeftClickTile;
             }
 
             CalculateMoveRange();
@@ -40,9 +40,9 @@ namespace Gangs.Abilities {
         
         public override void Deselect() {
             if (BattleUnit.IsPlayerControlled) {
-                InputManager.Instance.OnRightClick -= ResetMove;
-                InputManager.Instance.OnTileHovered -= TileHovered;
-                InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+                // InputManager.Instance.OnRightClick -= ResetMove;
+                // InputManager.Instance.OnTileHovered -= TileHovered;
+                // InputManager.Instance.OnLeftClickTile -= LeftClickTile;
             }
 
             CancelMove();
@@ -87,7 +87,7 @@ namespace Gangs.Abilities {
         public void AddWaypoint(Tile tile) {
             var lastWaypoints = _moveWaypoints.Select(w => w.DirectPathTiles.Last()).ToList();
             if (lastWaypoints.Contains(tile)) {
-                ResetMove();
+                //ResetMove();
                 return;
             }
                 
@@ -151,15 +151,15 @@ namespace Gangs.Abilities {
             }
         }
         
-        private void ResetMove() {
-            CancelMove();
-            CalculateMoveRange();
-            DrawMovePath(InputManager.Instance.HoverTile);
-
-            if (BattleUnit.IsPlayerControlled) {
-                GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
-            }
-        }
+        // private void ResetMove() {
+        //     CancelMove();
+        //     CalculateMoveRange();
+        //     DrawMovePath(InputManager.Instance.HoverTile);
+        //
+        //     if (BattleUnit.IsPlayerControlled) {
+        //         GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
+        //     }
+        // }
 
         private void DrawMovePath(Tile tile) {
             GridVisualManager.Instance.ClearMovementPath();

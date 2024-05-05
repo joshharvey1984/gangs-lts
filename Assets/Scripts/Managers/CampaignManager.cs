@@ -66,9 +66,30 @@ namespace Gangs.Managers {
             CampaignUIManager.Instance.SetBattleMenu(territory);
         }
 
-        public void Battle() {
-            var territory = _campaignMap.Territories.Find(t => t.Squads.Count > 1);
+        public void AutoBattle() {
+            var territory = GetTerritory();
             var campaignBattle = new CampaignBattle(territory, CampaignBattleType.Auto);
+            campaignBattle.OnEndBattle += EndBattle;
+            campaignBattle.StartBattle();
+        }
+        
+        public void ManualBattle() {
+            var territory = GetTerritory();
+            var campaignBattle = new CampaignBattle(territory, CampaignBattleType.Manual);
+            campaignBattle.OnEndBattle += EndBattle;
+            gameObject.AddComponent<BattleStartManager>().SetBattle(campaignBattle);
+            
+        }
+        
+        // TODO: Implement actual territory finding
+        private CampaignTerritory GetTerritory() => _campaignMap.Territories.Find(t => t.Squads.Count > 1);
+
+        private void EndBattle(CampaignSquad victor) {
+            var territory = _campaignMap.Territories.Find(t => !t.Squads.Contains(victor));
+            var defeated = territory.Squads.Find(s => !s.Equals(victor));
+            territory.Squads.Remove(defeated);
+            ResetTerritoryHighlights();
+            CampaignUIManager.Instance.SetBattleMenuVictor(victor);
         }
     }
 }

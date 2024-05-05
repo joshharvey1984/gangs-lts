@@ -1,6 +1,5 @@
 ﻿using Gangs.Campaign;
 using Gangs.Campaign.UI;
-using Gangs.Data;
 using Gangs.MainMenu;
 using UnityEngine;
 
@@ -13,11 +12,8 @@ namespace Gangs.Managers {
         [SerializeField] private GameObject battleMenu;
         
         private void Awake() {
-            if (Instance is null) {
-                Instance = this;
-            } else {
-                Destroy(gameObject);
-            }
+            if (Instance != null && Instance != this) Destroy(this); 
+            else Instance = this;
         }
         
         public void SetCampaignInfo(CampaignData campaign) {
@@ -38,6 +34,10 @@ namespace Gangs.Managers {
 
         public void SetBattleMenu(CampaignTerritory territory) {
             battleMenu.GetComponent<BattleMenuPanel>().SetBattleMenu(territory);
+        }
+
+        public void SetBattleMenuVictor(CampaignSquad victor) {
+            battleMenu.GetComponent<BattleMenuPanel>().SetBattleMenuVictor(victor);
         }
     }
 }

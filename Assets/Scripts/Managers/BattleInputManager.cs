@@ -1,20 +1,17 @@
 using System;
-using Gangs.Battle;
-using Gangs.Grid;
 using UnityEngine;
 
 namespace Gangs.Managers {
-    public class InputManager : MonoBehaviour {
-        public static InputManager Instance { get; private set; }
+    public class BattleInputManager : MonoBehaviour {
+        public static BattleInputManager Instance { get; private set; }
 
         private Camera _camera;
-        private Grid.Grid Grid => GridManager.Instance.Grid;
 
-        public Tile HoverTile { get; private set; }
+        public GameObject HoverTile { get; private set; }
 
-        public event Action<Tile> OnTileHovered;
+        public event Action<GameObject> OnTileHovered;
         public event Action OnRightClick;
-        public event Action<Tile> OnLeftClickTile; 
+        public event Action<GameObject> OnLeftClickTile; 
 
         private void Awake() {
             if (Instance != null && Instance != this) { 
@@ -122,15 +119,15 @@ namespace Gangs.Managers {
             if (tile == HoverTile) return;
             HoverTile = tile;
             OnTileHovered?.Invoke(HoverTile);
-            GridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
+            //GridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
         }
 
-        private Tile GetMouseTile() {
+        private GameObject GetMouseTile() {
             var ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(ray, out var hit)) return null;
             var tileGameObject = hit.collider.gameObject.transform.parent.transform;
             if (!tileGameObject.CompareTag($"Tile")) return null;
-            return Grid.GetTile(tileGameObject.position);
+            return tileGameObject.gameObject;
         }
     }
 }

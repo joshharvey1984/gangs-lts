@@ -3,13 +3,13 @@ using Gangs.Data;
 using Random = UnityEngine.Random;
 
 namespace Gangs.Campaign.CampaignGenerators {
-    public class CampaignNeutralSquadGenerator {
+    public static class CampaignNeutralSquadGenerator {
         public static CampaignSquad GenerateNeutralSquad(Faction faction, int squadStrength) {
             if (faction.Playable) {
                 throw new System.Exception($"Neutral squad cannot be playable: {faction.Name}");
             }
 
-            var squad = new CampaignNeutralSquad();
+            var squad = new CampaignSquad();
             var factionUnit = faction.Units[Random.Range(0, faction.Units.Count)];
             
             var unitLevels = GenerateStrengthDistribution(squadStrength, 3, 6);

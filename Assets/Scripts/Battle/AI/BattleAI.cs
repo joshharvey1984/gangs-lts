@@ -4,7 +4,6 @@ using Gangs.Abilities;
 using Gangs.Abilities.Structs;
 using Gangs.Core;
 using Gangs.Grid;
-using Gangs.Managers;
 using UnityEngine;
 
 namespace Gangs.Battle.AI {
@@ -60,17 +59,19 @@ namespace Gangs.Battle.AI {
                     var target = GetEnemiesInLineOfSight(battleUnit).First();
                     var targetTile = target.GridUnit.GetTile();
                     fireAbility!.Select();
+                    fireAbility!.OnAbilityFinished += AbilityFinished;
                     fireAbility!.LeftClickTile(targetTile);
+                    return;
                 }
-                else {
-                    activeSquad.EndUnitTurn();
-                }
-                
-                return;
             }
             
             moveAbility!.AddWaypoint(bestMove.Key);
+            moveAbility!.OnAbilityFinished += AbilityFinished;
             moveAbility!.Execute();
+        }
+        
+        private static void AbilityFinished() {
+            _battle.ActiveSquad.EndUnitTurn();
         }
         
         private static Dictionary<Tile, float> FindBestTile(BattleUnit battleUnit, List<MoveRange> moveRange, List<TargetTiles> targetTiles, AIBattleSquad activeSquad) {

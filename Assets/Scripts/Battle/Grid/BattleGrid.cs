@@ -37,18 +37,16 @@ namespace Gangs.Battle.Grid {
 
             return units;
         }
-
-        public BattleUnit GetUnit(GridUnit gridUnit) {
-            var tile = Grid.GetTileByGridUnit(gridUnit);
-            return tile != null ? OnGetUnit?.Invoke(gridUnit) : null;
-        }
-
+        
         public CoverType GetCoverType(GridPosition gridPosition, GridPosition targetGridPosition) {
             var dir = GridPosition.GetCardinalDirection(gridPosition, targetGridPosition);
             return dir != null ? GetCoverType(gridPosition, dir.Value) : CoverType.None;
         }
+        
+        public BattleUnit GetUnit(GridUnit gridUnit) => Grid.GetTileByGridUnit(gridUnit) != null ? OnGetUnit?.Invoke(gridUnit) : null;
+        public void RemoveUnit(BattleUnit unit) => Grid.RemoveUnit(unit.GridUnit);
 
-        private CoverType GetCoverType(GridPosition gridPosition, CardinalDirection cardinalDirection) {
+        public CoverType GetCoverType(GridPosition gridPosition, CardinalDirection cardinalDirection) {
             var gridWall = Grid.GetWall(gridPosition, cardinalDirection);
             return Walls.FirstOrDefault(w => w.Wall == gridWall)?.CoverType ?? CoverType.None;
         }

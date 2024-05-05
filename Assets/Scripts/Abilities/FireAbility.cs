@@ -37,23 +37,23 @@ namespace Gangs.Abilities {
         }
         
         public override void Deselect() {
-            if (BattleUnit.IsPlayerControlled) {
-                InputManager.Instance.OnTileHovered -= TileHovered;
-                InputManager.Instance.OnLeftClickTile -= LeftClickTile;
-            }
+            // if (BattleUnit.IsPlayerControlled) {
+            //     InputManager.Instance.OnTileHovered -= TileHovered;
+            //     InputManager.Instance.OnLeftClickTile -= LeftClickTile;
+            // }
 
             base.Deselect();
         }
         
-        private void TileHovered(Tile tile) {
-            if (BattleUnit.ActionPointsRemaining <= 0) return;
-            var targetTiles = _targets.Select(t => GridManager.Instance.Grid.FindGridUnit(t.GridUnit)).ToList();
-            //targetTiles.ForEach(t => GridVisualManager.Instance.ColorTile(t, Color.red));
-            if (targetTiles.Contains(tile)) {
-                //GridVisualManager.Instance.ColorTile(tile, Color.yellow);
-                var toHit = ToHit(tile);
-            }
-        }
+        // private void TileHovered(Tile tile) {
+        //     if (BattleUnit.ActionPointsRemaining <= 0) return;
+        //     var targetTiles = _targets.Select(t => GridManager.Instance.Grid.FindGridUnit(t.GridUnit)).ToList();
+        //     //targetTiles.ForEach(t => GridVisualManager.Instance.ColorTile(t, Color.red));
+        //     if (targetTiles.Contains(tile)) {
+        //         //GridVisualManager.Instance.ColorTile(tile, Color.yellow);
+        //         var toHit = ToHit(tile);
+        //     }
+        // }
         
         public void LeftClickTile(Tile tile) {
             _targetTile = tile;
@@ -61,26 +61,19 @@ namespace Gangs.Abilities {
         }
 
         public override void Execute() {
-            try {
-                base.Execute();
-                //if (_targetTile == null) _targetTile = InputManager.Instance.HoverTile;
-                var random = new System.Random();
-                var toHitRoll = random.Next(1, 101);
-                var toHit = ToHit(_targetTile);
-                if (toHitRoll <= toHit) {
-                    var targetGridUnit = _targetTile.GridUnit;
-                    var damage = 10;
-                    OnDamageDealt?.Invoke(new List<Tile> { _targetTile }, damage);
-                    Debug.Log($"Hit! Dealt {damage} damage to {targetGridUnit}");
-                }
-                else {
-                    Debug.Log("Miss!");
-                }
+            base.Execute();
+            var random = new System.Random();
+            var toHitRoll = random.Next(1, 101);
+            var toHit = ToHit(_targetTile);
+            if (toHitRoll <= toHit) {
+                var targetGridUnit = _targetTile.GridUnit;
+                var damage = 10;
+                Debug.Log($"Hit! {BattleUnit.Unit.Name} Dealt {damage} damage to {BattleGrid.GetUnit(targetGridUnit).Unit.Name}");
+                Debug.Log($"{BattleGrid.GetUnit(targetGridUnit).Unit.Name} has {BattleGrid.GetUnit(targetGridUnit).GetCurrentHitPoints() - damage} hit points remaining");
+                BattleGrid.GetUnit(targetGridUnit).Damage(damage);
             }
-            catch (Battle.Battle.EndGameException) {
-                Deselect();
-                //Battle.EndGame();
-                return;
+            else {
+                Debug.Log("Miss!");
             }
             
             Finish();

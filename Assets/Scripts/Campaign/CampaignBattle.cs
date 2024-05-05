@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gangs.Battle;
 using Gangs.Battle.AI;
@@ -6,11 +7,15 @@ using Gangs.Data;
 using Gangs.Grid;
 
 namespace Gangs.Campaign {
-    public class CampaignBattle {
+    public class CampaignBattle : IBattle {
+        CampaignTerritory Territory { get; }
         public CampaignBattleType BattleType { get; }
         public Battle.Battle Battle { get; }
         
+        public event Action<CampaignSquad> OnEndBattle;
+        
         public CampaignBattle(CampaignTerritory territory, CampaignBattleType battleType) {
+            Territory = territory;
             BattleType = battleType;
             Battle = new Battle.Battle();
             Battle.CreateGrid(territory.Map);
@@ -18,7 +23,17 @@ namespace Gangs.Campaign {
             squads.ForEach(squad => Battle.AddSquad(squad));
             var spawnPositions = SpawnSquads(territory.Map);
             Battle.SpawnSquad(spawnPositions);
-            Battle.StartTurn();
+            Battle.OnEndGame += EndBattle;
+        }
+        
+        public void StartBattle() {
+            Battle.StartBattle();
+        }
+        
+        private void EndBattle(BattleSquad battleSquad) {
+            var unit = battleSquad.Units.FirstOrDefault()!.Unit;
+            var victor = Territory.Squads.FirstOrDefault(squad => squad.Units.Contains(unit));
+            OnEndBattle?.Invoke(victor);
         }
 
         // TODO: Implement spawning squads in Map Editor
@@ -69,6 +84,7 @@ namespace Gangs.Campaign {
                     
                     entity.Units.ForEach(unit => {
                         var battleUnit = new BattleUnit(unit, Battle.Grid);
+                        battleUnit.OnUnitEliminated += Battle.Grid.RemoveUnit;
                         squad.Units.Add(battleUnit);
                     });
                     squads.Add(squad);
