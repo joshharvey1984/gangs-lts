@@ -8,6 +8,8 @@ TagManager:
   - Wall
   - Tile
   - Ladder
+  - Soldier
+  - MapParent
   layers:
   - Default
   - TransparentFX

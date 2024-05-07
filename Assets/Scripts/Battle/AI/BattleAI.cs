@@ -54,7 +54,7 @@ namespace Gangs.Battle.AI {
             var bestMoveTileValue = bestMove.Value;
             var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, battleUnit.ActionPointsRemaining);
             
-            if (bestMoveTileValue <= currentTileValue) {
+            if (bestMoveTileValue <= currentTileValue + 1) {
                 if (GetEnemiesInLineOfSight(battleUnit).ToList().Count > 0) {
                     var target = GetEnemiesInLineOfSight(battleUnit).First();
                     var targetTile = target.GridUnit.GetTile();

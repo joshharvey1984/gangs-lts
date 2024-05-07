@@ -29,7 +29,7 @@ namespace Gangs.Campaign {
             SpawnGangs(campaignData, ruleset.StartingTerritories);
             SpawnMonsters();
             foreach (var territory in Territories.Where(t => t.Territory == null)) {
-                territory.SetTerritory(ruleset.ValidTerritories[Random.Range(0, ruleset.ValidTerritories.Count)]);
+                territory.SetTerritory(ruleset.ValidTerritories[0]);
                 if (Random.Range(0, 100) < 10) CreateNeutralSquad(territory);
             }
         }

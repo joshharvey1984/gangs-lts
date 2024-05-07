@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle;
 using Gangs.Battle.AI;
 using Gangs.Campaign;
 using Gangs.Campaign.CampaignGenerators;
 using Gangs.Data;
 using Gangs.MainMenu;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Gangs.Managers {
     public class CampaignManager : MonoBehaviour {
@@ -16,6 +18,8 @@ namespace Gangs.Managers {
         
         private List<CampaignGangManager> _gangs;
         private CampaignGangManager _currentGangManager;
+        
+        private IBattle _currentBattle;
         
         private void Awake() {
             DontDestroyOnLoad(gameObject);
@@ -47,6 +51,8 @@ namespace Gangs.Managers {
             StartTurn();
         }
         
+        private void SetMapParent() => GameObject.FindWithTag("MapParent");
+        
         public void StartTurn() {
             _currentGangManager.StartTurn();
         }
@@ -69,30 +75,40 @@ namespace Gangs.Managers {
 
         public void AutoBattle() {
             var territory = GetTerritory();
-            var campaignBattle = new CampaignBattle(territory);
-            campaignBattle.OnEndBattle += EndBattle;
-            campaignBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
-            BattleAI.BattleBase = campaignBattle.BattleBase;
-            campaignBattle.StartBattle();
+            _currentBattle = new CampaignBattle(territory);
+            _currentBattle.OnEndBattle += AutoEndBattle;
+            gameObject.AddComponent<AutoBattleManager>().StartBattle(_currentBattle);
         }
-        
+
         public void ManualBattle() {
             var territory = GetTerritory();
-            var campaignBattle = new CampaignBattle(territory);
-            campaignBattle.OnEndBattle += EndBattle;
-            campaignBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
-            gameObject.AddComponent<BattleStartManager>().SetBattle(campaignBattle);
+            _currentBattle = new CampaignBattle(territory);
+            _currentBattle.OnEndBattle += ManualEndBattle;
+            _currentBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
+            gameObject.AddComponent<BattleStartManager>().SetBattle(_currentBattle);
         }
         
-        // TODO: Implement actual territory finding
-        private CampaignTerritory GetTerritory() => _campaignMap.Territories.Find(t => t.Squads.Count > 1);
-
+        private void AutoEndBattle(CampaignSquad victor) {
+            Destroy(GetComponent<AutoBattleManager>());
+            EndBattle(victor);
+        }
+        
+        private void ManualEndBattle(CampaignSquad victor) {
+            SceneManager.LoadScene("Campaign");
+            SetMapParent();
+            Destroy(GetComponent<BattleStartManager>());
+            EndBattle(victor);
+        }
+        
         private void EndBattle(CampaignSquad victor) {
-            var territory = _campaignMap.Territories.Find(t => !t.Squads.Contains(victor));
-            var defeated = territory.Squads.Find(s => !s.Equals(victor));
-            territory.Squads.Remove(defeated);
+            var defeated = _campaignMap.Territories.Find(t => !t.Squads.Contains(victor)).Squads.Find(s => !s.Equals(victor));
+            _campaignMap.Territories.Find(t => t.Squads.Contains(defeated)).Squads.Remove(defeated);
             ResetTerritoryHighlights();
             CampaignUIManager.Instance.SetBattleMenuVictor(victor);
         }
+        
+        // TODO: Implement actual territory finding
+
+        private CampaignTerritory GetTerritory() => _campaignMap.Territories.Find(t => t.Squads.Count > 1);
     }
 }

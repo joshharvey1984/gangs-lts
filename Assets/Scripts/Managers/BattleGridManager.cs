@@ -34,8 +34,10 @@ namespace Gangs.Managers {
             foreach (var gridUnit in gridUnits) {
                 _unitGameObjects.Add(SpawnUnit(gridUnit));
             }
-            
-            BattleManager.Instance.StartBattle(_unitGameObjects);
+        }
+        
+        private void Start() {
+            BattleManager.Instance.StartBattle();
         }
         
         private UnitGameObject SpawnUnit(BattleUnit unit) {

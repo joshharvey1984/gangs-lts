@@ -20,7 +20,7 @@ namespace Gangs.Battle.GameObjects {
         }
         
         private List<MoveWaypoint> _moveWaypoints;
-        private float MoveSpeed => 5.5f * BattleManager.Instance.globalMoveSpeed;
+        private float MoveSpeed => 5.5f;
         
         public event Action<GridPosition> UnitNewPosition;
         public event Action OnMoveComplete;
@@ -45,6 +45,11 @@ namespace Gangs.Battle.GameObjects {
             BattleUnit = unit;
             BattleUnit.OnSelected += SetSelected;
             BattleUnit.OnDeselected += SetDeselected;
+            BattleUnit.OnMoveUnitTile += MoveUnit;
+        }
+        
+        private void MoveUnit(BattleUnit unit, MoveWaypoint waypoint) {
+            _moveWaypoints = new List<MoveWaypoint> { waypoint };
         }
 
         private void SetSelected() => SelectionCircle.SetState(SelectionCircle.State.Selected);
@@ -62,13 +67,13 @@ namespace Gangs.Battle.GameObjects {
                     _moveWaypoints.RemoveAt(0);
                 }
                 if (_moveWaypoints.Count == 0) {
-                    UnitNewPosition?.Invoke(new GridPosition(Position));
-                    OnMoveComplete?.Invoke();
+                    BattleManager.Instance.MoveUnit(BattleUnit, new GridPosition(Position));
+                    BattleUnit.MoveNextWaypointTile();
                     return;
                 }
             }
             
-            UnitNewPosition?.Invoke(new GridPosition(Position));
+            BattleManager.Instance.MoveUnit(BattleUnit, new GridPosition(Position));
         }
     }
 }

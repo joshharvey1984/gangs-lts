@@ -14,12 +14,8 @@ namespace Gangs.Managers {
         public event Action<GameObject> OnLeftClickTile; 
 
         private void Awake() {
-            if (Instance != null && Instance != this) { 
-                Destroy(this); 
-            } 
-            else { 
-                Instance = this; 
-            }
+            if (Instance is not null && Instance != this) Destroy(this); 
+            else Instance = this;
             
             _camera = Camera.main;
         }
@@ -88,7 +84,7 @@ namespace Gangs.Managers {
         
         private void LeftClick() {
             var tile = GetMouseTile();
-            if (tile == null) return;
+            if (tile is null) return;
             OnLeftClickTile?.Invoke(tile);
             
             // if (tile.GridUnit != null) {

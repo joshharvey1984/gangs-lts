@@ -52,8 +52,8 @@ namespace Gangs.Battle {
         }
         
         public void AddOrUpdateEnemyLastSeen(BattleUnit battleUnit, Tile tile) => EnemyLastSeen[battleUnit] = tile;
-        
         public bool AllUnitsTurnTaken() => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
+        public void TakeTurn() => OnUnitStartTurn?.Invoke();
 
         private void SetSelectedUnit(BattleUnit battleUnit) {
             SelectedUnit?.SetSelected(false);
@@ -61,6 +61,6 @@ namespace Gangs.Battle {
             SelectedUnit.SetSelected(true);
         }
 
-        public void TakeTurn() => OnUnitStartTurn?.Invoke();
+        
     }
 }

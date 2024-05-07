@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Gangs.Abilities;
+using Gangs.Abilities.Structs;
 using Gangs.Battle.Grid;
 using Gangs.Campaign;
 using Gangs.Core;
@@ -11,7 +13,6 @@ namespace Gangs.Battle {
         public GridUnit GridUnit;
         
         public readonly Ability[] Abilities;
-        
         public Ability SelectedAbility;
         
         public Status Status = Status.Active;
@@ -20,13 +21,14 @@ namespace Gangs.Battle {
         public bool TurnTaken = false;
         
         public int DamageTaken;
-
-        //public bool IsPlayerControlled = false;
+        
+        public List<MoveWaypoint> MoveWaypoints = new();
         
         public event Action OnDeselected;
         public event Action OnSelected;
-        public event Action OnTakeTurn;
         public event Action<BattleUnit> OnUnitEliminated;
+        public event Action OnAbilityCompleted;
+        public event Action<BattleUnit, MoveWaypoint> OnMoveUnitTile;
         
         public BattleUnit(CampaignUnit unit, BattleGrid battleGrid) {
             Unit = unit;
@@ -78,6 +80,27 @@ namespace Gangs.Battle {
 
         public void SetSelectedAbility(Ability ability) {
             ability.Select();
+        }
+
+        public void SetMoveWaypoints(List<MoveWaypoint> moveWaypoints) {
+            MoveWaypoints = moveWaypoints;
+            MoveWaypoints.RemoveAt(0);
+            MoveNextWaypointTile();
+        }
+        
+        public void MoveNextWaypointTile() {
+            if (MoveWaypoints.Count == 0) {
+                OnAbilityCompleted?.Invoke();
+                return;
+            }
+
+            var nextWaypoint = new MoveWaypoint {
+                DirectPathTiles = new List<Tile>(MoveWaypoints[0].DirectPathTiles),
+                Tiles = new List<Tile>(MoveWaypoints[0].Tiles),
+            };
+            
+            MoveWaypoints.RemoveAt(0);
+            OnMoveUnitTile?.Invoke(this, nextWaypoint);
         }
     }
     

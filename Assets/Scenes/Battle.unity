@@ -546,10 +546,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1418209416}
-  - component: {fileID: 1418209419}
   - component: {fileID: 1418209418}
   - component: {fileID: 1418209417}
   - component: {fileID: 1418209420}
+  - component: {fileID: 1418209421}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -608,24 +608,6 @@ MonoBehaviour:
     type: 3}
   debugLosIndicatorPrefab: {fileID: 4539126478402315808, guid: 65da7c5386b140b45ac275fc0c9b3c27,
     type: 3}
---- !u!114 &1418209419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1418209415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc4c598d0978d804ea925f90e42ca37a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  soldierPrefab: {fileID: 1899693000088921737, guid: a219e71745ea9e04697b18d93dcd5993,
-    type: 3}
-  selectionCirclePrefab: {fileID: 3197906927602201418, guid: 91627fd271861b64bb8f650acef103e7,
-    type: 3}
-  abilityUIPanel: {fileID: 1906178484}
-  globalMoveSpeed: 2
 --- !u!114 &1418209420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -649,6 +631,18 @@ MonoBehaviour:
     type: 3}
   unitPrefab: {fileID: 1899693000088921737, guid: a219e71745ea9e04697b18d93dcd5993,
     type: 3}
+--- !u!114 &1418209421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418209415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9834e4a499247ebaf0c33d7c40c8273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1906178484
 GameObject:
   m_ObjectHideFlags: 0

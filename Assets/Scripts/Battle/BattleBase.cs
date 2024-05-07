@@ -4,6 +4,8 @@ using System.Linq;
 using Gangs.Battle.Grid;
 using Gangs.Data;
 using Gangs.Grid;
+using UnityEngine;
+using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Battle {
     public class BattleBase {
@@ -25,6 +27,10 @@ namespace Gangs.Battle {
         }
 
         public void SpawnSquad(List<List<GridPosition>> spawnPositionGroups) {
+            var unitCount = Squads.SelectMany(s => s.Units).ToList().Count;
+            if (unitCount > spawnPositionGroups.SelectMany(s => s).ToList().Count) {
+                Debug.LogError($"Unit count mismatch: {unitCount} > {spawnPositionGroups.SelectMany(s => s).ToList().Count}");
+            }
             for (var i = 0; i < Squads.Count; i++) {
                 for (var j = 0; j < Squads[i].Units.Count; j++) {
                     var gridUnit = Grid.Grid.AddUnit(spawnPositionGroups[i][j]);
@@ -39,7 +45,9 @@ namespace Gangs.Battle {
         
         public IEnumerable<BattleUnit> GetEnemyUnits(BattleUnit battleUnit) => 
             Squads.Where(sq => !sq.Units.Contains(battleUnit)).SelectMany(sq => sq.Units).ToList();
-
+        
+        public void MoveUnit(BattleUnit unit, Tile tile) => Grid.MoveUnit(unit, tile);
+        
         private void NextTurn() {
             ActiveSquad = GetNextSquadTurn();
             ActiveSquad.NextUnit();
@@ -66,7 +74,8 @@ namespace Gangs.Battle {
             Squads.ForEach(s => s.ResetTurns());
             RoundNumber++;
             
-            if (RoundNumber > 20) {
+            if (RoundNumber > 7) {
+                Debug.Log("Timeout - Draw!");
                 EndGame(null);
             }
         }
@@ -80,8 +89,6 @@ namespace Gangs.Battle {
             return false;
         }
 
-        private void EndGame(BattleSquad victor) {
-            OnEndGame?.Invoke(victor);
-        }
+        private void EndGame(BattleSquad victor) => OnEndGame?.Invoke(victor);
     }
 }

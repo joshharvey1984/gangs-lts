@@ -33,7 +33,7 @@ namespace Gangs.Abilities {
         }
 
         public virtual void Execute(){
-            OnAbilityExecuted?.Invoke();
+            //OnAbilityExecuted?.Invoke();
         }
 
         public virtual int ToHit(Tile tile) => 0;

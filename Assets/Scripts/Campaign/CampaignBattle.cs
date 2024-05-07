@@ -4,6 +4,8 @@ using System.Linq;
 using Gangs.Battle;
 using Gangs.Data;
 using Gangs.Grid;
+using UnityEngine;
+using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Campaign {
     public class CampaignBattle : IBattle {
@@ -15,12 +17,13 @@ namespace Gangs.Campaign {
         public CampaignBattle(CampaignTerritory territory) {
             Territory = territory;
             BattleBase = new BattleBase();
+            if (territory.Map == null) Debug.LogError("Map is null");
             BattleBase.CreateGrid(territory.Map);
             var squads = CreateSquads(territory.Squads);
             squads.ForEach(squad => BattleBase.AddSquad(squad));
             var spawnPositions = SpawnSquads(territory.Map);
             BattleBase.SpawnSquad(spawnPositions);
-            BattleBase.OnEndGame += EndBattleBase;
+            BattleBase.OnEndGame += EndBattle;
         }
         
         public void StartBattle() {
@@ -30,8 +33,12 @@ namespace Gangs.Campaign {
         public List<BattleUnit> GetUnits() {
             return BattleBase.Squads.SelectMany(squad => squad.Units).ToList();
         }
-        
-        private void EndBattleBase(BattleSquad battleSquad) {
+
+        public void MoveUnit(BattleUnit unit, Tile tile) {
+            BattleBase.MoveUnit(unit, tile);
+        }
+
+        private void EndBattle(BattleSquad battleSquad) {
             var unit = battleSquad.Units.FirstOrDefault()!.Unit;
             var victor = Territory.Squads.FirstOrDefault(squad => squad.Units.Contains(unit));
             OnEndBattle?.Invoke(victor);
@@ -66,7 +73,6 @@ namespace Gangs.Campaign {
             };
         }
         
-        // TODO: Implement AI Wieghtings in unit data
         private List<BattleSquad> CreateSquads(List<CampaignSquad> territorySquads) {
             var squads = new List<BattleSquad>();
 

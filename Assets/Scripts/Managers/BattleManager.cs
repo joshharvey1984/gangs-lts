@@ -1,7 +1,5 @@
-using System.Collections.Generic;
-using Gangs.Battle;
-using Gangs.Battle.AI;
-using Gangs.Battle.GameObjects;
+﻿using Gangs.Battle;
+using Gangs.Grid;
 using UnityEngine;
 
 namespace Gangs.Managers {
@@ -9,9 +7,6 @@ namespace Gangs.Managers {
         public static BattleManager Instance { get; private set; }
         
         private IBattle _battle;
-        private List<UnitGameObject> _unitGameObjects;
-        
-        public float globalMoveSpeed = 2f;
         
         private void Awake() {
             if (Instance != null) {
@@ -23,10 +18,13 @@ namespace Gangs.Managers {
             _battle = BattleStartManager.Instance.Battle;
         }
         
-        public void StartBattle(List<UnitGameObject> unitGameObjects) {
-            _unitGameObjects = unitGameObjects;
-            BattleAI.BattleBase = _battle.BattleBase;
+        public void StartBattle() {
             _battle.StartBattle();
+        }
+
+        public void MoveUnit(BattleUnit battleUnit, GridPosition gridPosition) {
+            var tile = _battle.BattleBase.Grid.Grid.GetTile(gridPosition);
+            _battle.MoveUnit(battleUnit, tile);
         }
     }
 }
