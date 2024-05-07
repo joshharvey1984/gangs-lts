@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gangs.Battle.AI;
 using Gangs.Battle.Grid;
 using Gangs.Data;
 using Gangs.Grid;
 
 namespace Gangs.Battle {
-    public class Battle {
+    public class BattleBase {
         public BattleGrid Grid { get; private set; }
-        private List<BattleSquad> Squads { get; } = new();
+        public List<BattleSquad> Squads { get; } = new();
         public BattleSquad ActiveSquad { get; private set; }
         private int RoundNumber { get; set; } = 1;
         
@@ -44,7 +43,7 @@ namespace Gangs.Battle {
         private void NextTurn() {
             ActiveSquad = GetNextSquadTurn();
             ActiveSquad.NextUnit();
-            BattleAI.TakeTurn(ActiveSquad.SelectedUnit, this);
+            ActiveSquad.TakeTurn();
         }
         
         private BattleUnit GetUnit(GridUnit gridUnit) => 

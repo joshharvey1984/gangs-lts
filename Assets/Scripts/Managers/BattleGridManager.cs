@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Gangs.Battle;
+using Gangs.Battle.GameObjects;
 using Gangs.Battle.Grid;
 using Gangs.Core;
 using Gangs.Grid;
@@ -14,15 +17,33 @@ namespace Gangs.Managers {
         [SerializeField] private GameObject wallPrefab;
         [SerializeField] private GameObject halfWallPrefab;
         [SerializeField] private GameObject ladderPrefab;
+        
+        [SerializeField] private GameObject unitPrefab;
 
         private BattleGrid _grid;
+        private List<UnitGameObject> _unitGameObjects = new();
         
         private void Awake() {
             if (Instance != null && Instance != this) Destroy(this); 
             else Instance = this;
 
-            var battleGrid = BattleStartManager.Instance.Battle.Battle.Grid;
+            var battleGrid = BattleStartManager.Instance.Battle.BattleBase.Grid;
             CreateGrid(battleGrid);
+            
+            var gridUnits = BattleStartManager.Instance.Battle.GetUnits();
+            foreach (var gridUnit in gridUnits) {
+                _unitGameObjects.Add(SpawnUnit(gridUnit));
+            }
+            
+            BattleManager.Instance.StartBattle(_unitGameObjects);
+        }
+        
+        private UnitGameObject SpawnUnit(BattleUnit unit) {
+            var spawnPos = unit.GridUnit.GetTile().GridPosition.ToVector3();
+            var unitObject = Instantiate(unitPrefab, spawnPos, Quaternion.identity, gridParent.transform);
+            var unitGameObject = unitObject.GetComponent<UnitGameObject>();
+            unitGameObject.SetBattleUnit(unit);
+            return unitGameObject;
         }
 
         private void CreateGrid(BattleGrid grid) {

@@ -28,22 +28,22 @@ namespace Gangs.Abilities {
         
         public override void Select() {
             base.Select();
-            if (BattleUnit.IsPlayerControlled) {
+            //if (BattleUnit.IsPlayerControlled) {
                 // InputManager.Instance.OnTileHovered += TileHovered;
                 // InputManager.Instance.OnRightClick += ResetMove;
                 // InputManager.Instance.OnLeftClickTile += LeftClickTile;
-            }
+            //}
 
             CalculateMoveRange();
             //GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
         }
         
         public override void Deselect() {
-            if (BattleUnit.IsPlayerControlled) {
+            //if (BattleUnit.IsPlayerControlled) {
                 // InputManager.Instance.OnRightClick -= ResetMove;
                 // InputManager.Instance.OnTileHovered -= TileHovered;
                 // InputManager.Instance.OnLeftClickTile -= LeftClickTile;
-            }
+            //}
 
             CancelMove();
             base.Deselect();
@@ -71,11 +71,11 @@ namespace Gangs.Abilities {
             BattleGrid.MoveUnit(BattleUnit, tile);
         }
 
-        private void TileHovered(Tile tile) {
-            if (MaxMovementReached) return;
-            DrawMovePath(tile);
-            GridVisualManager.Instance.DrawTileDetails(tile);
-        }
+        // private void TileHovered(Tile tile) {
+        //     if (MaxMovementReached) return;
+        //     DrawMovePath(tile);
+        //     GridVisualManager.Instance.DrawTileDetails(tile);
+        // }
 
         private void LeftClickTile(Tile tile) {
             if (!_moveRanges.SelectMany(t => t.Tiles).ToList().Contains(tile)) return;
@@ -123,9 +123,9 @@ namespace Gangs.Abilities {
                 moveRanges.Add(moveRangeList);
             }
 
-            if (BattleUnit.IsPlayerControlled) {
-                GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
-            }
+            // if (BattleUnit.IsPlayerControlled) {
+            //     GridVisualManager.Instance.DrawMoveRanges(moveRanges.OrderBy(m => m.ActionPoint).ToList());
+            // }
             
             _moveRanges = moveRanges;
 
@@ -145,10 +145,10 @@ namespace Gangs.Abilities {
         private void CancelMove() {
             ResetMoveWaypoints();
             
-            if (BattleUnit.IsPlayerControlled) {
-                GridVisualManager.Instance.ClearWaypoints();
-                GridVisualManager.Instance.ClearMoveRanges();
-            }
+            // if (BattleUnit.IsPlayerControlled) {
+            //     GridVisualManager.Instance.ClearWaypoints();
+            //     GridVisualManager.Instance.ClearMoveRanges();
+            // }
         }
         
         // private void ResetMove() {
@@ -161,18 +161,18 @@ namespace Gangs.Abilities {
         //     }
         // }
 
-        private void DrawMovePath(Tile tile) {
-            GridVisualManager.Instance.ClearMovementPath();
-            if (tile == null) return;
-            if (!_moveRanges.SelectMany(t => t.Tiles).ToList().Contains(tile)) return;
-
-            foreach (var moveWaypoint in _moveWaypoints) {
-                GridVisualManager.Instance.DrawMovementPath(moveWaypoint.DirectPathTiles);
-            }
-
-            var pathTiles = Pathfinder.FindOptimizedPath(_moveWaypoints.Last().DirectPathTiles.Last(), tile);
-            GridVisualManager.Instance.DrawMovementPath(pathTiles.DirectPathTiles);
-        }
+        // private void DrawMovePath(Tile tile) {
+        //     GridVisualManager.Instance.ClearMovementPath();
+        //     if (tile == null) return;
+        //     if (!_moveRanges.SelectMany(t => t.Tiles).ToList().Contains(tile)) return;
+        //
+        //     foreach (var moveWaypoint in _moveWaypoints) {
+        //         GridVisualManager.Instance.DrawMovementPath(moveWaypoint.DirectPathTiles);
+        //     }
+        //
+        //     var pathTiles = Pathfinder.FindOptimizedPath(_moveWaypoints.Last().DirectPathTiles.Last(), tile);
+        //     GridVisualManager.Instance.DrawMovementPath(pathTiles.DirectPathTiles);
+        // }
 
         private void MoveComplete() {
             //ResetMove();

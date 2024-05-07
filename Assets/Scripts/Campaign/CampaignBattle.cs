@@ -2,35 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Battle;
-using Gangs.Battle.AI;
 using Gangs.Data;
 using Gangs.Grid;
 
 namespace Gangs.Campaign {
     public class CampaignBattle : IBattle {
         CampaignTerritory Territory { get; }
-        public CampaignBattleType BattleType { get; }
-        public Battle.Battle Battle { get; }
+        public BattleBase BattleBase { get; }
         
         public event Action<CampaignSquad> OnEndBattle;
         
-        public CampaignBattle(CampaignTerritory territory, CampaignBattleType battleType) {
+        public CampaignBattle(CampaignTerritory territory) {
             Territory = territory;
-            BattleType = battleType;
-            Battle = new Battle.Battle();
-            Battle.CreateGrid(territory.Map);
-            var squads = CreateSquads(territory.Squads, battleType);
-            squads.ForEach(squad => Battle.AddSquad(squad));
+            BattleBase = new BattleBase();
+            BattleBase.CreateGrid(territory.Map);
+            var squads = CreateSquads(territory.Squads);
+            squads.ForEach(squad => BattleBase.AddSquad(squad));
             var spawnPositions = SpawnSquads(territory.Map);
-            Battle.SpawnSquad(spawnPositions);
-            Battle.OnEndGame += EndBattle;
+            BattleBase.SpawnSquad(spawnPositions);
+            BattleBase.OnEndGame += EndBattleBase;
         }
         
         public void StartBattle() {
-            Battle.StartBattle();
+            BattleBase.StartBattle();
         }
         
-        private void EndBattle(BattleSquad battleSquad) {
+        public List<BattleUnit> GetUnits() {
+            return BattleBase.Squads.SelectMany(squad => squad.Units).ToList();
+        }
+        
+        private void EndBattleBase(BattleSquad battleSquad) {
             var unit = battleSquad.Units.FirstOrDefault()!.Unit;
             var victor = Territory.Squads.FirstOrDefault(squad => squad.Units.Contains(unit));
             OnEndBattle?.Invoke(victor);
@@ -66,41 +67,22 @@ namespace Gangs.Campaign {
         }
         
         // TODO: Implement AI Wieghtings in unit data
-        private List<BattleSquad> CreateSquads(List<CampaignSquad> territoryEntities, CampaignBattleType battleType) {
+        private List<BattleSquad> CreateSquads(List<CampaignSquad> territorySquads) {
             var squads = new List<BattleSquad>();
-            
-            territoryEntities.ForEach(entity => {
-                var aiSquad = battleType == CampaignBattleType.Auto;
-                if (aiSquad) {
-                    var squad = new AIBattleSquad(new BattleAIWeightings {
-                        CanFlankWeight = 1,
-                        DistanceCheckWeight = 1,
-                        FullCoverWeight = 1,
-                        HalfCoverWeight = 1,
-                        HeightAdvantageWeight = 1,
-                        IsFlankedWeight = 1,
-                        RemainingActionPointWeight = 1
-                    }, entity);
-                    
-                    entity.Units.ForEach(unit => {
-                        var battleUnit = new BattleUnit(unit, Battle.Grid);
-                        battleUnit.OnUnitEliminated += Battle.Grid.RemoveUnit;
-                        squad.Units.Add(battleUnit);
-                    });
-                    squads.Add(squad);
-                }
-                else {
-                    var squad = new PlayerBattleSquad();
-                    squads.Add(squad);
-                }
-            });
 
+            territorySquads.ForEach(entity => {
+                var squad = new BattleSquad();
+
+                entity.Units.ForEach(unit => {
+                    var battleUnit = new BattleUnit(unit, BattleBase.Grid);
+                    battleUnit.OnUnitEliminated += BattleBase.Grid.RemoveUnit;
+                    squad.Units.Add(battleUnit);
+                });
+                
+                squads.Add(squad);
+            });
+            
             return squads;
         }
-    }
-    
-    public enum CampaignBattleType {
-        Auto,
-        Manual
     }
 }

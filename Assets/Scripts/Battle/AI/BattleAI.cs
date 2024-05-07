@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
 using Gangs.Abilities.Structs;
 using Gangs.Core;
 using Gangs.Grid;
-using UnityEngine;
 
 namespace Gangs.Battle.AI {
     public static class BattleAI {
-        private static Battle _battle;
-        public static void TakeTurn(BattleUnit battleUnit, Battle battle) {
-            _battle = battle;
-            if (battle.ActiveSquad is not AIBattleSquad activeSquad) {
-                Debug.LogError("EnemyAI.TakeTurn() called on a non-AI squad turn!");
-                return;
-            }
+        public static BattleBase BattleBase { private get; set; }
+        public static void TakeTurn() {
+            if (BattleBase is null) throw new Exception("BattleAI.Battle is null!");
+            if (BattleBase.ActiveSquad is null) throw new Exception("BattleAI.Battle.ActiveSquad is null!");
+            
+            var activeSquad = BattleBase.ActiveSquad;
+            var battleUnit = activeSquad.SelectedUnit;
             
             var moveAbility = battleUnit.Abilities[0] as MoveAbility;
             var fireAbility = battleUnit.Abilities[1] as FireAbility;
@@ -37,7 +37,7 @@ namespace Gangs.Battle.AI {
             }
             
             if (enemyData.Count == 0) {
-                var centreTile = battle.Grid.Grid.GetRandomCenterTile();
+                var centreTile = BattleBase.Grid.Grid.GetRandomCenterTile();
                 enemyData.Add(new TargetTiles {
                     BattleUnit = null,
                     Tile = centreTile,
@@ -45,11 +45,11 @@ namespace Gangs.Battle.AI {
                 });
             }
             
-            var weightings = activeSquad!.Weightings;
+            var weightings = GetWeightings(battleUnit);
             
             var moveRange = moveAbility!.CalculateMoveRange();
-            var bestMoveTiles = FindBestTile(battleUnit, moveRange, enemyData, activeSquad);
-            var bestMove = bestMoveTiles.Take(3).ElementAt(Random.Range(0, 3));
+            var bestMoveTiles = FindBestTile(moveRange, enemyData, weightings);
+            var bestMove = bestMoveTiles.Take(3).ElementAt(new Random().Next(0, 3));
             
             var bestMoveTileValue = bestMove.Value;
             var currentTileValue = GetTilePointValue(currentTile, enemyData, weightings, battleUnit.ActionPointsRemaining);
@@ -71,12 +71,10 @@ namespace Gangs.Battle.AI {
         }
         
         private static void AbilityFinished() {
-            _battle.ActiveSquad.EndUnitTurn();
+            BattleBase.ActiveSquad.EndUnitTurn();
         }
         
-        private static Dictionary<Tile, float> FindBestTile(BattleUnit battleUnit, List<MoveRange> moveRange, List<TargetTiles> targetTiles, AIBattleSquad activeSquad) {
-            var weightings = activeSquad!.Weightings;
-            
+        private static Dictionary<Tile, float> FindBestTile(List<MoveRange> moveRange, List<TargetTiles> targetTiles, BattleAIWeightings weightings) {
             var candidateMoves = new Dictionary<Tile, float>();
             foreach (var move in moveRange) {
                 foreach (var tile in move.Tiles) {
@@ -110,7 +108,7 @@ namespace Gangs.Battle.AI {
         private static int DistanceCheck(Tile tile, List<TargetTiles> targetTiles) {
             var distance = 0;
             foreach (var targetTile in targetTiles) {
-                var distanceToEnemy = _battle.Grid.Grid.GetDistance(tile, targetTile.Tile);
+                var distanceToEnemy = BattleBase.Grid.Grid.GetDistance(tile, targetTile.Tile);
                 if (distanceToEnemy > distance) distance = distanceToEnemy;
             }
 
@@ -120,27 +118,27 @@ namespace Gangs.Battle.AI {
         private static bool IsFlanked(Tile tile, List<TargetTiles> enemyUnits) {
             var isFlanked = false;
             foreach (var enemyUnit in enemyUnits) {
-                var coverType = _battle.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
+                var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
                 if (coverType == CoverType.None) isFlanked = true;
             }
 
             return isFlanked;
         }
 
-        private static List<BattleUnit> GetEnemiesInSquadSight(AIBattleSquad activeSquad) => 
+        private static List<BattleUnit> GetEnemiesInSquadSight(BattleSquad activeSquad) => 
             activeSquad.ActiveUnits.SelectMany(GetEnemiesInLineOfSight).ToList();
 
         private static IEnumerable<BattleUnit> GetEnemiesInLineOfSight(BattleUnit battleUnit) {
             var unitTile = battleUnit.GridUnit.GetTile();
-            var losUnits = _battle.Grid.GetUnitsInSightOfTile(unitTile, 20);
-            var enemyUnits = _battle.GetEnemyUnits(battleUnit);
+            var losUnits = BattleBase.Grid.GetUnitsInSightOfTile(unitTile, 20);
+            var enemyUnits = BattleBase.GetEnemyUnits(battleUnit);
             return losUnits.Where(unit => enemyUnits.Contains(unit)).ToList();
         }
         
         private static bool CanFlank(Tile tile, List<TargetTiles> enemyUnits) {
             var canFlank = false;
             foreach (var enemyUnit in enemyUnits) {
-                var coverType = _battle.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
+                var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
                 if (coverType == CoverType.None) canFlank = true;
             }
 
@@ -159,11 +157,23 @@ namespace Gangs.Battle.AI {
         private static Dictionary<Tile, CoverType> GetTileCoverFromEnemyTiles(Tile tile, List<TargetTiles> enemyUnits) {
             var cover = new Dictionary<Tile, CoverType>();
             foreach (var enemyUnit in enemyUnits) {
-                var coverType = _battle.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
+                var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
                 cover.TryAdd(enemyUnit.Tile, coverType);
             }
 
             return cover;
+        }
+        
+        private static BattleAIWeightings GetWeightings(BattleUnit battleUnit) {
+            return new BattleAIWeightings {
+                HalfCoverWeight = 1,
+                FullCoverWeight = 2,
+                HeightAdvantageWeight = 1,
+                CanFlankWeight = 2,
+                IsFlankedWeight = 2,
+                DistanceCheckWeight = 1,
+                RemainingActionPointWeight = 1
+            };
         }
     }
     

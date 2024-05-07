@@ -21,10 +21,11 @@ namespace Gangs.Battle {
         
         public int DamageTaken;
 
-        public bool IsPlayerControlled = false;
+        //public bool IsPlayerControlled = false;
         
-        public event Action<BattleUnit> OnDeselected;
-        public event Action<BattleUnit> OnSelected; 
+        public event Action OnDeselected;
+        public event Action OnSelected;
+        public event Action OnTakeTurn;
         public event Action<BattleUnit> OnUnitEliminated;
         
         public BattleUnit(CampaignUnit unit, BattleGrid battleGrid) {
@@ -39,7 +40,7 @@ namespace Gangs.Battle {
         public int GetAttributeValue(UnitAttributeType attributeType) => Unit.GetAttribute(attributeType).GetValue();
 
         public void SetSelected(bool selected) {
-            (selected ? OnSelected : OnDeselected)?.Invoke(this);
+            (selected ? OnSelected : OnDeselected)?.Invoke();
             
             if (selected == false) SelectedAbility?.Deselect(); 
             else Abilities[0]?.Select();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Gangs.Battle.AI;
 using Gangs.Campaign;
 using Gangs.Campaign.CampaignGenerators;
 using Gangs.Data;
@@ -68,17 +69,19 @@ namespace Gangs.Managers {
 
         public void AutoBattle() {
             var territory = GetTerritory();
-            var campaignBattle = new CampaignBattle(territory, CampaignBattleType.Auto);
+            var campaignBattle = new CampaignBattle(territory);
             campaignBattle.OnEndBattle += EndBattle;
+            campaignBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
+            BattleAI.BattleBase = campaignBattle.BattleBase;
             campaignBattle.StartBattle();
         }
         
         public void ManualBattle() {
             var territory = GetTerritory();
-            var campaignBattle = new CampaignBattle(territory, CampaignBattleType.Manual);
+            var campaignBattle = new CampaignBattle(territory);
             campaignBattle.OnEndBattle += EndBattle;
+            campaignBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
             gameObject.AddComponent<BattleStartManager>().SetBattle(campaignBattle);
-            
         }
         
         // TODO: Implement actual territory finding

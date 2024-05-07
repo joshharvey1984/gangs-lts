@@ -6,6 +6,7 @@ namespace Gangs.Campaign {
         public CampaignEntityGameObject GameObject { get; set; }
         public string Name { get; set; }
         public List<CampaignUnit> Units { get; set; } = new();
+        public bool IsPlayerControlled { get; set; }
         
         public void AddUnit(CampaignUnit campaignUnit) {
             Units.Add(campaignUnit);

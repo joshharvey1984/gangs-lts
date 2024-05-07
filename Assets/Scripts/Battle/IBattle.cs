@@ -1,8 +1,9 @@
-﻿using Gangs.Battle.Grid;
+﻿using System.Collections.Generic;
 
 namespace Gangs.Battle {
     public interface IBattle {
-        public Battle Battle { get; }
+        public BattleBase BattleBase { get; }
         public void StartBattle();
+        public List<BattleUnit> GetUnits();
     }
 }

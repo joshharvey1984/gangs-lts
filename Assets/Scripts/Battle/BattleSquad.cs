@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gangs.Battle.AI;
-using Gangs.Campaign;
 using Gangs.Grid;
 
 namespace Gangs.Battle {
-    public abstract class BattleSquad {
+    public class BattleSquad {
         public readonly List<BattleUnit> Units = new();
         public List<BattleUnit> ActiveUnits => Units.Where(u => u.Status == Status.Active).ToList();
         
@@ -16,6 +14,7 @@ namespace Gangs.Battle {
         
         public Dictionary<BattleUnit, Tile> EnemyLastSeen = new();
         
+        public event Action OnUnitStartTurn;
         public event Action OnUnitTurnTaken;
         public event Action OnAllUnitsTurnTaken;
         
@@ -53,6 +52,7 @@ namespace Gangs.Battle {
         }
         
         public void AddOrUpdateEnemyLastSeen(BattleUnit battleUnit, Tile tile) => EnemyLastSeen[battleUnit] = tile;
+        
         public bool AllUnitsTurnTaken() => Units.Where(u => u.Status == Status.Active).All(u => u.TurnTaken);
 
         private void SetSelectedUnit(BattleUnit battleUnit) {
@@ -60,15 +60,7 @@ namespace Gangs.Battle {
             SelectedUnit = battleUnit;
             SelectedUnit.SetSelected(true);
         }
-    }
-    
-    public class PlayerBattleSquad : BattleSquad { }
-    
-    public class AIBattleSquad : BattleSquad {
-        public BattleAIWeightings Weightings;
-        
-        public AIBattleSquad(BattleAIWeightings weightings, CampaignSquad entity) {
-            Weightings = weightings;
-        }
+
+        public void TakeTurn() => OnUnitStartTurn?.Invoke();
     }
 }

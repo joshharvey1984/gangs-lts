@@ -647,6 +647,8 @@ MonoBehaviour:
     type: 3}
   ladderPrefab: {fileID: 9176165691699579343, guid: cde164b1bd42d3e4ea8308d530af9ff2,
     type: 3}
+  unitPrefab: {fileID: 1899693000088921737, guid: a219e71745ea9e04697b18d93dcd5993,
+    type: 3}
 --- !u!1 &1906178484
 GameObject:
   m_ObjectHideFlags: 0

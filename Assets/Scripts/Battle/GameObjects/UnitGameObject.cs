@@ -7,13 +7,15 @@ using Gangs.Managers;
 using Gangs.UI;
 using UnityEngine;
 
-namespace Gangs.GameObjects {
+namespace Gangs.Battle.GameObjects {
     public class UnitGameObject : MonoBehaviour {
+        private BattleUnit BattleUnit { get; set; }
         public GameObject selectionCircleObject;
         public GameObject modelObject;
         private SelectionCircle SelectionCircle => selectionCircleObject.GetComponent<SelectionCircle>();
-        public Vector3 Position {
-            private set => gameObject.transform.position = value;
+
+        private Vector3 Position {
+            set => gameObject.transform.position = value;
             get => gameObject.transform.position;
         }
         
@@ -34,8 +36,19 @@ namespace Gangs.GameObjects {
         public void Move(List<MoveWaypoint> tiles) {
             _moveWaypoints = tiles;
         }
+        
+        public void Eliminate() {
+            Destroy(gameObject);
+        }
 
-        public void SetSelected(SelectionCircle.State state) => SelectionCircle.SetState(state);
+        public void SetBattleUnit(BattleUnit unit) {
+            BattleUnit = unit;
+            BattleUnit.OnSelected += SetSelected;
+            BattleUnit.OnDeselected += SetDeselected;
+        }
+
+        private void SetSelected() => SelectionCircle.SetState(SelectionCircle.State.Selected);
+        private void SetDeselected() => SelectionCircle.SetState(SelectionCircle.State.Available);
         
         private void HandleMovement() {
             var nextTile = _moveWaypoints.First().DirectPathTiles.First();
@@ -56,10 +69,6 @@ namespace Gangs.GameObjects {
             }
             
             UnitNewPosition?.Invoke(new GridPosition(Position));
-        }
-
-        public void Eliminate() {
-            Destroy(gameObject);
         }
     }
 }
