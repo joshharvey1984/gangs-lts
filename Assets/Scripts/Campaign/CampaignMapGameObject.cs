@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Gangs.Managers;
 using UnityEngine;
 
 namespace Gangs.Campaign
@@ -25,6 +26,8 @@ namespace Gangs.Campaign
             foreach (var territory in _territories) {
                 territory.GetComponent<CampaignTerritoryGameObject>().CreateBorder();
             }
+
+            CampaignManager.Instance.LoadedMap();
         }
         
         public List<GameObject> GetActiveTerritories(int gridSize) {

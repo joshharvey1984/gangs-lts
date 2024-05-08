@@ -10,6 +10,7 @@ namespace Gangs.Campaign {
     public class CampaignMap {
         public CampaignMapGameObject GameObject { get; set; }
         public List<CampaignTerritory> Territories { get; set; }
+        public List<CampaignEntityGameObject> Entities { get; set; } = new();
         
         public CampaignMap(CampaignData campaignData, GameObject gameObject) {
             GameObject = gameObject.GetComponent<CampaignMapGameObject>();
@@ -17,7 +18,7 @@ namespace Gangs.Campaign {
             GetActiveTerritories(campaignData.MapSize.GetGridSize());
             FindTerritoryNeighbours();
             GenerateMap(campaignData);
-            Territories.ForEach(t => t.SpawnEntities());
+            Territories.ForEach(t => Entities.AddRange(t.SpawnEntities()));
         }
         
         public CampaignTerritory GetTerritoryByGameObject(CampaignTerritoryGameObject territoryGameObject) {

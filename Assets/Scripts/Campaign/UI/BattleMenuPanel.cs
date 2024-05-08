@@ -66,6 +66,7 @@ namespace Gangs.Campaign.UI {
             gameObject.SetActive(false);
             autoBattleButton.SetActive(true);
             manualBattleButton.SetActive(true);
+            CampaignInputManager.Instance.InputEnabled = true;
             Reset();
         }
         

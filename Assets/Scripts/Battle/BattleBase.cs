@@ -4,7 +4,6 @@ using System.Linq;
 using Gangs.Battle.Grid;
 using Gangs.Data;
 using Gangs.Grid;
-using UnityEngine;
 using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Battle {
@@ -13,6 +12,8 @@ namespace Gangs.Battle {
         public List<BattleSquad> Squads { get; } = new();
         public BattleSquad ActiveSquad { get; private set; }
         private int RoundNumber { get; set; } = 1;
+
+        public bool endGame = false;
         
         public event Action<BattleSquad> OnEndGame;
         
@@ -29,7 +30,7 @@ namespace Gangs.Battle {
         public void SpawnSquad(List<List<GridPosition>> spawnPositionGroups) {
             var unitCount = Squads.SelectMany(s => s.Units).ToList().Count;
             if (unitCount > spawnPositionGroups.SelectMany(s => s).ToList().Count) {
-                Debug.LogError($"Unit count mismatch: {unitCount} > {spawnPositionGroups.SelectMany(s => s).ToList().Count}");
+                throw new Exception("Not enough spawn positions for all units");
             }
             for (var i = 0; i < Squads.Count; i++) {
                 for (var j = 0; j < Squads[i].Units.Count; j++) {
@@ -75,14 +76,15 @@ namespace Gangs.Battle {
             RoundNumber++;
             
             if (RoundNumber > 7) {
-                Debug.Log("Timeout - Draw!");
                 EndGame(null);
             }
         }
         
         private bool CheckForEndGame() {
+            if (endGame) return true;
             if (Squads.Any(s => s.Units.All(u => u.Status == Status.Eliminated))) {
                 EndGame(Squads.FirstOrDefault(s => s.Units.Any(u => u.Status != Status.Eliminated)));
+                endGame = true;
                 return true;
             }
             

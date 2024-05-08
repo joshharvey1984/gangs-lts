@@ -36,8 +36,10 @@ namespace Gangs.Campaign {
             CampaignUIManager.Instance.SetTerritoryInfo(this);
         }
 
-        public void SpawnEntities() {
-            Squads.ForEach(e => GameObject.SpawnEntity(e));
+        public List<CampaignEntityGameObject> SpawnEntities() {
+            List<CampaignEntityGameObject> entityGameObjects = new();
+            Squads.ForEach(e => entityGameObjects.Add(GameObject.SpawnEntity(e)));
+            return entityGameObjects;
         }
     }
 }

@@ -17,7 +17,8 @@ namespace Gangs.Campaign {
         public CampaignBattle(CampaignTerritory territory) {
             Territory = territory;
             BattleBase = new BattleBase();
-            if (territory.Map == null) Debug.LogError("Map is null");
+            if (territory is null) Debug.LogError("Territory is null");
+            if (territory!.Map is null) Debug.LogError("Map is null");
             BattleBase.CreateGrid(territory.Map);
             var squads = CreateSquads(territory.Squads);
             squads.ForEach(squad => BattleBase.AddSquad(squad));
@@ -35,6 +36,7 @@ namespace Gangs.Campaign {
         }
 
         public void MoveUnit(BattleUnit unit, Tile tile) {
+            if (BattleBase.endGame) return;
             BattleBase.MoveUnit(unit, tile);
         }
 

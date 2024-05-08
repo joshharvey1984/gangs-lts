@@ -6,6 +6,7 @@ namespace Gangs.Managers {
     public class CampaignInputManager : MonoBehaviour {
         public static CampaignInputManager Instance { get; private set; }
         
+        public bool InputEnabled { get; set; } = true;
         public CampaignTerritory HoverTerritory { get; private set; }
         
         public event Action<CampaignTerritory> OnLeftClickTerritory; 
@@ -16,6 +17,8 @@ namespace Gangs.Managers {
         }
         
         private void Update() {
+            if (!InputEnabled) return;
+            
             if (Input.GetMouseButtonDown(0)) {
                 HandleLeftClick();
             }
@@ -52,7 +55,7 @@ namespace Gangs.Managers {
         
         private void HandleLeftClick() {
             if (HoverTerritory is null) return;
-            OnLeftClickTerritory?.Invoke(HoverTerritory);
+            CampaignManager.Instance.SelectTerritory(HoverTerritory);
         }
         
         private void HandleRightClick() {

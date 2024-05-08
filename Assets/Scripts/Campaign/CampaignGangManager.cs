@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Gangs.Managers;
 
 namespace Gangs.Campaign {
     public class CampaignGangManager {
@@ -9,15 +10,27 @@ namespace Gangs.Campaign {
 
         public void StartTurn() {
             ActiveSquad = Squads[0];
-            ActiveSquad.Select();
+            ActiveSquad.Select(true);
             
             if (IsPlayerControlled) {
-                ActiveSquad.SubscribeToTerritoryClicks();
+                CampaignInputManager.Instance.SelectSquad(ActiveSquad);
             }
         }
         
         public void AddSquad(CampaignSquad squad) {
             Squads.Add(squad);
+        }
+
+        public void SelectTerritory(CampaignTerritory hoverTerritory) {
+            if (ActiveSquad is null) return;
+            var activeSquadTerritory = CampaignManager.Instance.GetTerritory(ActiveSquad);
+            if (activeSquadTerritory == hoverTerritory) return;
+            if (!hoverTerritory.Neighbours.Contains(activeSquadTerritory)) return;
+            
+            activeSquadTerritory.Squads.Remove(ActiveSquad);
+            hoverTerritory.AddEntity(ActiveSquad);
+            
+            CampaignManager.Instance.MoveEntity(ActiveSquad, hoverTerritory);
         }
     }
 }

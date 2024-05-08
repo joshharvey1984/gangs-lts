@@ -1010,7 +1010,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3da8a3a34bd4069a29528842d418c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapParent: {fileID: 2147071757}
+  mapParent: {fileID: 0}
 --- !u!114 &105409082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17156,7 +17156,7 @@ GameObject:
   - component: {fileID: 2147071759}
   m_Layer: 0
   m_Name: CityMap
-  m_TagString: Untagged
+  m_TagString: MapParent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
