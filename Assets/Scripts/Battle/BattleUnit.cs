@@ -72,7 +72,6 @@ namespace Gangs.Battle {
         
         private void Eliminate() {
             Status = Status.Eliminated;
-            //GridManager.Instance.RemoveGridUnit(GridUnit);
             OnUnitEliminated?.Invoke(this);
         }
         

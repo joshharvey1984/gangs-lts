@@ -28,6 +28,9 @@ namespace Gangs.Campaign.UI {
         }
         
         public void SetBattleMenuVictor(CampaignSquad victor) {
+            autoBattleButton.SetActive(false);
+            manualBattleButton.SetActive(false);
+            
             Reset();
             var victorName = victor.Name;
             var text = victorName + " is victorious!";

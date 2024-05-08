@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Gangs.Abilities;
 using Gangs.Abilities.Structs;
+using Gangs.Battle.UI;
 using Gangs.Grid;
 using Gangs.UI;
 using UnityEngine;
@@ -126,7 +128,7 @@ namespace Gangs.Managers {
             return waypoint;
         }
         
-        public void DrawMoveRanges(List<MoveRange> moveRanges) {
+        public void DrawMoveRanges(List<TargetTiles> moveRanges) {
             _moveRangeLine.DestroyAllLines();
             _moveRangeLine.DrawMovementRangeBoundary(moveRanges);
         }
@@ -164,6 +166,13 @@ namespace Gangs.Managers {
                 Destroy(number);
             }
             _tileNumbers.Clear();
+        }
+
+        public void DrawTargetingTiles(List<TargetTiles> targetTiles, TargetingType targetingType) {
+            ResetAllVisuals();
+            if (targetingType == TargetingType.StandardMove) {
+                DrawMoveRanges(targetTiles);
+            }
         }
     }
 }

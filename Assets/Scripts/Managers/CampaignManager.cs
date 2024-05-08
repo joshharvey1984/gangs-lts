@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Battle;
@@ -117,8 +116,22 @@ namespace Gangs.Managers {
             var territory = GetBattleTerritory();
             _currentBattle = new CampaignBattle(territory);
             _currentBattle.OnEndBattle += ManualEndBattle;
-            _currentBattle.BattleBase.Squads.ForEach(s => s.OnUnitStartTurn += BattleAI.TakeTurn);
-            gameObject.AddComponent<BattleStartManager>().SetBattle(_currentBattle);
+            
+            var battleData = new BattleData {
+                Battle = _currentBattle,
+                BattleSquadData = new List<(BattleSquad, bool)>()
+            };
+
+            foreach (var battleSquad in _currentBattle.BattleBase.Squads) {
+                var squadUnit = battleSquad.Units[0].Unit;
+                var squad = territory.Squads.Find(sq => sq.Units.Contains(squadUnit));
+                var gang = _gangs.Find(g => g.Squads.Contains(squad));
+                if (gang is null) battleData.BattleSquadData.Add((battleSquad, false));
+                else if (gang.IsPlayerControlled) battleData.BattleSquadData.Add((battleSquad, true));
+                else battleData.BattleSquadData.Add((battleSquad, false));
+            }
+            
+            gameObject.AddComponent<BattleStartManager>().SetBattle(battleData);
         }
         
         private void AutoEndBattle(CampaignSquad victor) {

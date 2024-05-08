@@ -8,6 +8,8 @@ namespace Gangs.Managers {
         private Camera _camera;
 
         public GameObject HoverTile { get; private set; }
+        
+        public bool InputEnabled { get; set; } = true;
 
         public event Action<GameObject> OnTileHovered;
         public event Action OnRightClick;
@@ -21,8 +23,13 @@ namespace Gangs.Managers {
         }
 
         private void Update() {
+            if (!InputEnabled) return;
             CheckHoverTile();
             CheckKeys();
+        }
+        
+        public void SetPlayerControl() {
+            InputEnabled = true;
         }
 
         private void CheckKeys() {

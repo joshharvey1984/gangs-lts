@@ -5,6 +5,7 @@ using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
+using Gangs.Managers;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
@@ -26,6 +27,10 @@ namespace Gangs.Abilities {
         public virtual void Select() {
             if (BattleUnit.SelectedAbility != null && BattleUnit.SelectedAbility != this) BattleUnit.SelectedAbility.Deselect();
             BattleUnit.SelectedAbility = this;
+            
+            var unitTile = BattleUnit.GridUnit.GetTile();
+            var targetTiles = TargetingType.GetTargetingTiles(unitTile, BattleUnit);
+            GridVisualManager.Instance.DrawTargetingTiles(targetTiles, TargetingType);
         }
 
         public virtual void Deselect() {
@@ -82,9 +87,4 @@ namespace Gangs.Abilities {
             // BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
         }
     }
-}
-
-public enum TargetingType {
-    StandardMove,
-    EnemiesInLineOfSight,
 }

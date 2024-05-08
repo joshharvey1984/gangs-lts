@@ -1,4 +1,5 @@
 ﻿using Gangs.Battle;
+using Gangs.Battle.AI;
 using Gangs.Grid;
 using UnityEngine;
 
@@ -15,7 +16,11 @@ namespace Gangs.Managers {
             }
             
             Instance = this;
-            _battle = BattleStartManager.Instance.Battle;
+            _battle = BattleStartManager.Instance.BattleData.Battle;
+            BattleStartManager.Instance.BattleData.BattleSquadData.ForEach(s => {
+                if (s.PlayerControlled) s.Squad.OnUnitStartTurn += StartPlayerTurn;
+                else s.Squad.OnUnitStartTurn += BattleAI.TakeTurn;
+            });
         }
         
         public void StartBattle() {
@@ -26,5 +31,12 @@ namespace Gangs.Managers {
             var tile = _battle.BattleBase.Grid.Grid.GetTile(gridPosition);
             _battle.MoveUnit(battleUnit, tile);
         }
+
+        private void StartPlayerTurn() {
+            var selectedUnit = GetSelectedUnit();
+            selectedUnit.Abilities[0].Select();
+        }
+        
+        private BattleUnit GetSelectedUnit() => _battle.BattleBase.ActiveSquad.SelectedUnit;
     }
 }

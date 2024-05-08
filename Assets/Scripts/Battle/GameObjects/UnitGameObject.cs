@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Gangs.Battle.GameObjects {
     public class UnitGameObject : MonoBehaviour {
-        private BattleUnit BattleUnit { get; set; }
+        public BattleUnit BattleUnit { get; set; }
         public GameObject selectionCircleObject;
         public GameObject modelObject;
         private SelectionCircle SelectionCircle => selectionCircleObject.GetComponent<SelectionCircle>();

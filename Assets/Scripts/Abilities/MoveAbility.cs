@@ -33,7 +33,7 @@ namespace Gangs.Abilities {
                 // InputManager.Instance.OnLeftClickTile += LeftClickTile;
             //}
 
-            CalculateMoveRange();
+            //CalculateMoveRange();
             //GridVisualManager.Instance.DrawTileDetails(InputManager.Instance.HoverTile);
         }
         

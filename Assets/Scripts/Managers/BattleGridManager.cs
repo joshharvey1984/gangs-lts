@@ -27,10 +27,10 @@ namespace Gangs.Managers {
             if (Instance != null && Instance != this) Destroy(this); 
             else Instance = this;
 
-            var battleGrid = BattleStartManager.Instance.Battle.BattleBase.Grid;
+            var battleGrid = BattleStartManager.Instance.BattleData.Battle.BattleBase.Grid;
             CreateGrid(battleGrid);
             
-            var gridUnits = BattleStartManager.Instance.Battle.GetUnits();
+            var gridUnits = BattleStartManager.Instance.BattleData.Battle.GetUnits();
             foreach (var gridUnit in gridUnits) {
                 _unitGameObjects.Add(SpawnUnit(gridUnit));
             }
@@ -40,11 +40,22 @@ namespace Gangs.Managers {
             BattleManager.Instance.StartBattle();
         }
         
-        private UnitGameObject SpawnUnit(BattleUnit unit) {
+        public Tile GetTile(GridPosition position) => _grid.Grid.GetTile(position);
+
+        private void RemoveUnit(BattleUnit unit) {
+            var unitGameObject = _unitGameObjects.FirstOrDefault(u => u.BattleUnit == unit);
+            if (unitGameObject is null) return;
+            _unitGameObjects.Remove(unitGameObject);
+            Destroy(unitGameObject.gameObject);
+        }
+        
+        private UnitGameObject SpawnUnit(BattleUnit unit, Color? color = null) {
             var spawnPos = unit.GridUnit.GetTile().GridPosition.ToVector3();
             var unitObject = Instantiate(unitPrefab, spawnPos, Quaternion.identity, gridParent.transform);
             var unitGameObject = unitObject.GetComponent<UnitGameObject>();
+            unitGameObject.GetComponent<UnitGameObject>().modelObject.GetComponent<Renderer>().material.color = color ?? Color.white;
             unitGameObject.SetBattleUnit(unit);
+            unitGameObject.BattleUnit.OnUnitEliminated += RemoveUnit;
             return unitGameObject;
         }
 

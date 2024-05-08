@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Gangs.Abilities;
 using Gangs.Abilities.Structs;
 using Gangs.Grid;
 using UnityEngine;
 
-namespace Gangs.UI
+namespace Gangs.Battle.UI
 {
     public class MoveRangeLine : MonoBehaviour {
         public float lineWidth = 0.05f;
@@ -12,14 +13,14 @@ namespace Gangs.UI
         public float emissionIntensity = 0.5f;
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
-        public void DrawMovementRangeBoundary(List<MoveRange> movementRangeTiles) {
+        public void DrawMovementRangeBoundary(List<TargetTiles> movementRangeTiles) {
             foreach (var movementRangeTile in movementRangeTiles) {
-                var excludeTiles = movementRangeTiles.Take(movementRangeTile.ActionPoint).ToList();
+                var excludeTiles = movementRangeTiles.Take(movementRangeTile.Cost).ToList();
                 var mergedExcludeTiles = new List<Tile>();
                 foreach (var excludeTile in excludeTiles) {
                     mergedExcludeTiles.AddRange(excludeTile.Tiles);
                 }
-                DrawRangeLines(movementRangeTile.Tiles, movementRangeTile.ActionPoint, mergedExcludeTiles);
+                DrawRangeLines(movementRangeTile.Tiles, movementRangeTile.Cost, mergedExcludeTiles);
             }
         }
         
