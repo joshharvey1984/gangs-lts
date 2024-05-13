@@ -1,4 +1,5 @@
 using System;
+using Gangs.Grid;
 using UnityEngine;
 
 namespace Gangs.Managers {
@@ -13,7 +14,7 @@ namespace Gangs.Managers {
 
         public event Action<GameObject> OnTileHovered;
         public event Action OnRightClick;
-        public event Action<GameObject> OnLeftClickTile; 
+        public event Action<Tile> OnLeftClickTile; 
 
         private void Awake() {
             if (Instance is not null && Instance != this) Destroy(this); 
@@ -28,7 +29,7 @@ namespace Gangs.Managers {
             CheckKeys();
         }
         
-        public void SetPlayerControl() {
+        public void SetPlayerControl(bool playerControl = true) {
             InputEnabled = true;
         }
 
@@ -57,17 +58,13 @@ namespace Gangs.Managers {
                 _camera.transform.Translate(Vector3.right * (Time.deltaTime * 10));
             }
             
-            // if (Input.GetKeyUp(KeyCode.Tab)) {
-            //     BattleManager.Instance.NextUnit();
-            // }
-            //
-            // if (Input.GetKeyUp(KeyCode.Space)) {
-            //     BattleManager.Instance.BattleSquadTurn.EndUnitTurn();
-            // }
-            //
-            // if (Input.GetKeyUp(KeyCode.Escape)) {
-            //     BattleManager.Instance.EndGame();
-            // }
+            if (Input.GetKeyUp(KeyCode.Tab)) {
+                BattleManager.Instance.NextUnit();
+            }
+            
+            if (Input.GetKeyUp(KeyCode.Space)) {
+                BattleManager.Instance.EndUnitTurn();
+            }
 
             if (Input.GetMouseButtonUp(0)) {
                 LeftClick();
@@ -90,9 +87,11 @@ namespace Gangs.Managers {
         }
         
         private void LeftClick() {
-            var tile = GetMouseTile();
+            var tile = GetMouseTileGameObject();
             if (tile is null) return;
-            OnLeftClickTile?.Invoke(tile);
+            var gridPosition = new GridPosition(tile.transform.position);
+            var gridTile = BattleGridManager.Instance.GetTile(gridPosition);
+            OnLeftClickTile?.Invoke(gridTile);
             
             // if (tile.GridUnit != null) {
             //     ClickOnUnit();
@@ -118,19 +117,18 @@ namespace Gangs.Managers {
         // }
         
         private void CheckHoverTile() {
-            var tile = GetMouseTile();
+            var tile = GetMouseTileGameObject();
             if (tile == HoverTile) return;
             HoverTile = tile;
             OnTileHovered?.Invoke(HoverTile);
-            //GridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
-        }
+            GridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
+        } 
 
-        private GameObject GetMouseTile() {
+        private GameObject GetMouseTileGameObject() {
             var ray = _camera.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(ray, out var hit)) return null;
             var tileGameObject = hit.collider.gameObject.transform.parent.transform;
-            if (!tileGameObject.CompareTag($"Tile")) return null;
-            return tileGameObject.gameObject;
+            return !tileGameObject.CompareTag($"Tile") ? null : tileGameObject.gameObject;
         }
     }
 }

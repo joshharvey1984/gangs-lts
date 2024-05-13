@@ -20,7 +20,7 @@ namespace Gangs.Battle {
         
         public void NextUnit(BattleUnit battleUnit = null) {
             if (ActivatedUnit) return;
-            if (battleUnit == null) battleUnit = SelectedUnit;
+            battleUnit ??= SelectedUnit;
             
             if (AllUnitsTurnTaken()) {
                 OnAllUnitsTurnTaken?.Invoke();

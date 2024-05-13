@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Gangs.Battle;
 using Gangs.Battle.AI;
 using UnityEngine;
@@ -27,5 +28,7 @@ namespace Gangs.Managers {
     public struct BattleData {
         public IBattle Battle;
         public List<(BattleSquad Squad, bool PlayerControlled)> BattleSquadData;
+        
+        public bool PlayerControllerUnit(BattleUnit unit) => BattleSquadData.Any(s => s.Squad.Units.Contains(unit) && s.PlayerControlled);
     }
 }

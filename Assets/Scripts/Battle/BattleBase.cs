@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Battle.Grid;
+using Gangs.Core;
 using Gangs.Data;
 using Gangs.Grid;
 using Tile = Gangs.Grid.Tile;
@@ -48,6 +49,9 @@ namespace Gangs.Battle {
             Squads.Where(sq => !sq.Units.Contains(battleUnit)).SelectMany(sq => sq.Units).ToList();
         
         public void MoveUnit(BattleUnit unit, Tile tile) => Grid.MoveUnit(unit, tile);
+        
+        public CoverType GetCoverType(GridPosition gridPosition, CardinalDirection direction) => 
+            Grid.GetCoverType(gridPosition, direction);
         
         private void NextTurn() {
             ActiveSquad = GetNextSquadTurn();

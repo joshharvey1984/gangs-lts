@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Gangs.Abilities;
-using Gangs.Abilities.Structs;
 using Gangs.Battle.UI;
+using Gangs.Core;
 using Gangs.Grid;
 using Gangs.UI;
 using UnityEngine;
@@ -34,6 +34,8 @@ namespace Gangs.Managers {
         [SerializeField]
         private GameObject debugLosIndicatorPrefab;
         private readonly List<GameObject> _debugLosIndicators = new();
+
+        private List<TargetTiles> _targetTiles = new();
         
         private List<GameObject> _tileNumbers = new();
         
@@ -56,28 +58,26 @@ namespace Gangs.Managers {
             ClearTileDetails();
             ClearAllTileColors();
         }
-        
-        public void DrawTileDetails(Tile tile) {
-            // ClearTileDetails();
-            //
-            // if (tile == null) return;
-            // foreach (var wall in tile.Walls) {
-            //     var wallGameObject = BattleManager.Instance.GetWallGameObject(wall.Value);
-            //     if (wallGameObject == null) continue;
-            //     var wallScript = wallGameObject.GetComponent<WallGameObject>();
-            //     if (wallScript.CoverType == CoverType.None) continue;
-            //     var indicatorPos = wallGameObject.transform.position;
-            //     var yPos = tile.GridPosition.Y + 0.5f;
-            //     indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.15f);
-            //     indicatorPos.y = yPos;
-            //     var indicator = Instantiate(wallScript.CoverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
-            //     if (wall.Key is CardinalDirection.East or CardinalDirection.West) {
-            //         indicator.transform.Rotate(Vector3.up, 90);
-            //     }
-            //     indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
-            //     _coverIndicators.Add(indicator);
-            // }
-            //
+
+        private void DrawTileDetails(Tile tile) {
+            ClearTileDetails();
+            
+            if (tile == null) return;
+            foreach (var wall in tile.Walls) {
+                var coverType = BattleManager.Instance.GetCoverType(tile.GridPosition, wall.Key);
+                if (coverType == CoverType.None) continue;
+                var indicatorPos = GetIndicatorPosition(tile, wall.Key);
+                var yPos = tile.GridPosition.Y + 0.5f;
+                indicatorPos = Vector3.MoveTowards(indicatorPos, tile.GridPosition.ToVector3(), 0.15f);
+                indicatorPos.y = yPos;
+                var indicator = Instantiate(coverType == CoverType.Full ? fullCoverIndicatorPrefab : halfCoverIndicatorPrefab, indicatorPos, Quaternion.identity);
+                if (wall.Key is CardinalDirection.East or CardinalDirection.West) {
+                    indicator.transform.Rotate(Vector3.up, 90);
+                }
+                indicator.GetComponentInChildren<Renderer>().material.color = new Color(128 / 255f, 210 / 255f, 196 / 255f, 1f);
+                _coverIndicators.Add(indicator);
+            }
+            
             // if (DebugManager.Instance.DebugMode) {
             //     // draw line of sight
             //     var lineOfSight = tile.LineOfSightGridPositions;
@@ -88,6 +88,25 @@ namespace Gangs.Managers {
             //         _debugLosIndicators.Add(indicator);
             //     }
             // }
+        }
+        
+        private Vector3 GetIndicatorPosition(Tile tile, CardinalDirection direction) {
+            var indicatorPos = tile.GridPosition.ToVector3();
+            switch (direction) {
+                case CardinalDirection.North:
+                    indicatorPos.z += 0.5f;
+                    break;
+                case CardinalDirection.East:
+                    indicatorPos.x += 0.5f;
+                    break;
+                case CardinalDirection.South:
+                    indicatorPos.z -= 0.5f;
+                    break;
+                case CardinalDirection.West:
+                    indicatorPos.x -= 0.5f;
+                    break;
+            }
+            return indicatorPos;
         }
 
         private void ClearTileDetails() {
@@ -102,23 +121,31 @@ namespace Gangs.Managers {
             _debugLosIndicators.Clear();
         }
         
-        public void UpdateSelectionCursor(Tile hoverTile) {
-            if (_selectionCursor == null) {
+        public void UpdateSelectionCursor(GameObject hoverTile) {
+            if (_selectionCursor is null) {
                 _selectionCursor = Instantiate(selectionCursorPrefab);
             }
             
-            if (hoverTile == null) {
+            if (hoverTile is null) {
                 _selectionCursor.SetActive(false);
                 return;
             }
             
             _selectionCursor.SetActive(true);
+            var gridPosition = new GridPosition(hoverTile.transform.position);
             
             _selectionCursor.transform.position = new Vector3 {
-                x = hoverTile.GridPosition.X,
-                y = hoverTile.GridPosition.Y + 0.01f,
-                z = hoverTile.GridPosition.Z
+                x = gridPosition.X,
+                y = gridPosition.Y + 0.01f,
+                z = gridPosition.Z
             };
+
+            if (!BattleInputManager.Instance.InputEnabled) return;
+            if (BattleManager.Instance.CurrentAbility() == null) return;
+            if (BattleManager.Instance.CurrentAbility().TargetingType == TargetingType.StandardMove) {
+                DrawMovementPath(gridPosition);
+                DrawTileDetails(BattleGridManager.Instance.GetTile(gridPosition));
+            }
         }
         
         public GameObject DrawWaypointIndicator(Tile tiles) {
@@ -127,15 +154,25 @@ namespace Gangs.Managers {
             waypoint.transform.Rotate(Vector3.right, 90);
             return waypoint;
         }
-        
-        public void DrawMoveRanges(List<TargetTiles> moveRanges) {
+
+        private void DrawMoveRanges(List<TargetTiles> moveRanges) {
             _moveRangeLine.DestroyAllLines();
             _moveRangeLine.DrawMovementRangeBoundary(moveRanges);
         }
-        public void ClearMoveRanges() => _moveRangeLine.DestroyAllLines();
-        public void ClearWaypoints() => _movePathLine.ClearAllLines();
-        public void ClearMovementPath() => _movePathLine.ClearMovementPath();
-        public void DrawMovementPath(List<Tile> tiles) => _movePathLine.DrawMovementPath(tiles);
+
+        private void ClearMoveRanges() => _moveRangeLine.DestroyAllLines();
+        private void ClearWaypoints() => _movePathLine.ClearAllLines();
+        private void ClearMovementPath() => _movePathLine.ClearMovementPath();
+
+        private void DrawMovementPath(GridPosition endPosition) {
+            ClearWaypoints();
+            var endTile = BattleGridManager.Instance.GetTile(endPosition);
+            if (!BattleManager.Instance.CurrentAbility().TargetTiles.Exists(t => t.Tiles.Contains(endTile))) return;
+            var startTile = BattleManager.Instance.GetSelectedUnit().GridUnit.GetTile();
+            var path = Pathfinder.FindOptimizedPath(startTile, endTile);
+            _movePathLine.DrawMovementPath(path.DirectPathTiles);
+        }
+
         public void ConvertMovementPathToWayPoint() => _movePathLine.ConvertMovementPathToWayPoint();
 
         // public void ColorTile(Tile tile, Color color) {
@@ -161,17 +198,17 @@ namespace Gangs.Managers {
         //     _tileNumbers.Add(text);
         // }
 
-        public void DeleteAllTileNumbers() {
-            foreach (var number in _tileNumbers) {
-                Destroy(number);
-            }
-            _tileNumbers.Clear();
-        }
-
-        public void DrawTargetingTiles(List<TargetTiles> targetTiles, TargetingType targetingType) {
+        // public void DeleteAllTileNumbers() {
+        //     foreach (var number in _tileNumbers) {
+        //         Destroy(number);
+        //     }
+        //     _tileNumbers.Clear();
+        // }
+        
+        public void DrawTargetingTiles(Ability ability) {
             ResetAllVisuals();
-            if (targetingType == TargetingType.StandardMove) {
-                DrawMoveRanges(targetTiles);
+            if (ability.TargetingType == TargetingType.StandardMove) {
+                DrawMoveRanges(ability.TargetTiles);
             }
         }
     }

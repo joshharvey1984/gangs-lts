@@ -5,7 +5,6 @@ using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
-using Gangs.Managers;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
@@ -13,32 +12,48 @@ namespace Gangs.Abilities {
         protected readonly BattleGrid BattleGrid;
         
         public string ButtonText;
-        protected TargetingType TargetingType;
-        protected bool EndTurnOnUse = false;
+        public bool EndTurnOnUse = false;
+        public TargetingType TargetingType { get; protected set; }
         
+        public List<TargetTiles> TargetTiles { get; private set; }
+        public Tile TargetTile { get; set; }
+        
+        public event Action<Ability> OnAbilitySelected;
+        public event Action<Tile> OnAbilityExecuted;
         public event Action OnAbilityFinished;
-        public event Action OnAbilityExecuted;
-
-        protected Ability(BattleUnit battleUnit, BattleGrid battleGrid) {
+        
+        protected Ability(BattleUnit battleUnit, BattleGrid battleGrid, Action<Tile> onAbilityExecuted = null) {
             BattleUnit = battleUnit;
             BattleGrid = battleGrid;
+            OnAbilityExecuted = onAbilityExecuted;
         }
         
         public virtual void Select() {
             if (BattleUnit.SelectedAbility != null && BattleUnit.SelectedAbility != this) BattleUnit.SelectedAbility.Deselect();
             BattleUnit.SelectedAbility = this;
-            
-            var unitTile = BattleUnit.GridUnit.GetTile();
-            var targetTiles = TargetingType.GetTargetingTiles(unitTile, BattleUnit);
-            GridVisualManager.Instance.DrawTargetingTiles(targetTiles, TargetingType);
+            TargetTiles = TargetingType.GetTargetingTiles(BattleUnit.GridUnit.GetTile(), BattleUnit, BattleGrid);
+            OnAbilitySelected?.Invoke(this);
         }
 
         public virtual void Deselect() {
             BattleUnit.SelectedAbility = null;
+            TargetTile = null;
+            TargetTiles = null;
+        }
+        
+        public void SetTarget(Tile tile) {
+            if (tile == null) return;
+            if (TargetTiles == null) return;
+            if (!TargetTiles.Exists(t => t.Tiles.Contains(tile))) return;
+            TargetTile = tile;
+            Execute();
         }
 
-        public virtual void Execute(){
-            //OnAbilityExecuted?.Invoke();
+        public virtual void Execute() {
+            var apCost = TargetTiles.Find(t => t.Tiles.Contains(TargetTile)).Cost;
+            BattleUnit.SpendActionPoints(apCost);
+            BattleUnit.OnAbilityCompleted += Finish;
+            OnAbilityExecuted?.Invoke(TargetTile);
         }
 
         public virtual int ToHit(Tile tile) => 0;
@@ -74,17 +89,6 @@ namespace Gangs.Abilities {
 
         protected void Finish() {
             OnAbilityFinished?.Invoke();
-            // if (EndTurnOnUse || BattleUnit.ActionPointsRemaining <= 0) {
-            //     GridVisualManager.Instance.ResetAllVisuals();
-            //     OnAbilityFinished?.Invoke();
-            //     return;
-            // }
-            //
-            // if (!BattleUnit.IsPlayerControlled && BattleUnit.ActionPointsRemaining > 0) {
-            //     BattleAI.TakeTurn(BattleUnit, Battle);
-            // }
-            //
-            // BattleManager.Instance.abilityUIPanel.GetComponent<AbilityButtonBar>().EnableAbilityButtons();
         }
     }
 }

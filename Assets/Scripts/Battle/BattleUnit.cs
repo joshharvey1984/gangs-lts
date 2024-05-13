@@ -34,7 +34,7 @@ namespace Gangs.Battle {
             Unit = unit;
             ActionPointsRemaining = GetAttributeValue(UnitAttributeType.ActionPoints);
             Abilities = new Ability[] {
-                new MoveAbility(this, battleGrid),
+                new MoveAbility(this, battleGrid, SetMoveTile),
                 new FireAbility(this, battleGrid)
             };
         }
@@ -46,9 +46,6 @@ namespace Gangs.Battle {
             
             if (selected == false) SelectedAbility?.Deselect(); 
             else Abilities[0]?.Select();
-            
-            //if (TurnTaken) UnitGameObject.SetSelected(SelectionCircle.State.Unavailable);
-            //else UnitGameObject.SetSelected(selected ? SelectionCircle.State.Selected : SelectionCircle.State.Available);
         }
 
         public void ResetTurn() {
@@ -81,9 +78,14 @@ namespace Gangs.Battle {
             ability.Select();
         }
 
-        public void SetMoveWaypoints(List<MoveWaypoint> moveWaypoints) {
-            MoveWaypoints = moveWaypoints;
-            MoveWaypoints.RemoveAt(0);
+        private void SetMoveTile(Tile tile) {
+            var path = Pathfinder.FindOptimizedPath(GridUnit.GetTile(), tile);
+            MoveWaypoints.Add(new MoveWaypoint {
+                DirectPathTiles = path.DirectPathTiles,
+                Tiles = path.PathTiles,
+                Cost = path.Cost
+            });
+            
             MoveNextWaypointTile();
         }
         
@@ -101,6 +103,8 @@ namespace Gangs.Battle {
             MoveWaypoints.RemoveAt(0);
             OnMoveUnitTile?.Invoke(this, nextWaypoint);
         }
+
+        public int GetTotalMovePoints() => GetAttributeValue(UnitAttributeType.Movement) * ActionPointsRemaining * 10;
     }
     
     public enum Status {

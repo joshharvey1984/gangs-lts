@@ -116,7 +116,7 @@ namespace Gangs.Managers {
             var territory = GetBattleTerritory();
             _currentBattle = new CampaignBattle(territory);
             _currentBattle.OnEndBattle += ManualEndBattle;
-            
+
             var battleData = new BattleData {
                 Battle = _currentBattle,
                 BattleSquadData = new List<(BattleSquad, bool)>()

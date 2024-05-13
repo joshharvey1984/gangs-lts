@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Abilities;
-using Gangs.Abilities.Structs;
 using Gangs.Core;
 using Gangs.Grid;
 
@@ -24,30 +23,31 @@ namespace Gangs.Battle.AI {
             var lastSeenEnemies = activeSquad.EnemyLastSeen;
             var enemiesInSight = GetEnemiesInSquadSight(activeSquad);
             
-            var enemyData = new List<TargetTiles>();
+            var enemyData = new List<SearchTiles>();
             
             foreach (var (enemy, tile) in lastSeenEnemies) {
-                enemyData.Add(new TargetTiles {
+                enemyData.Add(new SearchTiles {
                     BattleUnit = enemy,
                     Tile = tile,
                     Type = enemiesInSight.Contains(enemy) 
-                        ? TargetTiles.TargetTileType.VisibleEnemy 
-                        : TargetTiles.TargetTileType.LastSeenEnemy
+                        ? SearchTiles.SearchTileType.VisibleEnemy 
+                        : SearchTiles.SearchTileType.LastSeenEnemy
                 });
             }
             
             if (enemyData.Count == 0) {
                 var centreTile = BattleBase.Grid.Grid.GetRandomCenterTile();
-                enemyData.Add(new TargetTiles {
+                enemyData.Add(new SearchTiles {
                     BattleUnit = null,
                     Tile = centreTile,
-                    Type = TargetTiles.TargetTileType.Search
+                    Type = SearchTiles.SearchTileType.Search
                 });
             }
             
             var weightings = GetWeightings(battleUnit);
             
-            var moveRange = moveAbility!.CalculateMoveRange();
+            //var moveRange = moveAbility!.CalculateMoveRange();
+            var moveRange = moveAbility!.TargetingType.GetTargetingTiles(currentTile, battleUnit, BattleBase.Grid);
             var bestMoveTiles = FindBestTile(moveRange, enemyData, weightings);
             var bestMove = bestMoveTiles.Take(3).ElementAt(new Random().Next(0, 3));
             
@@ -65,21 +65,20 @@ namespace Gangs.Battle.AI {
                 }
             }
             
-            moveAbility!.AddWaypoint(bestMove.Key);
             moveAbility!.OnAbilityFinished += AbilityFinished;
-            moveAbility!.Execute();
+            moveAbility!.SetTarget(bestMove.Key);
         }
         
         private static void AbilityFinished() {
             BattleBase.ActiveSquad.EndUnitTurn();
         }
         
-        private static Dictionary<Tile, float> FindBestTile(List<MoveRange> moveRange, List<TargetTiles> targetTiles, BattleAIWeightings weightings) {
+        private static Dictionary<Tile, float> FindBestTile(List<TargetTiles> moveRange, List<SearchTiles> targetTiles, BattleAIWeightings weightings) {
             var candidateMoves = new Dictionary<Tile, float>();
             foreach (var move in moveRange) {
                 foreach (var tile in move.Tiles) {
                     if (tile.GridUnit != null) continue;
-                    var pointValue = GetTilePointValue(tile, targetTiles, weightings, move.ActionPoint);
+                    var pointValue = GetTilePointValue(tile, targetTiles, weightings, move.Cost);
                     if (!candidateMoves.TryAdd(tile, pointValue)) candidateMoves[tile] += pointValue;
                 }
             }
@@ -87,7 +86,7 @@ namespace Gangs.Battle.AI {
             return candidateMoves.OrderByDescending(kvp => kvp.Value).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
-        private static float GetTilePointValue(Tile tile, List<TargetTiles> targetTiles, BattleAIWeightings weightings, int apRemaining) {
+        private static float GetTilePointValue(Tile tile, List<SearchTiles> targetTiles, BattleAIWeightings weightings, int apRemaining) {
             var pointValue = 0f;
             var cover = GetTileCoverFromEnemyTiles(tile, targetTiles);
             if (cover is {Count: > 0}){
@@ -105,7 +104,7 @@ namespace Gangs.Battle.AI {
             return pointValue;
         }
         
-        private static int DistanceCheck(Tile tile, List<TargetTiles> targetTiles) {
+        private static int DistanceCheck(Tile tile, List<SearchTiles> targetTiles) {
             var distance = 0;
             foreach (var targetTile in targetTiles) {
                 var distanceToEnemy = BattleBase.Grid.Grid.GetDistance(tile, targetTile.Tile);
@@ -115,7 +114,7 @@ namespace Gangs.Battle.AI {
             return distance;
         }
         
-        private static bool IsFlanked(Tile tile, List<TargetTiles> enemyUnits) {
+        private static bool IsFlanked(Tile tile, List<SearchTiles> enemyUnits) {
             var isFlanked = false;
             foreach (var enemyUnit in enemyUnits) {
                 var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
@@ -135,7 +134,7 @@ namespace Gangs.Battle.AI {
             return losUnits.Where(unit => enemyUnits.Contains(unit)).ToList();
         }
         
-        private static bool CanFlank(Tile tile, List<TargetTiles> enemyUnits) {
+        private static bool CanFlank(Tile tile, List<SearchTiles> enemyUnits) {
             var canFlank = false;
             foreach (var enemyUnit in enemyUnits) {
                 var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
@@ -145,7 +144,7 @@ namespace Gangs.Battle.AI {
             return canFlank;
         }
         
-        private static bool HeightAdvantage(Tile tile, List<TargetTiles> enemyUnits) {
+        private static bool HeightAdvantage(Tile tile, List<SearchTiles> enemyUnits) {
             var heightAdvantage = false;
             foreach (var enemyUnit in enemyUnits) {
                 if (tile.GridPosition.Y > enemyUnit.Tile.GridPosition.Y) heightAdvantage = true;
@@ -154,7 +153,7 @@ namespace Gangs.Battle.AI {
             return heightAdvantage;
         }
         
-        private static Dictionary<Tile, CoverType> GetTileCoverFromEnemyTiles(Tile tile, List<TargetTiles> enemyUnits) {
+        private static Dictionary<Tile, CoverType> GetTileCoverFromEnemyTiles(Tile tile, List<SearchTiles> enemyUnits) {
             var cover = new Dictionary<Tile, CoverType>();
             foreach (var enemyUnit in enemyUnits) {
                 var coverType = BattleBase.Grid.GetCoverType(tile.GridPosition, enemyUnit.Tile.GridPosition);
@@ -177,12 +176,12 @@ namespace Gangs.Battle.AI {
         }
     }
     
-    public struct TargetTiles {
+    public struct SearchTiles {
         public Tile Tile;
         public BattleUnit BattleUnit;
-        public TargetTileType Type;
+        public SearchTileType Type;
         
-        public enum TargetTileType {
+        public enum SearchTileType {
             VisibleEnemy,
             LastSeenEnemy,
             Search
