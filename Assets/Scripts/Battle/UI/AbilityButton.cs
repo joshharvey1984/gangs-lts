@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Gangs.UI {
+namespace Gangs.Battle.UI {
     public class AbilityButton : MonoBehaviour {
         private KeyCode _key;
         public TextMeshProUGUI abilityNameText;

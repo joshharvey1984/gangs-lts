@@ -62,7 +62,7 @@ namespace Gangs.Battle {
         
         public void Damage(int amount) {
             DamageTaken += amount;
-            if (DamageTaken >= GetCurrentHitPoints()) {
+            if (GetCurrentHitPoints() <= 0) {
                 Eliminate();
             }
         }

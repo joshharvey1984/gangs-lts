@@ -5,6 +5,7 @@ using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
+using UnityEngine;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
@@ -88,6 +89,7 @@ namespace Gangs.Abilities {
         }
 
         protected void Finish() {
+            Debug.Log($"{BattleUnit.Unit.Name} finished using {ButtonText}");
             OnAbilityFinished?.Invoke();
         }
     }

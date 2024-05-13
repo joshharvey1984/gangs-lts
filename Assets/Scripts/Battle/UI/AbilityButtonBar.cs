@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gangs.Battle;
 using UnityEngine;
 
-namespace Gangs.UI {
+namespace Gangs.Battle.UI {
     public class AbilityButtonBar : MonoBehaviour {
         [SerializeField]
         private GameObject abilityButtonPrefab;
@@ -25,6 +24,7 @@ namespace Gangs.UI {
         
         public void DisableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(false));
         public void EnableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(true));
+        
         public void DestroyAbilityButtons() {
             foreach (var button in _abilityButtons) {
                 Destroy(button.gameObject);

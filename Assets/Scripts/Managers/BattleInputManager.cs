@@ -10,7 +10,7 @@ namespace Gangs.Managers {
 
         public GameObject HoverTile { get; private set; }
         
-        public bool InputEnabled { get; set; } = true;
+        public bool InputEnabled { get; private set; } = false;
 
         public event Action<GameObject> OnTileHovered;
         public event Action OnRightClick;
@@ -30,7 +30,7 @@ namespace Gangs.Managers {
         }
         
         public void SetPlayerControl(bool playerControl = true) {
-            InputEnabled = true;
+            InputEnabled = playerControl;
         }
 
         private void CheckKeys() {
@@ -63,6 +63,7 @@ namespace Gangs.Managers {
             }
             
             if (Input.GetKeyUp(KeyCode.Space)) {
+                BattleGridVisualManager.Instance.ResetAllVisuals();
                 BattleManager.Instance.EndUnitTurn();
             }
 
@@ -121,7 +122,7 @@ namespace Gangs.Managers {
             if (tile == HoverTile) return;
             HoverTile = tile;
             OnTileHovered?.Invoke(HoverTile);
-            GridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
+            BattleGridVisualManager.Instance.UpdateSelectionCursor(HoverTile);
         } 
 
         private GameObject GetMouseTileGameObject() {

@@ -42,7 +42,7 @@ namespace Gangs.Managers {
                 return;
             }
             
-            GetSelectedUnit().SelectedAbility.Select();
+            StartPlayerTurn();
         }
         
         private void StartPlayerTurn() {
@@ -58,8 +58,10 @@ namespace Gangs.Managers {
             
             foreach (var u in _battle.GetUnits().Where(u => BattleStartManager.Instance.BattleData.PlayerControllerUnit(u))) {
                 foreach (var ability in u.Abilities) {
-                    ability.OnAbilitySelected += GridVisualManager.Instance.DrawTargetingTiles;
-                    ability.OnAbilityExecuted += _ => GridVisualManager.Instance.ResetAllVisuals();
+                    ability.OnAbilitySelected += BattleGridVisualManager.Instance.DrawTargetingTiles;
+                    ability.OnAbilityExecuted += _ => BattleGridVisualManager.Instance.ResetAllVisuals();
+                    ability.OnAbilityExecuted += _ => BattleInputManager.Instance.SetPlayerControl(false);
+                    ability.OnAbilityExecuted += _ => BattleGridVisualManager.Instance.ResetAllVisuals();
                     BattleInputManager.Instance.OnLeftClickTile += ability.SetTarget;
                     ability.OnAbilityFinished += CheckEndTurn;
                 }

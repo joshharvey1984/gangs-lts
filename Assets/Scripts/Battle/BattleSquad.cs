@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gangs.Grid;
+using UnityEngine;
 
 namespace Gangs.Battle {
     public class BattleSquad {
@@ -16,16 +17,10 @@ namespace Gangs.Battle {
         
         public event Action OnUnitStartTurn;
         public event Action OnUnitTurnTaken;
-        public event Action OnAllUnitsTurnTaken;
         
         public void NextUnit(BattleUnit battleUnit = null) {
             if (ActivatedUnit) return;
             battleUnit ??= SelectedUnit;
-            
-            if (AllUnitsTurnTaken()) {
-                OnAllUnitsTurnTaken?.Invoke();
-                return;
-            }
             
             var index = Units.IndexOf(battleUnit);
             index++;
@@ -40,6 +35,7 @@ namespace Gangs.Battle {
         }
         
         public void EndUnitTurn() {
+            Debug.Log($"{SelectedUnit.Unit.Name} turn ended");
             SelectedUnit.TurnTaken = true;
             SelectedUnit.SetSelected(false); 
             ActivatedUnit = false;

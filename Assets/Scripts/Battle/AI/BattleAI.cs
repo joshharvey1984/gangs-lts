@@ -60,7 +60,7 @@ namespace Gangs.Battle.AI {
                     var targetTile = target.GridUnit.GetTile();
                     fireAbility!.Select();
                     fireAbility!.OnAbilityFinished += AbilityFinished;
-                    fireAbility!.LeftClickTile(targetTile);
+                    fireAbility!.SetTarget(targetTile);
                     return;
                 }
             }
@@ -70,6 +70,12 @@ namespace Gangs.Battle.AI {
         }
         
         private static void AbilityFinished() {
+            var activeSquad = BattleBase.ActiveSquad;
+            var battleUnit = activeSquad.SelectedUnit;
+            foreach (var battleUnitAbility in battleUnit.Abilities) {
+                battleUnitAbility.OnAbilityFinished -= AbilityFinished;
+            }
+            
             BattleBase.ActiveSquad.EndUnitTurn();
         }
         
@@ -169,7 +175,7 @@ namespace Gangs.Battle.AI {
                 FullCoverWeight = 2,
                 HeightAdvantageWeight = 1,
                 CanFlankWeight = 2,
-                IsFlankedWeight = 2,
+                IsFlankedWeight = -2,
                 DistanceCheckWeight = 1,
                 RemainingActionPointWeight = 1
             };

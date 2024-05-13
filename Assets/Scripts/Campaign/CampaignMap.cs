@@ -80,6 +80,7 @@ namespace Gangs.Campaign {
             var monsterCount = monsterTerritories.Count / 3;
             for (var i = 0; i < monsterCount; i++) {
                 var territory = monsterTerritories[Random.Range(0, monsterTerritories.Count)];
+                if (territory.Squads.Count > 0) continue;
                 CreateNeutralSquad(territory);
             }
         }

@@ -5,6 +5,7 @@ using Gangs.Battle.Grid;
 using Gangs.Core;
 using Gangs.Data;
 using Gangs.Grid;
+using UnityEngine;
 using Tile = Gangs.Grid.Tile;
 
 namespace Gangs.Battle {
@@ -29,12 +30,15 @@ namespace Gangs.Battle {
         }
 
         public void SpawnSquad(List<List<GridPosition>> spawnPositionGroups) {
-            var unitCount = Squads.SelectMany(s => s.Units).ToList().Count;
-            if (unitCount > spawnPositionGroups.SelectMany(s => s).ToList().Count) {
-                throw new Exception("Not enough spawn positions for all units");
-            }
             for (var i = 0; i < Squads.Count; i++) {
                 for (var j = 0; j < Squads[i].Units.Count; j++) {
+                    // catch out of range exception
+                    try {
+                        var spawnPosition = spawnPositionGroups[i][j];
+                    } catch (Exception e) {
+                        Debug.LogError(e);
+                        return;
+                    }
                     var gridUnit = Grid.Grid.AddUnit(spawnPositionGroups[i][j]);
                     Squads[i].Units[j].GridUnit = gridUnit;
                 }
@@ -76,6 +80,7 @@ namespace Gangs.Battle {
         }
         
         private void EndRound() {
+            Debug.Log($"End of round {RoundNumber}");
             Squads.ForEach(s => s.ResetTurns());
             RoundNumber++;
             

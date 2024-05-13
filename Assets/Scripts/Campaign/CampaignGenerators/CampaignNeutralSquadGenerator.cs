@@ -13,8 +13,10 @@ namespace Gangs.Campaign.CampaignGenerators {
             var factionUnit = faction.Units[Random.Range(0, faction.Units.Count)];
             
             var unitLevels = GenerateStrengthDistribution(squadStrength, 3, 6);
-            foreach (var unitLevel in unitLevels) {
+            for (var i = 0; i < unitLevels.Count; i++) {
+                var unitLevel = unitLevels[i];
                 var unit = CampaignUnitGenerator.GenerateUnit(faction, factionUnit, unitLevel);
+                unit.Name = unit.Name + " " + (i + 1);
                 squad.Units.Add(unit);
             }
 

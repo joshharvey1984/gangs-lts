@@ -7,8 +7,8 @@ using Gangs.UI;
 using UnityEngine;
 
 namespace Gangs.Managers {
-    public class GridVisualManager : MonoBehaviour {
-        public static GridVisualManager Instance { get; private set; }
+    public class BattleGridVisualManager : MonoBehaviour {
+        public static BattleGridVisualManager Instance { get; private set; }
         
         [SerializeField]
         private GameObject moveRangeLineRendererObject;
@@ -57,6 +57,7 @@ namespace Gangs.Managers {
             ClearMovementPath();
             ClearTileDetails();
             ClearAllTileColors();
+            ClearSelectionCursor();
         }
 
         private void DrawTileDetails(Tile tile) {
@@ -89,7 +90,7 @@ namespace Gangs.Managers {
             //     }
             // }
         }
-        
+
         private Vector3 GetIndicatorPosition(Tile tile, CardinalDirection direction) {
             var indicatorPos = tile.GridPosition.ToVector3();
             switch (direction) {
@@ -107,6 +108,12 @@ namespace Gangs.Managers {
                     break;
             }
             return indicatorPos;
+        }
+
+        private void ClearSelectionCursor() {
+            if (_selectionCursor is null) return;
+            Destroy(_selectionCursor);
+            _selectionCursor = null;
         }
 
         private void ClearTileDetails() {
