@@ -12,7 +12,7 @@ namespace Gangs.Abilities {
         
         public event Action<List<Tile>, int> OnDamageDealt;
         
-        public FireAbility(BattleUnit battleUnit, BattleGrid battleGrid) : base(battleUnit, battleGrid) {
+        public FireAbility(BattleUnit battleUnit, BattleGrid battleGrid, BattleBase battle) : base(battleUnit, battleGrid, battle) {
             ButtonText = "Fire";
             TargetingType = TargetingType.EnemiesInLineOfSight;
             EndTurnOnUse = true;

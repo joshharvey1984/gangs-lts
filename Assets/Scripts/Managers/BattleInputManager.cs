@@ -63,7 +63,6 @@ namespace Gangs.Managers {
             }
             
             if (Input.GetKeyUp(KeyCode.Space)) {
-                BattleGridVisualManager.Instance.ResetAllVisuals();
                 BattleManager.Instance.EndUnitTurn();
             }
 

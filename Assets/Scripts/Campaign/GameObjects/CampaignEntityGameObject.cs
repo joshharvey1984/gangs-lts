@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Gangs.Campaign {
+namespace Gangs.Campaign.GameObjects {
     public class CampaignEntityGameObject : MonoBehaviour {
         [SerializeField] private GameObject selectionIndicator;
         public CampaignSquad Entity { get; set; }

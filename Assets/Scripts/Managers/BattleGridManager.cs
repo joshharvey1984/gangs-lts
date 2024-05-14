@@ -73,7 +73,8 @@ namespace Gangs.Managers {
         }
         
         private void SpawnTile(Tile tile) {
-            Instantiate(tilePrefab, tile.GridPosition.ToVector3(), Quaternion.identity, gridParent.transform);
+            var spawnTile = Instantiate(tilePrefab, tile.GridPosition.ToVector3(), Quaternion.identity, gridParent.transform);
+            spawnTile.name = $"Tile {tile.GridPosition}";
                         
             foreach (var wall in tile.Walls.Where(w => w.Key is CardinalDirection.North or CardinalDirection.East)) {
                 var prefab = _grid.GetCoverType(tile.GridPosition, wall.Key) == CoverType.Full ? wallPrefab : halfWallPrefab; 

@@ -5,8 +5,7 @@ using UnityEngine;
 
 namespace Gangs.Battle.UI {
     public class AbilityButtonBar : MonoBehaviour {
-        [SerializeField]
-        private GameObject abilityButtonPrefab;
+        [SerializeField] private GameObject abilityButtonPrefab;
         
         private readonly List<AbilityButton> _abilityButtons = new();
         
@@ -24,7 +23,6 @@ namespace Gangs.Battle.UI {
         
         public void DisableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(false));
         public void EnableAbilityButtons() => _abilityButtons.ForEach(b => b.Enabled(true));
-        
         public void DestroyAbilityButtons() {
             foreach (var button in _abilityButtons) {
                 Destroy(button.gameObject);

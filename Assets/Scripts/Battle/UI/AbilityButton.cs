@@ -35,6 +35,7 @@ namespace Gangs.Battle.UI {
         }
 
         private void Execute() {
+            Debug.Log($"Ability {abilityNameText.text} selected");
             OnSelected?.Invoke();
         }
     }

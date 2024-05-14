@@ -5,12 +5,12 @@ using Gangs.Battle.Grid;
 using Gangs.Calculators;
 using Gangs.Core;
 using Gangs.Grid;
-using UnityEngine;
 
 namespace Gangs.Abilities {
     public abstract class Ability {
         protected readonly BattleUnit BattleUnit;
         protected readonly BattleGrid BattleGrid;
+        protected readonly BattleBase BattleBase;
         
         public string ButtonText;
         public bool EndTurnOnUse = false;
@@ -23,16 +23,17 @@ namespace Gangs.Abilities {
         public event Action<Tile> OnAbilityExecuted;
         public event Action OnAbilityFinished;
         
-        protected Ability(BattleUnit battleUnit, BattleGrid battleGrid, Action<Tile> onAbilityExecuted = null) {
+        protected Ability(BattleUnit battleUnit, BattleGrid battleGrid, BattleBase battle, Action<Tile> onAbilityExecuted = null) {
             BattleUnit = battleUnit;
             BattleGrid = battleGrid;
+            BattleBase = battle;
             OnAbilityExecuted = onAbilityExecuted;
         }
         
         public virtual void Select() {
             if (BattleUnit.SelectedAbility != null && BattleUnit.SelectedAbility != this) BattleUnit.SelectedAbility.Deselect();
             BattleUnit.SelectedAbility = this;
-            TargetTiles = TargetingType.GetTargetingTiles(BattleUnit.GridUnit.GetTile(), BattleUnit, BattleGrid);
+            TargetTiles = TargetingType.GetTargetingTiles(BattleUnit.GridUnit.GetTile(), BattleUnit, BattleBase);
             OnAbilitySelected?.Invoke(this);
         }
 
@@ -89,7 +90,7 @@ namespace Gangs.Abilities {
         }
 
         protected void Finish() {
-            Debug.Log($"{BattleUnit.Unit.Name} finished using {ButtonText}");
+            //Debug.Log($"{BattleUnit.Unit.Name} finished using {ButtonText}");
             OnAbilityFinished?.Invoke();
         }
     }

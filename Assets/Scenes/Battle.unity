@@ -461,7 +461,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -687,7 +687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ed3b43b8adc4338b14cb532bb7ddd99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityButtonBar: {fileID: 0}
+  abilityButtonBar: {fileID: 1906178484}
 --- !u!1 &1906178484
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,10 +723,10 @@ RectTransform:
   m_Father: {fileID: 626966143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.2685464, y: 0.12778811}
-  m_AnchoredPosition: {x: 0.4835205, y: -0.03845215}
-  m_SizeDelta: {x: 0.967041, y: -0.0769043}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 56.5, y: 45.7}
+  m_SizeDelta: {x: 474.96704, y: 112.923096}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1906178486
 MonoBehaviour:
   m_ObjectHideFlags: 0

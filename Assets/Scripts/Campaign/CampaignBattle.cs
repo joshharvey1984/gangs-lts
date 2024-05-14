@@ -36,7 +36,6 @@ namespace Gangs.Campaign {
         }
 
         public void MoveUnit(BattleUnit unit, Tile tile) {
-            if (BattleBase.endGame) return;
             BattleBase.MoveUnit(unit, tile);
         }
 
@@ -82,8 +81,9 @@ namespace Gangs.Campaign {
                 var squad = new BattleSquad();
 
                 entity.Units.ForEach(unit => {
-                    var battleUnit = new BattleUnit(unit, BattleBase.Grid);
+                    var battleUnit = new BattleUnit(unit, BattleBase.Grid, BattleBase);
                     battleUnit.OnUnitEliminated += BattleBase.Grid.RemoveUnit;
+                    battleUnit.OnUnitEliminated += _ => BattleBase.CheckForEndGame();
                     squad.Units.Add(battleUnit);
                 });
                 

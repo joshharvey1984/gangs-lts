@@ -4,7 +4,7 @@ using System.Linq;
 using Gangs.Managers;
 using UnityEngine;
 
-namespace Gangs.Campaign
+namespace Gangs.Campaign.GameObjects
 {
     public class CampaignMapGameObject : MonoBehaviour {
         private List<GameObject> _territories;

@@ -153,6 +153,13 @@ namespace Gangs.Managers {
                 DrawMovementPath(gridPosition);
                 DrawTileDetails(BattleGridManager.Instance.GetTile(gridPosition));
             }
+            if (BattleManager.Instance.CurrentAbility().TargetingType == TargetingType.EnemiesInLineOfSight) {
+                _targetTiles.ForEach(t => t.Tiles.ForEach(tile => ColorTile(tile, Color.red)));
+                var tile = BattleGridManager.Instance.GetTile(gridPosition);
+                if (_targetTiles.Exists(t => t.Tiles.Contains(tile))) {
+                    ColorTile(tile, Color.yellow);
+                }
+            }
         }
         
         public GameObject DrawWaypointIndicator(Tile tiles) {
@@ -182,10 +189,10 @@ namespace Gangs.Managers {
 
         public void ConvertMovementPathToWayPoint() => _movePathLine.ConvertMovementPathToWayPoint();
 
-        // public void ColorTile(Tile tile, Color color) {
-        //     var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
-        //     tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
-        // }
+        public void ColorTile(Tile tile, Color color) {
+            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
+            tileGameObject.GetComponentInChildren<Renderer>().material.color = color;
+        }
         
         public void ClearAllTileColors() {
             foreach (var go in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -193,29 +200,34 @@ namespace Gangs.Managers {
             }
         }
 
-        // public void NumberTile(Tile tile, float expectedDamageDifferential) {
-        //     var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
-        //     var text = Instantiate(new GameObject(), tileGameObject.transform);
-        //     text.transform.position = tileGameObject.transform.position;
-        //     text.transform.rotation = Quaternion.identity;
-        //     text.transform.Rotate(Vector3.right, 90);
-        //     text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        //     var textMesh = text.AddComponent<TextMesh>();
-        //     textMesh.text = expectedDamageDifferential.ToString("F1");
-        //     _tileNumbers.Add(text);
-        // }
+        public void NumberTile(Tile tile, float expectedDamageDifferential) {
+            var tileGameObject = BattleManager.Instance.GetTileGameObject(tile.GridPosition);
+            var text = Instantiate(new GameObject(), tileGameObject.transform);
+            text.transform.position = tileGameObject.transform.position;
+            text.transform.rotation = Quaternion.identity;
+            text.transform.Rotate(Vector3.right, 90);
+            text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            var textMesh = text.AddComponent<TextMesh>();
+            textMesh.text = expectedDamageDifferential.ToString("F1");
+            _tileNumbers.Add(text);
+        }
 
-        // public void DeleteAllTileNumbers() {
-        //     foreach (var number in _tileNumbers) {
-        //         Destroy(number);
-        //     }
-        //     _tileNumbers.Clear();
-        // }
+        public void DeleteAllTileNumbers() {
+            foreach (var number in _tileNumbers) {
+                Destroy(number);
+            }
+            _tileNumbers.Clear();
+        }
         
         public void DrawTargetingTiles(Ability ability) {
             ResetAllVisuals();
             if (ability.TargetingType == TargetingType.StandardMove) {
                 DrawMoveRanges(ability.TargetTiles);
+            }
+            
+            if (ability.TargetingType == TargetingType.EnemiesInLineOfSight) {
+                _targetTiles = ability.TargetTiles;
+                _targetTiles.ForEach(t => t.Tiles.ForEach(tile => ColorTile(tile, Color.red)));
             }
         }
     }

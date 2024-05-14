@@ -4,13 +4,14 @@ using Gangs.Battle;
 using Gangs.Battle.Grid;
 using Gangs.Core;
 using Gangs.Grid;
+using Gangs.Managers;
 
 namespace Gangs.Abilities {
     public static class AbilityTargetingExtensions {
-        public static List<TargetTiles> GetTargetingTiles(this TargetingType targetingType, Tile fromTile, BattleUnit battleUnit, BattleGrid battleGrid) {
+        public static List<TargetTiles> GetTargetingTiles(this TargetingType targetingType, Tile fromTile, BattleUnit battleUnit, BattleBase battle) {
             return targetingType switch {
                 TargetingType.StandardMove => StandardMove(fromTile, battleUnit),
-                TargetingType.EnemiesInLineOfSight => EnemiesInLineOfSight(fromTile, battleGrid),
+                TargetingType.EnemiesInLineOfSight => EnemiesInLineOfSight(fromTile, battleUnit, battle),
                 _ => new List<TargetTiles>()
             };
         }
@@ -31,10 +32,19 @@ namespace Gangs.Abilities {
             return targetTiles;
         }
         
-        private static List<TargetTiles> EnemiesInLineOfSight(Tile fromTile, BattleGrid battleGrid) {
+        private static List<TargetTiles> EnemiesInLineOfSight(Tile fromTile, BattleUnit battleUnit, BattleBase battle) {
             var losPositions = fromTile.LineOfSightGridPositions;
-            var losTiles = losPositions.Select(p => battleGrid.Grid.GetTile(p)).ToList();
-            return new List<TargetTiles> { new() { Tiles = losTiles, Cost = 1 } };
+            var enemies = battle.GetActiveEnemyUnits(battleUnit);
+            var targetTiles = new List<TargetTiles>();
+            
+            foreach (var enemy in enemies) {
+                var enemyTile = enemy.GridUnit.GetTile();
+                if (losPositions.Contains(enemyTile.GridPosition)) {
+                    targetTiles.Add(new TargetTiles { Tiles = new List<Tile> { enemyTile }, Cost = 1 });
+                }
+            }
+            
+            return targetTiles;
         }
     }
     

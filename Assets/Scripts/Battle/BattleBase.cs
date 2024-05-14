@@ -14,8 +14,15 @@ namespace Gangs.Battle {
         public List<BattleSquad> Squads { get; } = new();
         public BattleSquad ActiveSquad { get; private set; }
         private int RoundNumber { get; set; } = 1;
-
-        public bool endGame = false;
+        
+        // replace with Battle status enum
+        public enum BattleStatus {
+            Setup,
+            Active,
+            End
+        }
+        
+        public BattleStatus Status { get; private set; } = BattleStatus.Setup;
         
         public event Action<BattleSquad> OnEndGame;
         
@@ -46,10 +53,14 @@ namespace Gangs.Battle {
         }
         
         public void StartBattle() {
+            Status = BattleStatus.Active;
             NextTurn();
         }
         
-        public IEnumerable<BattleUnit> GetEnemyUnits(BattleUnit battleUnit) => 
+        public IEnumerable<BattleUnit> GetActiveEnemyUnits(BattleUnit battleUnit) => 
+            GetEnemyUnits(battleUnit).Where(u => u.UnitStatus != UnitStatus.Eliminated);
+
+        private IEnumerable<BattleUnit> GetEnemyUnits(BattleUnit battleUnit) => 
             Squads.Where(sq => !sq.Units.Contains(battleUnit)).SelectMany(sq => sq.Units).ToList();
         
         public void MoveUnit(BattleUnit unit, Tile tile) => Grid.MoveUnit(unit, tile);
@@ -89,11 +100,11 @@ namespace Gangs.Battle {
             }
         }
         
-        private bool CheckForEndGame() {
-            if (endGame) return true;
-            if (Squads.Any(s => s.Units.All(u => u.Status == Status.Eliminated))) {
-                EndGame(Squads.FirstOrDefault(s => s.Units.Any(u => u.Status != Status.Eliminated)));
-                endGame = true;
+        public bool CheckForEndGame() {
+            if (Status == BattleStatus.End) return true;
+            if (Squads.Any(s => s.Units.All(u => u.UnitStatus == UnitStatus.Eliminated))) {
+                EndGame(Squads.FirstOrDefault(s => s.Units.Any(u => u.UnitStatus != UnitStatus.Eliminated)));
+                Status = BattleStatus.End;
                 return true;
             }
             

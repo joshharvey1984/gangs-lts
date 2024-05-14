@@ -1,5 +1,6 @@
 ﻿using System;
 using Gangs.Campaign;
+using Gangs.Campaign.GameObjects;
 using UnityEngine;
 
 namespace Gangs.Managers {
@@ -41,16 +42,16 @@ namespace Gangs.Managers {
             if (!Physics.Raycast(ray, out var hit)) return null;
             if (!hit.collider.CompareTag("Territory")) return null;
             var coll = hit.collider.GetComponent<CampaignTerritoryGameObject>();
-            return CampaignManager.Instance.GetTerritory(coll);
+            return CampaignMapManager.Instance.Territories
         }
 
         public void SelectSquad(CampaignSquad squad) {
-            var territory = CampaignManager.Instance.GetTerritory(squad);
+            var territory = CampaignMapManager.Instance.GetTerritory(squad);
             territory.Neighbours.ForEach(t => t.GameObject.Highlight(Color.yellow));
         }
         
         public static void DeselectSquad() {
-            CampaignManager.Instance.ResetTerritoryHighlights();
+            CampaignMapManager.Instance.ResetTerritoryHighlights();
         }
         
         private void HandleLeftClick() {

@@ -15,7 +15,7 @@ namespace Gangs.Battle {
         public readonly Ability[] Abilities;
         public Ability SelectedAbility;
         
-        public Status Status = Status.Active;
+        public UnitStatus UnitStatus = UnitStatus.Active;
         
         public int ActionPointsRemaining;
         public bool TurnTaken = false;
@@ -30,12 +30,12 @@ namespace Gangs.Battle {
         public event Action OnAbilityCompleted;
         public event Action<BattleUnit, MoveWaypoint> OnMoveUnitTile;
         
-        public BattleUnit(CampaignUnit unit, BattleGrid battleGrid) {
+        public BattleUnit(CampaignUnit unit, BattleGrid battleGrid, BattleBase battleBase) {
             Unit = unit;
             ActionPointsRemaining = GetAttributeValue(UnitAttributeType.ActionPoints);
             Abilities = new Ability[] {
-                new MoveAbility(this, battleGrid, SetMoveTile),
-                new FireAbility(this, battleGrid)
+                new MoveAbility(this, battleGrid, battleBase, SetMoveTile),
+                new FireAbility(this, battleGrid, battleBase)
             };
         }
 
@@ -68,7 +68,7 @@ namespace Gangs.Battle {
         }
         
         private void Eliminate() {
-            Status = Status.Eliminated;
+            UnitStatus = UnitStatus.Eliminated;
             OnUnitEliminated?.Invoke(this);
         }
         
@@ -107,7 +107,7 @@ namespace Gangs.Battle {
         public int GetTotalMovePoints() => GetAttributeValue(UnitAttributeType.Movement) * ActionPointsRemaining * 10;
     }
     
-    public enum Status {
+    public enum UnitStatus {
         Active,
         Knocked,
         Eliminated

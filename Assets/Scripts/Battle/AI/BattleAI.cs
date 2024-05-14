@@ -45,9 +45,7 @@ namespace Gangs.Battle.AI {
             }
             
             var weightings = GetWeightings(battleUnit);
-            
-            //var moveRange = moveAbility!.CalculateMoveRange();
-            var moveRange = moveAbility!.TargetingType.GetTargetingTiles(currentTile, battleUnit, BattleBase.Grid);
+            var moveRange = moveAbility!.TargetingType.GetTargetingTiles(currentTile, battleUnit, BattleBase);
             var bestMoveTiles = FindBestTile(moveRange, enemyData, weightings);
             var bestMove = bestMoveTiles.Take(3).ElementAt(new Random().Next(0, 3));
             
@@ -70,12 +68,6 @@ namespace Gangs.Battle.AI {
         }
         
         private static void AbilityFinished() {
-            var activeSquad = BattleBase.ActiveSquad;
-            var battleUnit = activeSquad.SelectedUnit;
-            foreach (var battleUnitAbility in battleUnit.Abilities) {
-                battleUnitAbility.OnAbilityFinished -= AbilityFinished;
-            }
-            
             BattleBase.ActiveSquad.EndUnitTurn();
         }
         
@@ -136,7 +128,7 @@ namespace Gangs.Battle.AI {
         private static IEnumerable<BattleUnit> GetEnemiesInLineOfSight(BattleUnit battleUnit) {
             var unitTile = battleUnit.GridUnit.GetTile();
             var losUnits = BattleBase.Grid.GetUnitsInSightOfTile(unitTile, 20);
-            var enemyUnits = BattleBase.GetEnemyUnits(battleUnit);
+            var enemyUnits = BattleBase.GetActiveEnemyUnits(battleUnit);
             return losUnits.Where(unit => enemyUnits.Contains(unit)).ToList();
         }
         
@@ -175,7 +167,7 @@ namespace Gangs.Battle.AI {
                 FullCoverWeight = 2,
                 HeightAdvantageWeight = 1,
                 CanFlankWeight = 2,
-                IsFlankedWeight = -2,
+                IsFlankedWeight = 2,
                 DistanceCheckWeight = 1,
                 RemainingActionPointWeight = 1
             };

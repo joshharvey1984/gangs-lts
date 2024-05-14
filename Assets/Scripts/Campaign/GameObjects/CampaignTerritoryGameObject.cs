@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 
-namespace Gangs.Campaign
+namespace Gangs.Campaign.GameObjects
 {
     public class CampaignTerritoryGameObject : MonoBehaviour {
         [SerializeField] private LineRenderer borderRenderer;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Gangs.Campaign.CampaignGenerators;
+using Gangs.Campaign.GameObjects;
 using Gangs.Data;
 using Gangs.MainMenu;
 using Gangs.Managers;
@@ -8,12 +9,10 @@ using UnityEngine;
 
 namespace Gangs.Campaign {
     public class CampaignMap {
-        public CampaignMapGameObject GameObject { get; set; }
-        public List<CampaignTerritory> Territories { get; set; }
-        public List<CampaignEntityGameObject> Entities { get; set; } = new();
         
-        public CampaignMap(CampaignData campaignData, GameObject gameObject) {
-            GameObject = gameObject.GetComponent<CampaignMapGameObject>();
+        public List<CampaignTerritory> Territories { get; set; }
+        
+        public CampaignMap(CampaignData campaignData) {
             Territories = new List<CampaignTerritory>();
             GetActiveTerritories(campaignData.MapSize.GetGridSize());
             FindTerritoryNeighbours();
